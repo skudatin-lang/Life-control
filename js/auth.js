@@ -1,7 +1,8 @@
-// ═══════════════════════════════════════════════════
+// =============================================
 //  AUTH MODULE
-//  Авторизация: Google + Яндекс (через OAuthProvider)
-// ═══════════════════════════════════════════════════
+//  Google OAuth — встроен в Firebase
+//  Яндекс OAuth — через OAuthProvider
+// =============================================
 
 import { auth } from "./firebase-config.js";
 import {
@@ -11,44 +12,37 @@ import {
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { showToast } from "./app.js";
 
-// ── Google ──
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: "select_account" });
+let onLoginCallback  = null;
+let onLogoutCallback = null;
 
-// ── Яндекс ──
-const yandexProvider = new OAuthProvider("yandex.com");
+export function setAuthCallbacks(onLogin, onLogout) {
+  onLoginCallback  = onLogin;
+  onLogoutCallback = onLogout;
+}
 
-// ── Кнопки авторизации ──
-document.getElementById("loginGoogle").addEventListener("click", async () => {
+onAuthStateChanged(auth, (user) => {
+  if (user) { onLoginCallback?.(user);  }
+  else       { onLogoutCallback?.();     }
+});
+
+export async function loginWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  await signInWithPopup(auth, provider);
+}
+
+export async function loginWithYandex() {
+  const provider = new OAuthProvider("yandex.com");
   try {
-    await signInWithPopup(auth, googleProvider);
-  } catch (err) {
-    console.error("Google login error:", err);
-    showToast("Ошибка входа через Google: " + err.message);
+    await signInWithPopup(auth, provider);
+  } catch (e) {
+    alert("Для входа через Яндекс нужно настроить Yandex OAuth в Firebase Console.\nСм. инструкцию в README.md");
   }
-});
+}
 
-document.getElementById("loginYandex").addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, yandexProvider);
-  } catch (err) {
-    console.error("Yandex login error:", err);
-    showToast("Ошибка входа через Яндекс: " + err.message);
-  }
-});
-
-// ── Выход ──
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  if (confirm("Выйти из аккаунта?")) {
-    await signOut(auth);
-  }
-});
-
-// ── Слушатель смены состояния авторизации ──
-export function onAuth(callback) {
-  return onAuthStateChanged(auth, callback);
+export async function logout() {
+  await signOut(auth);
 }
 
 export function getCurrentUser() {

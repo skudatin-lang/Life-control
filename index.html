@@ -1,227 +1,129 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Хаос-контроль</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Geologica:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life-control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Mulish:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/plan.css" />
+  <link rel="stylesheet" href="css/projects.css" />
+  <link rel="stylesheet" href="css/chaos.css" />
+  <link rel="stylesheet" href="css/modal.css" />
 </head>
 <body>
 
-  <!-- ═══ AUTH SCREEN ═══ -->
+  <!-- AUTH SCREEN -->
   <div id="auth-screen" class="screen active">
     <div class="auth-bg">
-      <div class="auth-glow g1"></div>
-      <div class="auth-glow g2"></div>
-      <div class="auth-noise"></div>
+      <div class="auth-orb orb-1"></div>
+      <div class="auth-orb orb-2"></div>
+      <div class="auth-orb orb-3"></div>
     </div>
-    <div class="auth-content">
+    <div class="auth-container">
       <div class="auth-logo">
-        <div class="logo-mark">ХК</div>
+        <div class="logo-mark">LC</div>
+        <div class="logo-text">
+          <span class="logo-title">Life-control</span>
+          <span class="logo-version">v1.0</span>
+        </div>
       </div>
-      <h1 class="auth-title">Хаос<span class="dash">—</span>контроль</h1>
-      <p class="auth-sub">Твоя система. Твои правила.</p>
-      <div class="auth-btns">
-        <button class="btn-auth google" id="loginGoogle">
-          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <p class="auth-tagline">Твоя система. Твои правила.</p>
+      <div class="auth-buttons">
+        <button class="btn-auth btn-google" id="btn-google-login">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
           Войти через Google
         </button>
-        <button class="btn-auth yandex" id="loginYandex">
-          <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FC3F1D"/><path d="M13.45 6.5H12.3c-1.4 0-2.15.7-2.15 1.85 0 1.3.56 1.95 1.7 2.7l.95.63-2.72 4.32H8.4l2.52-3.97c-1.45-.97-2.27-1.93-2.27-3.6C8.65 6.35 9.82 5.5 12.2 5.5h2.6V17.5h-1.35V6.5z" fill="white"/></svg>
+        <button class="btn-auth btn-yandex" id="btn-yandex-login">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="12" fill="#fff"/>
+            <path d="M13.32 6H11.5C9.57 6 8.25 7.08 8.25 8.92c0 1.6.77 2.5 2.17 3.44L8 18h2.25l2.2-5.35-.6-.38C10.6 11.4 10.1 10.75 10.1 8.97c0-.97.6-1.47 1.43-1.47h1.27V18H15V6h-1.68z" fill="#CC0000"/>
+          </svg>
           Войти через Яндекс
         </button>
       </div>
-      <p class="auth-note">Данные хранятся в Firebase — только твои</p>
+      <p class="auth-note">Данные хранятся в защищённом облаке и доступны только вам</p>
     </div>
   </div>
 
-  <!-- ═══ MAIN APP ═══ -->
+  <!-- MAIN APP -->
   <div id="app-screen" class="screen">
 
+    <!-- SIDEBAR -->
+    <nav id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">LC</div>
+        <span class="sidebar-appname">Life-control</span>
+        <button class="sidebar-close" id="sidebar-close">✕</button>
+      </div>
+      <div class="sidebar-user" id="sidebar-user">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <span class="user-name" id="user-name">Загрузка...</span>
+          <span class="user-email" id="user-email"></span>
+        </div>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a href="#" class="nav-item active" data-module="dashboard"><span class="nav-icon">⌂</span>Главная</a></li>
+        <li><a href="#" class="nav-item" data-module="plan"><span class="nav-icon">◫</span>План дня</a></li>
+        <li><a href="#" class="nav-item" data-module="projects"><span class="nav-icon">▤</span>Проекты</a></li>
+        <li><a href="#" class="nav-item" data-module="chaos"><span class="nav-icon">↯</span>Место Хаоса</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <button class="btn-logout" id="btn-logout">↩ Выйти</button>
+      </div>
+    </nav>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- TOP BAR -->
     <header class="topbar">
-      <div class="topbar-left">
-        <div class="topbar-logo">ХК</div>
-        <div class="topbar-title" id="topbarTitle">Хаос-контроль</div>
-      </div>
-      <div class="topbar-right">
-        <button class="icon-btn" id="logoutBtn" title="Выйти">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-      </div>
+      <button class="topbar-menu" id="topbar-menu">
+        <span></span><span></span><span></span>
+      </button>
+      <h1 class="topbar-title" id="topbar-title">Главная</h1>
+      <div class="topbar-actions" id="topbar-actions"></div>
     </header>
 
-    <main class="main-area" id="mainArea">
-
-      <!-- HOME -->
-      <div class="view active" id="view-home">
-        <div class="home-hero">
-          <div class="greeting" id="userGreeting">Добро пожаловать</div>
-          <div class="home-date" id="homeDate"></div>
-        </div>
-        <div class="home-cards">
-          <div class="hcard hcard-today" data-nav="today">
-            <div class="hcard-top">
-              <span class="hcard-icon">📅</span>
-              <span class="hcard-badge" id="todayBadge" style="display:none">0</span>
-            </div>
-            <div class="hcard-name">План дня</div>
-            <div class="hcard-meta" id="todayMeta">Смотреть задачи</div>
-          </div>
-          <div class="hcard hcard-projects" data-nav="projects">
-            <div class="hcard-top">
-              <span class="hcard-icon">🗂</span>
-            </div>
-            <div class="hcard-name">Проекты</div>
-            <div class="hcard-meta" id="projectsMeta">Смотреть</div>
-          </div>
-          <div class="hcard hcard-chaos" data-nav="chaos">
-            <div class="hcard-top">
-              <span class="hcard-icon">⚡</span>
-              <span class="hcard-badge chaos-badge" id="chaosBadge" style="display:none">0</span>
-            </div>
-            <div class="hcard-name">Место Хаоса</div>
-            <div class="hcard-meta" id="chaosMeta">Быстрый захват идей</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TODAY -->
-      <div class="view" id="view-today">
-        <div class="today-header">
-          <div class="today-nav">
-            <button class="nav-arrow" id="prevDay">‹</button>
-            <div class="today-date-wrap">
-              <div class="today-label" id="todayLabel">Сегодня</div>
-              <div class="today-full" id="todayFull"></div>
-            </div>
-            <button class="nav-arrow" id="nextDay">›</button>
-          </div>
-          <div class="week-strip" id="weekStrip"></div>
-        </div>
-        <div class="view-body">
-          <div id="todayTasksWrap">
-            <div class="section-label" id="todayCount">0 задач</div>
-            <div class="task-list" id="todayList"></div>
-          </div>
-          <div class="empty-pane" id="todayEmpty">
-            <div class="empty-icon">🌅</div>
-            <p>На этот день задач нет</p>
-            <button class="btn-add-empty" id="addTodayBtn">+ Добавить задачу</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- PROJECTS -->
-      <div class="view" id="view-projects">
-        <div class="projects-toolbar">
-          <button class="btn-back" id="projBack" style="display:none">‹ Назад</button>
-          <div class="breadcrumbs" id="breadcrumbs"></div>
-          <button class="btn-new" id="projAddBtn">+ Новый</button>
-        </div>
-        <div class="view-body" id="projectsBody">
-          <div class="empty-pane" id="projectsEmpty">
-            <div class="empty-icon">🗂</div>
-            <p>Проектов пока нет</p>
-          </div>
-          <div class="proj-list" id="projList"></div>
-          <div class="task-list" id="projTaskList" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- CHAOS -->
-      <div class="view" id="view-chaos">
-        <div class="chaos-zone">
-          <div class="chaos-heading">
-            <span class="chaos-bolt">⚡</span>
-            <div>
-              <div class="chaos-title-text">Место Хаоса</div>
-              <div class="chaos-sub">Пиши всё подряд — разберёшься потом</div>
-            </div>
-          </div>
-          <div class="chaos-input-box">
-            <textarea id="chaosInput" placeholder="Идея, задача, мысль, напоминание...&#10;Всё сюда." rows="4"></textarea>
-            <button id="chaosCapture">Захватить ⚡</button>
-          </div>
-        </div>
-        <div class="chaos-items" id="chaosList">
-          <div class="section-label">Захваченное</div>
-          <div id="chaosItemsList"></div>
-          <div class="empty-pane" id="chaosEmpty" style="display:none">
-            <div class="empty-icon">⚡</div>
-            <p>Хаос пуст. Пока.</p>
-          </div>
-        </div>
-      </div>
-
+    <!-- MODULE VIEWS -->
+    <main class="main-content">
+      <div id="module-dashboard" class="module active"></div>
+      <div id="module-plan" class="module"></div>
+      <div id="module-projects" class="module"></div>
+      <div id="module-chaos" class="module"></div>
     </main>
 
-    <nav class="bottomnav">
-      <button class="bnav-btn active" data-view="home">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>Главная</span>
-      </button>
-      <button class="bnav-btn" data-view="today">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span>День</span>
-      </button>
-      <button class="bnav-btn bnav-center" id="quickAddBtn">
-        <span>+</span>
-      </button>
-      <button class="bnav-btn" data-view="projects">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        <span>Проекты</span>
-      </button>
-      <button class="bnav-btn" data-view="chaos">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        <span>Хаос</span>
-      </button>
-    </nav>
   </div>
 
-  <!-- QUICK ADD SHEET -->
-  <div class="overlay" id="sheetOverlay">
-    <div class="bottom-sheet" id="quickSheet">
-      <div class="sheet-handle"></div>
-      <div class="sheet-title">Новая задача</div>
-      <input type="text" id="quickTitle" class="sheet-input" placeholder="Название задачи...">
-      <div class="sheet-row">
-        <div class="sheet-field">
-          <label>Дата дедлайна</label>
-          <input type="date" id="quickDate" class="sheet-ctrl">
-        </div>
-        <div class="sheet-field">
-          <label>Проект</label>
-          <select id="quickProject" class="sheet-ctrl">
-            <option value="">— без проекта —</option>
-          </select>
-        </div>
-      </div>
-      <input type="text" id="quickNote" class="sheet-input" placeholder="Заметка (необязательно)...">
-      <button class="sheet-save-btn" id="quickSave">Сохранить задачу</button>
-    </div>
-  </div>
-
-  <!-- TASK DETAIL MODAL -->
-  <div class="overlay" id="taskOverlay">
-    <div class="modal" id="taskModal">
+  <!-- GLOBAL MODAL -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-box" class="modal-box">
       <div class="modal-header">
-        <div class="modal-title" id="modalTitle">Задача</div>
-        <button class="modal-close" id="modalClose">✕</button>
+        <h3 id="modal-title"></h3>
+        <button id="modal-close" class="modal-close">✕</button>
       </div>
-      <div class="modal-body" id="modalBody"></div>
+      <div id="modal-body" class="modal-body"></div>
     </div>
   </div>
 
   <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+  <div id="toast" class="toast hidden"></div>
 
-  <!-- SCRIPTS -->
   <script type="module" src="js/firebase-config.js"></script>
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/db.js"></script>
-  <script type="module" src="js/modules/today.js"></script>
+  <script type="module" src="js/modal.js"></script>
+  <script type="module" src="js/router.js"></script>
+  <script type="module" src="js/modules/dashboard.js"></script>
+  <script type="module" src="js/modules/plan.js"></script>
   <script type="module" src="js/modules/projects.js"></script>
   <script type="module" src="js/modules/chaos.js"></script>
   <script type="module" src="js/app.js"></script>

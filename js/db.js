@@ -1,167 +1,229 @@
-// ═══════════════════════════════════════════════════
-//  DB MODULE
-//  Все операции с Firestore (CRUD)
+// =============================================
+//  DB MODULE — Firestore CRUD
 //  Структура:
-//    users/{uid}/tasks/{taskId}
-//    users/{uid}/projects/{projectId}
-//    users/{uid}/chaos/{chaosId}
-// ═══════════════════════════════════════════════════
+//  users/{uid}/categories/{catId}
+//  users/{uid}/projects/{projId}
+//  users/{uid}/tasks/{taskId}
+//  users/{uid}/chaos/{itemId}
+// =============================================
 
 import { db } from "./firebase-config.js";
 import {
-  collection, doc,
-  addDoc, setDoc, updateDoc, deleteDoc,
-  getDocs, onSnapshot,
-  query, where, orderBy,
-  serverTimestamp, Timestamp
+  collection, doc, addDoc, updateDoc, deleteDoc,
+  getDocs, query, where, orderBy, serverTimestamp, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let currentUid = null;
 
-export function setUid(uid) { currentUid = uid; }
-export function getUid()    { return currentUid; }
+export function setCurrentUser(uid) { currentUid = uid; }
 
-// ── helpers ──
-function col(name) {
-  return collection(db, "users", currentUid, name);
+// ---- Helpers ----
+function userCol(col) {
+  return collection(db, "users", currentUid, col);
 }
-function docRef(name, id) {
-  return doc(db, "users", currentUid, name, id);
+function userDoc(col, id) {
+  return doc(db, "users", currentUid, col, id);
 }
 
-// ══════════════════════════════
+// =============================================
+//  CATEGORIES
+// =============================================
+export async function getCategories() {
+  try {
+    const snap = await getDocs(query(userCol("categories"), orderBy("createdAt")));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    // Если индекс ещё не создан — без сортировки
+    const snap = await getDocs(userCol("categories"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+}
+
+export async function addCategory(name) {
+  return await addDoc(userCol("categories"), { name, createdAt: serverTimestamp() });
+}
+
+export async function deleteCategory(catId) {
+  await deleteDoc(userDoc("categories", catId));
+}
+
+export async function updateCategory(catId, data) {
+  await updateDoc(userDoc("categories", catId), data);
+}
+
+// =============================================
+//  PROJECTS
+// =============================================
+export async function getProjects(catId = null) {
+  try {
+    let q = catId
+      ? query(userCol("projects"), where("catId", "==", catId), orderBy("createdAt"))
+      : query(userCol("projects"), orderBy("createdAt"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    // Fallback без сортировки
+    let q = catId
+      ? query(userCol("projects"), where("catId", "==", catId))
+      : userCol("projects");
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+}
+
+export async function addProject(name, catId) {
+  return await addDoc(userCol("projects"), { name, catId: catId || null, createdAt: serverTimestamp() });
+}
+
+export async function deleteProject(projId) {
+  await deleteDoc(userDoc("projects", projId));
+}
+
+export async function updateProject(projId, data) {
+  await updateDoc(userDoc("projects", projId), data);
+}
+
+// =============================================
 //  TASKS
-// ══════════════════════════════
+// =============================================
+export async function getTasks(projId = null) {
+  try {
+    let q = projId
+      ? query(userCol("tasks"), where("projId", "==", projId), orderBy("createdAt"))
+      : query(userCol("tasks"), orderBy("createdAt"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    let q = projId
+      ? query(userCol("tasks"), where("projId", "==", projId))
+      : userCol("tasks");
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+}
 
-/**
- * Подписка на задачи (realtime)
- * @param {Function} callback  — вызывается при каждом изменении
- * @returns unsubscribe function
- */
-export function subscribeToTasks(callback) {
-  const q = query(col("tasks"), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snap) => {
-    const tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(tasks);
-  });
+export async function getTasksForDate(dateStr) {
+  // dateStr: "2026-04-05"
+  try {
+    const snap = await getDocs(query(userCol("tasks"), orderBy("deadline")));
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(t => {
+        if (!t.deadline) return false;
+        const d = t.deadline.toDate ? t.deadline.toDate() : new Date(t.deadline);
+        return d.toISOString().slice(0, 10) === dateStr;
+      });
+  } catch (e) {
+    const snap = await getDocs(userCol("tasks"));
+    return snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(t => {
+        if (!t.deadline) return false;
+        const d = t.deadline.toDate ? t.deadline.toDate() : new Date(t.deadline);
+        return d.toISOString().slice(0, 10) === dateStr;
+      });
+  }
+}
+
+export async function getDatesWithTasks() {
+  try {
+    const snap = await getDocs(userCol("tasks"));
+    const dates = new Set();
+    snap.docs.forEach(d => {
+      const t = d.data();
+      if (t.deadline) {
+        const dt = t.deadline.toDate ? t.deadline.toDate() : new Date(t.deadline);
+        dates.add(dt.toISOString().slice(0, 10));
+      }
+    });
+    return dates;
+  } catch (e) {
+    return new Set();
+  }
 }
 
 export async function addTask(data) {
-  return addDoc(col("tasks"), {
-    ...data,
-    done: false,
-    createdAt: serverTimestamp()
-  });
+  const payload = {
+    title:  data.title,
+    projId: data.projId || null,
+    catId:  data.catId  || null,
+    done:   false,
+    note:   data.note   || "",
+    createdAt: serverTimestamp(),
+  };
+  if (data.deadline) {
+    payload.deadline = Timestamp.fromDate(new Date(data.deadline));
+  }
+  return await addDoc(userCol("tasks"), payload);
 }
 
-export async function updateTask(id, data) {
-  return updateDoc(docRef("tasks", id), data);
+export async function updateTask(taskId, data) {
+  const payload = { ...data };
+  if (data.deadline !== undefined) {
+    payload.deadline = data.deadline
+      ? Timestamp.fromDate(new Date(data.deadline))
+      : null;
+  }
+  await updateDoc(userDoc("tasks", taskId), payload);
 }
 
-export async function deleteTask(id) {
-  return deleteDoc(docRef("tasks", id));
+export async function deleteTask(taskId) {
+  await deleteDoc(userDoc("tasks", taskId));
 }
 
-export async function toggleTask(id, currentDone) {
-  return updateDoc(docRef("tasks", id), {
-    done: !currentDone,
-    completedAt: !currentDone ? serverTimestamp() : null
-  });
-}
-
-// ══════════════════════════════
-//  PROJECTS / CATEGORIES
-//  Тип хранится в поле `type`:
-//    "category" — папка верхнего уровня
-//    "project"  — вложенный проект
-// ══════════════════════════════
-
-export function subscribeToProjects(callback) {
-  const q = query(col("projects"), orderBy("createdAt", "asc"));
-  return onSnapshot(q, (snap) => {
-    const projects = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(projects);
-  });
-}
-
-export async function addProject(data) {
-  return addDoc(col("projects"), {
-    ...data,
-    createdAt: serverTimestamp()
-  });
-}
-
-export async function updateProject(id, data) {
-  return updateDoc(docRef("projects", id), data);
-}
-
-export async function deleteProject(id) {
-  return deleteDoc(docRef("projects", id));
-}
-
-// ══════════════════════════════
-//  CHAOS (Место Хаоса)
-// ══════════════════════════════
-
-export function subscribeToChaos(callback) {
-  const q = query(col("chaos"), orderBy("createdAt", "desc"));
-  return onSnapshot(q, (snap) => {
-    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(items);
-  });
+// =============================================
+//  CHAOS ITEMS
+// =============================================
+export async function getChaosItems() {
+  try {
+    const snap = await getDocs(query(userCol("chaos"), orderBy("createdAt", "desc")));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (e) {
+    const snap = await getDocs(userCol("chaos"));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() })).reverse();
+  }
 }
 
 export async function addChaosItem(text) {
-  return addDoc(col("chaos"), {
-    text,
-    createdAt: serverTimestamp()
-  });
+  return await addDoc(userCol("chaos"), { text, createdAt: serverTimestamp() });
 }
 
-export async function deleteChaosItem(id) {
-  return deleteDoc(docRef("chaos", id));
+export async function deleteChaosItem(itemId) {
+  await deleteDoc(userDoc("chaos", itemId));
 }
 
-// Преобразовать хаос-запись в задачу
-export async function convertChaosToTask(chaosItem, taskData) {
-  await addTask(taskData);
-  await deleteChaosItem(chaosItem.id);
+export async function updateChaosItem(itemId, data) {
+  await updateDoc(userDoc("chaos", itemId), data);
 }
 
-// ══════════════════════════════
-//  UTILS
-// ══════════════════════════════
-
-/**
- * Форматирует Firebase Timestamp или строку даты в читаемый вид
- */
-export function formatDate(value) {
-  if (!value) return null;
-  let date;
-  if (value && value.toDate) {
-    date = value.toDate();
-  } else if (typeof value === "string") {
-    date = new Date(value + "T00:00:00");
-  } else {
-    date = new Date(value);
+// =============================================
+//  STATS (для dashboard)
+// =============================================
+export async function getStats() {
+  try {
+    const [cats, projs, tasks, chaos] = await Promise.all([
+      getDocs(userCol("categories")),
+      getDocs(userCol("projects")),
+      getDocs(userCol("tasks")),
+      getDocs(userCol("chaos")),
+    ]);
+    const allTasks  = tasks.docs.map(d => d.data());
+    const today     = new Date().toISOString().slice(0, 10);
+    const todayTasks = allTasks.filter(t => {
+      if (!t.deadline) return false;
+      const d = t.deadline.toDate ? t.deadline.toDate() : new Date(t.deadline);
+      return d.toISOString().slice(0, 10) === today;
+    });
+    return {
+      categories: cats.size,
+      projects:   projs.size,
+      tasks:      allTasks.length,
+      doneTasks:  allTasks.filter(t => t.done).length,
+      todayTasks: todayTasks.length,
+      chaosItems: chaos.size,
+    };
+  } catch (e) {
+    console.error("getStats error:", e);
+    return { categories:0, projects:0, tasks:0, doneTasks:0, todayTasks:0, chaosItems:0 };
   }
-  return date.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-}
-
-/**
- * Проверяет, просрочена ли дата дедлайна
- */
-export function isOverdue(deadline) {
-  if (!deadline) return false;
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  const d = new Date(deadline + "T00:00:00");
-  return d < today;
-}
-
-/**
- * Проверяет, попадает ли задача на конкретную дату (строка YYYY-MM-DD)
- */
-export function taskOnDate(task, dateStr) {
-  return task.deadline === dateStr;
 }
