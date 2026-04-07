@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Auth Test — Life-control</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:500px;margin:40px auto;padding:20px;background:#f5f0e8;}
+h2{color:#5A3510;}
+button{display:block;width:100%;padding:14px;margin:10px 0;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;}
+.g{background:#4285F4;color:#fff;}
+.log{background:#fff;border:1px solid #ccc;border-radius:8px;padding:14px;margin-top:16px;min-height:80px;font-family:monospace;font-size:12px;white-space:pre-wrap;word-break:break-all;}
+.ok{color:green;font-weight:700;}
+.err{color:red;font-weight:700;}
+.info{color:#555;}
+</style>
+</head>
+<body>
+<h2>🔐 Тест авторизации</h2>
+<p style="font-size:12px;color:#7B5A30">Этот файл только для диагностики — покажет точную ошибку</p>
+<button class="g" id="btn">Войти через Google</button>
+<div class="log" id="log">Нажмите кнопку...\n</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const log = (msg, cls='info') => {
+  const el = document.getElementById('log');
+  el.innerHTML += `<span class="${cls}">${new Date().toLocaleTimeString()} — ${msg}\n</span>`;
+};
+
+log('Firebase SDK загружен ✓', 'ok');
+
+const config = {
+  apiKey:            "AIzaSyA5mVDOI7rINUKbSdjs2tGFbS9sfTaBNBQ",
+  authDomain:        "life-control-70663.firebaseapp.com",
+  projectId:         "life-control-70663",
+  storageBucket:     "life-control-70663.firebasestorage.app",
+  messagingSenderId: "418774873271",
+  appId:             "1:418774873271:web:634a24c0f811cc55160932"
+};
+
+log('Конфиг: ' + JSON.stringify(config, null, 0), 'info');
+
+let app, auth;
+try {
+  app = initializeApp(config);
+  auth = getAuth(app);
+  log('Firebase инициализирован ✓', 'ok');
+  log('Текущий домен: ' + window.location.hostname, 'info');
+} catch(e) {
+  log('ОШИБКА инициализации: ' + e.message, 'err');
+}
+
+onAuthStateChanged(auth, user => {
+  if(user) log('Пользователь вошёл: ' + user.email + ' (' + user.uid + ')', 'ok');
+  else log('Пользователь не авторизован', 'info');
+});
+
+document.getElementById('btn').onclick = async () => {
+  log('Кнопка нажата, открываю popup...', 'info');
+  try {
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    log('Провайдер создан, вызываю signInWithPopup...', 'info');
+    const result = await signInWithPopup(auth, provider);
+    log('УСПЕХ! Вошёл: ' + result.user.email, 'ok');
+  } catch(e) {
+    log('КОД ОШИБКИ: ' + e.code, 'err');
+    log('СООБЩЕНИЕ: ' + e.message, 'err');
+    
+    if(e.code === 'auth/unauthorized-domain') {
+      log('→ РЕШЕНИЕ: Добавьте домен "' + window.location.hostname + '" в Firebase Console\n→ Authentication → Settings → Authorized domains', 'err');
+    } else if(e.code === 'auth/popup-blocked') {
+      log('→ РЕШЕНИЕ: Разрешите всплывающие окна в браузере для этого сайта', 'err');
+    } else if(e.code === 'auth/popup-closed-by-user') {
+      log('→ Окно закрыто пользователем', 'info');
+    } else if(e.code === 'auth/operation-not-allowed') {
+      log('→ РЕШЕНИЕ: Включите Google Sign-in в Firebase Console\n→ Authentication → Sign-in method → Google → Enable', 'err');
+    } else if(e.code === 'auth/internal-error') {
+      log('→ Внутренняя ошибка Firebase. Попробуйте ещё раз.', 'err');
+    }
+  }
+};
+</script>
+</body>
+</html>
