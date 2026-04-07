@@ -6,266 +6,265 @@
 <title>Life-control</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
-/* ════════════════════════════════════════
-   CSS VARIABLES
-════════════════════════════════════════ */
+/* ═══════════════════════ VARIABLES ═══════════════════════ */
 :root{
-  --bg:#EDE3CC; --bg-s:#E4D8BB; --bg-p:#F5EDD8; --bg-w:#FDFAF4;
-  --br:#7B4F1E; --br-d:#5A3510; --br-l:#A06A2E;
-  --go:#C8963E; --go-l:#E4B96A; --go-d:#9A6F28;
-  --cr:#F5EDD8; --cr-d:#EAE0C4;
-  --red:#C04030; --grn:#4A8A4A;
-  --tx:#3A2810; --tx-m:#7B5A30; --tx-l:#A08050;
-  --bd:rgba(123,79,30,.2); --bd-s:rgba(123,79,30,.45);
+  --bg:#EDE3CC;--bg-s:#E4D8BB;--bg-p:#F5EDD8;--bg-w:#FDFAF4;
+  --br:#7B4F1E;--br-d:#5A3510;--br-l:#A06A2E;
+  --go:#C8963E;--go-l:#E4B96A;--go-d:#9A6F28;
+  --cr:#F5EDD8;--cr-d:#EAE0C4;
+  --red:#C04030;--grn:#4A8A4A;--blu:#3A6EA8;
+  --tx:#3A2810;--tx-m:#7B5A30;--tx-l:#A08050;
+  --bd:rgba(123,79,30,.2);--bd-s:rgba(123,79,30,.45);
   --sh:rgba(80,40,10,.12);
-  --r:8px; --rl:14px; --rxl:20px; --rf:999px;
-  --fd:'Cinzel',serif; --fb:'Raleway',sans-serif;
+  --r:8px;--rl:14px;--rxl:20px;--rf:999px;
+  --fd:'Cinzel',serif;--fb:'Raleway',sans-serif;
   --tt:170ms ease;
-  --sb:280px; --tb:54px; --nb:56px;
+  --sb:280px;--tb:54px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;background:var(--bg);}
 body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 
-/* ════════════════════════════════════════
-   SCREENS
-════════════════════════════════════════ */
+/* ═══════════════════════ SCREENS ═══════════════════════ */
 .scr{display:none;position:fixed;inset:0;z-index:1;}
 .scr.on{display:flex;}
 
-/* ════════════════════════════════════════
-   AUTH
-════════════════════════════════════════ */
+/* ═══════════════════════ AUTH ═══════════════════════ */
 #s-auth{align-items:center;justify-content:center;background:linear-gradient(145deg,#D4C090,#B89040);}
 .auth-card{background:var(--bg-w);border:2px solid var(--bd-s);border-radius:var(--rxl);padding:44px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 12px 48px rgba(80,40,10,.3);}
-.auth-badge{width:68px;height:68px;background:var(--br);color:#fff;font-family:var(--fd);font-size:20px;font-weight:700;border-radius:var(--rl);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 4px 16px var(--sh);}
-.auth-title{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--br-d);margin-bottom:4px;}
-.auth-sub{font-size:12px;color:var(--tx-m);margin-bottom:28px;}
-.auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;border-radius:var(--rl);border:none;font-family:var(--fd);font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all var(--tt);margin-bottom:10px;}
-.ab-g{background:#4285F4;color:#fff;} .ab-g:hover{background:#3574e2;transform:translateY(-2px);}
-.ab-y{background:#CC0000;color:#fff;} .ab-y:hover{background:#aa0000;transform:translateY(-2px);}
-.auth-note{font-size:11px;color:var(--tx-l);margin-top:14px;}
+.a-badge{width:68px;height:68px;background:var(--br);color:#fff;font-family:var(--fd);font-size:20px;font-weight:700;border-radius:var(--rl);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.a-title{font-family:var(--fd);font-size:22px;font-weight:700;color:var(--br-d);margin-bottom:4px;}
+.a-sub{font-size:12px;color:var(--tx-m);margin-bottom:28px;}
+.a-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:var(--rl);border:none;font-family:var(--fd);font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:all var(--tt);margin-bottom:10px;}
+.a-g{background:#4285F4;color:#fff;}.a-g:hover{background:#3574e2;transform:translateY(-2px);}
+.a-y{background:#CC0000;color:#fff;}.a-y:hover{background:#aa0000;transform:translateY(-2px);}
+.a-note{font-size:11px;color:var(--tx-l);margin-top:14px;}
 
-/* ════════════════════════════════════════
-   APP SHELL
-════════════════════════════════════════ */
+/* ═══════════════════════ APP SHELL ═══════════════════════ */
 #s-app{flex-direction:row;}
-
-/* TOPBAR mobile */
-.topbar{display:none;position:fixed;top:0;left:0;right:0;height:var(--tb);background:var(--br-d);align-items:center;padding:0 14px;gap:12px;z-index:400;}
-.tb-burger{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;}
-.tb-burger span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
-.tb-title{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--go-l);flex:1;letter-spacing:.06em;}
+.topbar{display:none;position:fixed;top:0;left:0;right:0;height:var(--tb);background:var(--br-d);align-items:center;padding:0 14px;gap:10px;z-index:400;}
+.tb-burg{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px;}
+.tb-burg span{display:block;width:20px;height:2px;background:#fff;border-radius:2px;}
+.tb-ttl{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--go-l);flex:1;letter-spacing:.06em;}
 .tb-new{background:var(--go);color:#fff;border:none;border-radius:var(--r);padding:6px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;}
 
-/* SIDEBAR */
+/* ═══════════════════════ SIDEBAR ═══════════════════════ */
 .sidebar{width:var(--sb);min-width:var(--sb);background:var(--bg-p);border-right:2px dashed var(--bd);display:flex;flex-direction:column;z-index:200;overflow:hidden;flex-shrink:0;}
 .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .sb-ov.on{display:block;}
-.sb-profile{padding:20px 18px 16px;border-bottom:2px dashed var(--bd);text-align:center;}
-.sb-month{font-family:var(--fd);font-size:10px;font-weight:600;color:var(--go-d);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
-.sb-av{width:68px;height:68px;border-radius:50%;background:var(--br);border:3px solid var(--go);margin:0 auto 10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:700;color:#fff;flex-shrink:0;}
+.sb-prof{padding:18px 16px 14px;border-bottom:2px dashed var(--bd);text-align:center;}
+.sb-mo{font-family:var(--fd);font-size:10px;font-weight:600;color:var(--go-d);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.sb-av{width:64px;height:64px;border-radius:50%;background:var(--br);border:3px solid var(--go);margin:0 auto 8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:700;color:#fff;flex-shrink:0;}
 .sb-av img{width:100%;height:100%;object-fit:cover;}
-.sb-uname{display:block;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);}
-.sb-uemail{display:block;font-size:10px;color:var(--tx-l);margin-top:1px;}
-.sb-new{display:block;width:100%;margin:12px 0 0;padding:11px 14px;background:var(--go);color:#fff;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:all var(--tt);}
+.sb-un{display:block;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);}
+.sb-ue{display:block;font-size:10px;color:var(--tx-l);margin-top:1px;}
+.sb-new{display:block;width:100%;margin:10px 0 0;padding:10px 14px;background:var(--go);color:#fff;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:all var(--tt);}
 .sb-new:hover{background:var(--go-l);transform:translateY(-1px);}
-.sb-acts{display:flex;gap:8px;margin-top:8px;}
-.sb-act{flex:1;padding:8px 6px;background:var(--br);color:var(--cr);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:background var(--tt);}
-.sb-act:hover{background:var(--br-d);}
-.sb-extra{flex:1;overflow-y:auto;padding:14px 16px;}
-.sb-sec{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--bd);}
+.sb-btns{display:flex;gap:6px;margin-top:7px;}
+.sb-btn{flex:1;padding:7px 4px;background:var(--br);color:var(--cr);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:background var(--tt);}
+.sb-btn:hover{background:var(--br-d);}
+.sb-body{flex:1;overflow-y:auto;padding:12px 14px;}
+.sb-sec{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin:0 0 7px;padding-bottom:4px;border-bottom:1px solid var(--bd);}
 
-/* MAIN AREA */
+/* ═══════════════════════ MAIN ═══════════════════════ */
 .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-
-/* TOP NAV TABS */
-.top-nav{display:flex;background:var(--br-d);border-bottom:2px solid var(--go-d);flex-shrink:0;}
-.nt{flex:1;padding:13px 6px;font-family:var(--fd);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;}
-.nt:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.07);}
+.top-nav{display:flex;background:var(--br-d);border-bottom:2px solid var(--go-d);flex-shrink:0;overflow-x:auto;}
+.top-nav::-webkit-scrollbar{display:none;}
+.nt{flex:1;min-width:70px;padding:13px 6px;font-family:var(--fd);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.5);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;white-space:nowrap;}
+.nt:hover{color:rgba(255,255,255,.85);}
 .nt.on{color:var(--go-l);border-bottom-color:var(--go);}
-
-/* MODULE WRAPPER */
 .mwrap{flex:1;overflow:hidden;position:relative;}
 .mod{display:none;position:absolute;inset:0;flex-direction:column;overflow:hidden;}
 .mod.on{display:flex;}
-.mod-hd{background:var(--cr);border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.mod-title{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--br);letter-spacing:.08em;text-transform:uppercase;}
-.mod-body{flex:1;overflow-y:auto;padding:16px 18px 80px;}
+.mod-hd{background:var(--cr);border-bottom:1px solid var(--bd);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:8px;}
+.mod-ttl{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--br);letter-spacing:.08em;text-transform:uppercase;}
+.mod-body{flex:1;overflow-y:auto;padding:14px 16px 100px;}
 
-/* ════════════════════════════════════════
-   SHARED COMPONENTS
-════════════════════════════════════════ */
-/* Day strip */
-.day-nav-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-.dn-date{flex:1;min-width:160px;background:var(--go);color:#fff;border-radius:var(--r);padding:8px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:background var(--tt);}
+/* ═══════════════════════ COMPONENTS ═══════════════════════ */
+/* Day nav */
+.dn-row{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.dn-date{flex:1;min-width:140px;background:var(--go);color:#fff;border-radius:var(--r);padding:8px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;border:none;text-align:left;transition:background var(--tt);}
 .dn-date:hover{background:var(--go-d);}
-.dn-cal{background:var(--go);color:#fff;border:none;border-radius:var(--r);padding:8px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:background var(--tt);}
-.dn-cal:hover{background:var(--go-d);}
-.day-strip{display:flex;align-items:center;gap:4px;margin-bottom:16px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;}
+.dn-cal-btn{background:var(--go);color:#fff;border:none;border-radius:var(--r);padding:8px 10px;font-size:14px;cursor:pointer;transition:background var(--tt);}
+.dn-cal-btn:hover{background:var(--go-d);}
+.day-strip{display:flex;align-items:center;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
+.day-strip::-webkit-scrollbar{display:none;}
 .ds-arr{background:var(--go);color:#fff;width:26px;height:26px;min-width:26px;border-radius:50%;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background var(--tt);}
 .ds-arr:hover{background:var(--go-d);}
-.ds-btn{width:30px;height:30px;min-width:30px;border-radius:50%;background:var(--go);color:#fff;font-family:var(--fd);font-size:11px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tt);}
-.ds-btn:hover{background:var(--go-d);}
-.ds-btn.on{background:var(--br-d);box-shadow:0 2px 8px var(--sh);}
-.ds-all{background:var(--cr-d);color:var(--br);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--bd-s);border-radius:var(--r);padding:6px 8px;cursor:pointer;transition:all var(--tt);white-space:nowrap;}
+.ds-day{width:30px;height:30px;min-width:30px;border-radius:50%;background:var(--go);color:#fff;font-family:var(--fd);font-size:11px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tt);position:relative;}
+.ds-day:hover{background:var(--go-d);}
+.ds-day.on{background:var(--br-d);}
+.ds-day.has-dot::after{content:'';position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--red);border-radius:50%;}
+.ds-all{background:var(--cr-d);color:var(--br);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;border:1px solid var(--bd-s);border-radius:var(--r);padding:5px 8px;cursor:pointer;white-space:nowrap;transition:all var(--tt);}
 .ds-all:hover,.ds-all.on{background:var(--br);color:#fff;}
 
 /* Item card */
-.icard{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;transition:all var(--tt);}
+.icard{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;margin-bottom:9px;display:flex;align-items:flex-start;gap:10px;transition:all var(--tt);cursor:pointer;}
 .icard:hover{border-color:var(--bd-s);box-shadow:0 2px 8px var(--sh);}
-.icard.done{opacity:.5;} .icard.done .ic-title{text-decoration:line-through;}
-.ic-chk{width:22px;height:22px;min-width:22px;border:2px solid var(--bd-s);border-radius:4px;background:var(--bg-w);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all var(--tt);}
-.ic-chk:hover{border-color:var(--go);} .ic-chk.on{background:var(--go);border-color:var(--go);color:#fff;font-size:12px;}
+.icard.done{opacity:.45;}.icard.done .ic-ttl{text-decoration:line-through;}
+.ic-chk{width:22px;height:22px;min-width:22px;border:2px solid var(--bd-s);border-radius:4px;background:var(--bg-w);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all var(--tt);flex-shrink:0;}
+.ic-chk:hover{border-color:var(--go);}.ic-chk.on{background:var(--go);border-color:var(--go);color:#fff;font-size:12px;}
 .ic-body{flex:1;min-width:0;}
-.ic-title{font-family:var(--fd);font-size:12px;font-weight:600;color:var(--br-d);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
-.ic-sub{font-size:11px;color:var(--go-d);font-weight:600;}
-.ic-sub.ov{color:var(--red);}
-.ic-text{font-size:12px;color:var(--tx-m);margin-top:4px;line-height:1.5;}
-.ic-acts{display:flex;gap:4px;align-items:center;flex-shrink:0;}
+.ic-ttl{font-family:var(--fd);font-size:12px;font-weight:600;color:var(--br-d);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+.ic-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;}
+.ic-tag{font-size:10px;padding:2px 7px;border-radius:var(--rf);font-weight:600;}
+.tag-dl{background:rgba(200,150,62,.15);color:var(--go-d);}
+.tag-dl.ov{background:rgba(192,64,48,.12);color:var(--red);}
+.tag-goal{background:rgba(123,79,30,.12);color:var(--br);}
+.tag-proj{background:rgba(58,110,168,.12);color:var(--blu);}
+.tag-pri-high{background:rgba(192,64,48,.15);color:var(--red);}
+.tag-pri-med{background:rgba(200,150,62,.15);color:var(--go-d);}
+.tag-pri-low{background:rgba(74,138,74,.15);color:var(--grn);}
+.ic-sub-list{margin-top:6px;display:flex;flex-direction:column;gap:3px;}
+.ic-sub-item{font-size:11px;color:var(--tx-m);padding:2px 0 2px 10px;border-left:2px solid var(--bd);display:flex;align-items:center;gap:6px;}
+.ic-acts{display:flex;gap:4px;align-items:center;flex-shrink:0;opacity:0;transition:opacity var(--tt);}
+.icard:hover .ic-acts{opacity:1;}
 .ib{background:none;border:none;cursor:pointer;font-size:14px;color:var(--go);padding:4px;border-radius:var(--r);transition:all var(--tt);}
 .ib:hover{color:var(--br-d);background:var(--cr-d);}
 .ib.del:hover{color:var(--red);}
 
-/* Empty state */
-.empty{display:flex;flex-direction:column;align-items:center;padding:40px 20px;text-align:center;gap:8px;color:var(--tx-l);}
-.ei{font-size:36px;opacity:.3;}
+/* Section divider */
+.sec-div{height:1px;background:var(--bd);margin:14px 0;}
+.sec-lbl{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
 
-/* Goal pill in sidebar */
-.goal-pill{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--r);margin-bottom:6px;cursor:pointer;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;transition:all var(--tt);}
-.goal-pill:hover{transform:translateX(2px);}
-.gp-cnt{width:22px;height:22px;background:rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+/* Empty */
+.empty{display:flex;flex-direction:column;align-items:center;padding:36px 20px;text-align:center;gap:8px;color:var(--tx-l);}
+.ei{font-size:34px;opacity:.3;}
 
-/* Weeks goal blocks */
-.wg-block{background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;}
-.wg-lbl{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
-.wg-val{font-size:12px;color:var(--tx);min-height:24px;outline:none;border-radius:4px;padding:2px 4px;transition:background var(--tt);}
+/* Goal pill (sidebar) */
+.goal-pill{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border-radius:var(--r);margin-bottom:6px;cursor:pointer;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;transition:all var(--tt);}
+.goal-pill:hover{transform:translateX(2px);filter:brightness(1.1);}
+.gp-cnt{width:20px;height:20px;background:rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+
+/* Week goal blocks */
+.wg-block{background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r);padding:9px 11px;margin-bottom:7px;}
+.wg-lbl{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;}
+.wg-val{font-size:12px;color:var(--tx);min-height:22px;outline:none;border-radius:4px;padding:2px 4px;}
 .wg-val:focus{background:var(--cr-d);}
-.wg-val:empty::before{content:attr(data-ph);color:var(--tx-l);font-style:italic;}
+.wg-val:empty::before{content:attr(data-ph);color:var(--tx-l);font-style:italic;font-size:11px;}
 
 /* Template pill */
-.tmpl-pill{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:var(--r);margin-bottom:6px;background:var(--cr-d);border:1px solid var(--bd);font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--br);cursor:pointer;transition:all var(--tt);}
+.tmpl-pill{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border-radius:var(--r);margin-bottom:6px;background:var(--cr-d);border:1px solid var(--bd);font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--br);cursor:pointer;transition:all var(--tt);}
 .tmpl-pill:hover{background:var(--go);color:#fff;}
 
-/* ════════════════════════════════════════
-   DASHBOARD
-════════════════════════════════════════ */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.dash-tile{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 14px;cursor:pointer;transition:all var(--tt);display:flex;flex-direction:column;gap:6px;min-height:90px;}
-.dash-tile:hover{border-color:var(--go);background:var(--bg-w);transform:translateY(-2px);box-shadow:0 4px 14px var(--sh);}
-.dt-ico{font-size:24px;} .dt-lbl{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);}
-.dt-val{font-size:12px;color:var(--go);font-weight:700;}
-.dash-greeting{margin-bottom:20px;}
+/* ═══════════════════════ DASHBOARD ═══════════════════════ */
+.dash-greet{margin-bottom:18px;}
 .dg-date{font-size:11px;color:var(--tx-l);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
-.dg-hello{font-family:var(--fd);font-size:20px;font-weight:900;color:var(--br-d);line-height:1.3;}
+.dg-hello{font-family:var(--fd);font-size:22px;font-weight:900;color:var(--br-d);line-height:1.3;}
 .dg-hello span{color:var(--go);}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.dash-tile{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:18px 16px;cursor:pointer;transition:all var(--tt);display:flex;flex-direction:column;gap:8px;}
+.dash-tile:hover{border-color:var(--go);transform:translateY(-2px);box-shadow:0 4px 16px var(--sh);}
+.dt-ico{font-size:28px;}
+.dt-lbl{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--br-d);}
+.dt-val{font-size:16px;color:var(--go);font-weight:700;}
 
-/* ════════════════════════════════════════
-   MIND MAP CANVAS
-════════════════════════════════════════ */
-.mm-canvas{flex:1;position:relative;overflow:hidden;background:var(--bg-w);cursor:grab;user-select:none;}
-.mm-canvas.grabbing{cursor:grabbing;}
-.mm-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
-.mm-node{position:absolute;border-radius:var(--r);padding:8px 14px;font-family:var(--fd);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;cursor:move;user-select:none;box-shadow:0 3px 12px rgba(0,0,0,.15);min-width:100px;text-align:center;transition:box-shadow var(--tt);}
-.mm-node:hover{box-shadow:0 5px 18px rgba(0,0,0,.25);}
-.mm-node.selected{box-shadow:0 0 0 3px var(--go),0 5px 18px rgba(0,0,0,.2);}
-.mm-node.type-root{background:var(--br-d);color:var(--go-l);font-size:13px;padding:12px 20px;border-radius:var(--rl);}
-.mm-node.type-goal{background:var(--go);color:#fff;}
-.mm-node.type-project{background:var(--cr-d);color:var(--br-d);border:2px solid var(--go);}
-.mm-node.type-task{background:var(--bg-w);color:var(--tx);border:1px solid var(--bd-s);font-size:10px;font-weight:600;}
-.mm-toolbar{position:absolute;top:10px;right:10px;display:flex;gap:6px;z-index:10;}
-.mm-btn{background:var(--br);color:var(--go-l);border:none;border-radius:var(--r);padding:7px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all var(--tt);}
-.mm-btn:hover{background:var(--br-d);}
-.mm-info{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(90,53,16,.85);color:var(--go-l);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;padding:5px 14px;border-radius:var(--rf);pointer-events:none;}
+/* ═══════════════════════ MIND MAP ═══════════════════════ */
+.mm-wrap{flex:1;position:relative;overflow:hidden;background:var(--bg-w);}
+.mm-svg{position:absolute;inset:0;pointer-events:none;overflow:visible;}
+.mm-node{position:absolute;border-radius:var(--r);padding:8px 14px;font-family:var(--fd);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:grab;user-select:none;box-shadow:0 3px 12px rgba(0,0,0,.15);text-align:center;transition:box-shadow var(--tt),opacity var(--tt);}
+.mm-node:active{cursor:grabbing;}
+.mm-node:hover{box-shadow:0 5px 20px rgba(0,0,0,.25);}
+.mm-node.sel{box-shadow:0 0 0 3px var(--go),0 5px 20px rgba(0,0,0,.2);}
+.mm-node.type-root{background:var(--br-d);color:var(--go-l);font-size:13px;padding:14px 22px;border-radius:var(--rl);min-width:130px;}
+.mm-node.type-goal{color:#fff;min-width:110px;}
+.mm-node.type-project{background:var(--cr-d);color:var(--br-d);border:2px solid var(--go);min-width:100px;}
+.mm-node.type-task{background:var(--bg-w);color:var(--tx);border:1px solid var(--bd-s);font-size:10px;font-weight:600;min-width:90px;}
+.mm-node.type-task.done{opacity:.4;text-decoration:line-through;}
+.mm-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(90,53,16,.8);color:var(--go-l);font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;padding:5px 16px;border-radius:var(--rf);pointer-events:none;white-space:nowrap;}
+.mm-tb{position:absolute;top:10px;left:10px;display:flex;gap:6px;z-index:5;}
+.mm-tb-btn{background:var(--br);color:var(--go-l);border:none;border-radius:var(--r);padding:6px 12px;font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all var(--tt);}
+.mm-tb-btn:hover{background:var(--br-d);}
+/* Context menu on canvas click */
+.mm-ctx-menu{position:absolute;background:var(--bg-p);border:2px solid var(--bd-s);border-radius:var(--rl);padding:8px;z-index:20;min-width:160px;box-shadow:0 6px 24px var(--sh);}
+.mm-ctx-item{display:block;width:100%;padding:8px 12px;background:none;border:none;text-align:left;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);letter-spacing:.04em;cursor:pointer;border-radius:var(--r);transition:all var(--tt);}
+.mm-ctx-item:hover{background:var(--go);color:#fff;}
+.mm-ctx-item.danger:hover{background:var(--red);}
 
-/* ════════════════════════════════════════
-   MODAL (bottom sheet)
-════════════════════════════════════════ */
-.m-ov{position:fixed;inset:0;background:rgba(60,30,0,.6);z-index:1000;display:flex;align-items:flex-end;justify-content:center;transition:opacity var(--tt);}
+/* ═══════════════════════ MODAL ═══════════════════════ */
+.m-ov{position:fixed;inset:0;background:rgba(60,30,0,.65);z-index:1000;display:flex;align-items:flex-end;justify-content:center;transition:opacity var(--tt);}
 .m-ov.hidden{opacity:0;pointer-events:none;}
-.m-box{background:var(--bg-p);border:2px solid var(--bd-s);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:560px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;transition:transform var(--tt);}
+.m-box{background:var(--bg-p);border:2px solid var(--bd-s);border-radius:var(--rxl) var(--rxl) 0 0;width:100%;max-width:580px;max-height:94vh;display:flex;flex-direction:column;overflow:hidden;transition:transform var(--tt);}
 .m-ov.hidden .m-box{transform:translateY(40px);}
 .m-hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:2px dashed var(--bd);background:var(--br);}
 .m-ttl{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--go-l);letter-spacing:.08em;text-transform:uppercase;flex:1;}
-.m-date-badge{font-family:var(--fd);font-size:10px;color:rgba(255,255,255,.6);}
+.m-date-b{font-family:var(--fd);font-size:10px;color:rgba(255,255,255,.55);white-space:nowrap;}
 .m-x{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all var(--tt);}
 .m-x:hover{background:rgba(255,255,255,.25);}
-.m-body{padding:18px 20px;overflow-y:auto;flex:1;}
+.m-tabs{display:flex;background:var(--br-d);border-bottom:1px solid var(--bd);}
+.m-tab{flex:1;padding:9px 6px;font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.45);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;transition:all var(--tt);}
+.m-tab.on{color:var(--go-l);border-bottom-color:var(--go);}
+.m-body{padding:16px 18px;overflow-y:auto;flex:1;}
+.m-ft{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px 16px;border-top:2px dashed var(--bd);}
+.btn-sv{padding:10px 32px;background:var(--go);color:#fff;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:var(--rl);cursor:pointer;transition:all var(--tt);}
+.btn-sv:hover{background:var(--go-d);transform:translateY(-1px);}
+.btn-cl{padding:10px 20px;background:var(--cr-d);color:var(--br);font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--bd-s);border-radius:var(--rl);cursor:pointer;transition:all var(--tt);}
+.btn-cl:hover{background:var(--br);color:#fff;}
 
-/* Type switcher */
-.type-sw{display:flex;align-items:center;gap:8px;background:var(--cr-d);border:1px solid var(--bd);border-radius:var(--rl);padding:6px 10px;margin-bottom:16px;}
-.tsw-arr{background:none;border:none;color:var(--go);font-size:18px;cursor:pointer;padding:2px 6px;border-radius:var(--r);transition:background var(--tt);}
-.tsw-arr:hover{background:var(--bd);}
-.tsw-lbl{flex:1;text-align:center;font-family:var(--fd);font-size:12px;font-weight:700;color:var(--br);letter-spacing:.08em;text-transform:uppercase;}
-
-/* Form */
-.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+/* Task modal specifics */
+.m-section{margin-bottom:14px;}
+.m-section-ttl{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.m-section-ttl::after{content:'';flex:1;height:1px;background:var(--bd);}
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:11px;}
 .fl{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.08em;}
 .inp,.txta,.sel{width:100%;background:var(--bg-w);border:1px solid var(--bd);color:var(--tx);border-radius:var(--r);padding:9px 12px;font-family:var(--fb);font-size:14px;transition:border-color var(--tt);outline:none;}
 .inp:focus,.txta:focus,.sel:focus{border-color:var(--go);}
 .txta{resize:vertical;min-height:80px;}
 .sel option{background:var(--bg-w);}
-
-/* Subtask rows */
+.inp-row{display:flex;gap:8px;}
+.inp-row .inp{flex:1;}
+/* Priority selector */
+.pri-row{display:flex;gap:8px;margin-top:4px;}
+.pri-btn{flex:1;padding:7px;border-radius:var(--r);border:2px solid var(--bd);background:var(--bg-w);font-family:var(--fd);font-size:10px;font-weight:700;cursor:pointer;transition:all var(--tt);text-align:center;}
+.pri-btn.on-high{background:rgba(192,64,48,.12);border-color:var(--red);color:var(--red);}
+.pri-btn.on-med{background:rgba(200,150,62,.15);border-color:var(--go);color:var(--go-d);}
+.pri-btn.on-low{background:rgba(74,138,74,.12);border-color:var(--grn);color:var(--grn);}
+/* Subtasks */
 .sub-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .sub-row{display:flex;gap:8px;align-items:center;}
 .sub-row .inp{flex:1;}
 .rm-sub{background:none;border:none;color:var(--tx-l);cursor:pointer;font-size:16px;padding:2px 4px;transition:color var(--tt);}
 .rm-sub:hover{color:var(--red);}
-.add-sub{background:none;border:1px dashed var(--bd-s);color:var(--br);border-radius:var(--r);padding:7px 12px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all var(--tt);margin-top:4px;width:100%;}
+.add-sub{background:none;border:1px dashed var(--bd-s);color:var(--br);border-radius:var(--r);padding:7px;font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all var(--tt);width:100%;margin-top:4px;}
 .add-sub:hover{background:var(--cr-d);}
 
-/* Priority dots */
-.priority-row{display:flex;gap:8px;margin-top:4px;}
-.prio-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all var(--tt);}
-.prio-dot.on{transform:scale(1.2);border-color:var(--br-d);}
-
-.m-ft{display:flex;gap:8px;justify-content:center;padding:14px 20px 18px;border-top:2px dashed var(--bd);}
-.btn-save{padding:11px 36px;background:var(--go);color:#fff;font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:var(--rl);cursor:pointer;transition:all var(--tt);}
-.btn-save:hover{background:var(--go-d);transform:translateY(-1px);}
-.btn-cancel{padding:11px 22px;background:var(--cr-d);color:var(--br);font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--bd-s);border-radius:var(--rl);cursor:pointer;transition:all var(--tt);}
-.btn-cancel:hover{background:var(--br);color:#fff;}
-
-/* ════════════════════════════════════════
-   CALENDAR OVERLAY
-════════════════════════════════════════ */
-.cal-ov{position:fixed;inset:0;background:rgba(60,30,0,.7);z-index:900;display:flex;align-items:center;justify-content:center;}
+/* ═══════════════════════ CALENDAR ═══════════════════════ */
+.cal-ov{position:fixed;inset:0;background:rgba(60,30,0,.72);z-index:900;display:flex;align-items:center;justify-content:center;}
 .cal-ov.hidden{display:none;}
-.cal-box{background:var(--bg-p);border:2px solid var(--bd-s);border-radius:var(--rxl);width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
-.cal-hd{background:var(--br-d);padding:14px 20px;display:flex;align-items:center;gap:12px;}
-.cal-nav{background:none;border:none;color:var(--go-l);font-size:20px;cursor:pointer;padding:2px 8px;}
-.cal-month{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--go-l);flex:1;text-align:center;letter-spacing:.06em;}
-.cal-close{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:14px;}
-.cal-cell{min-height:70px;background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r);padding:6px;cursor:pointer;transition:all var(--tt);}
-.cal-cell:hover{border-color:var(--go);background:var(--cr);}
+.cal-box{background:var(--bg-p);border:2px solid var(--bd-s);border-radius:var(--rxl);width:100%;max-width:700px;max-height:94vh;display:flex;flex-direction:column;overflow:hidden;}
+.cal-hd{background:var(--br-d);padding:13px 18px;display:flex;align-items:center;gap:10px;}
+.cal-nav{background:none;border:none;color:var(--go-l);font-size:20px;cursor:pointer;padding:2px 8px;border-radius:var(--r);}
+.cal-nav:hover{background:rgba(255,255,255,.1);}
+.cal-mo{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--go-l);flex:1;text-align:center;letter-spacing:.06em;}
+.cal-cl{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:12px;}
+.cal-cell{min-height:64px;background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r);padding:5px;cursor:pointer;transition:all var(--tt);}
+.cal-cell:hover{border-color:var(--go);}
 .cal-cell.today{border-color:var(--go);background:var(--cr);}
-.cal-cell.selected{border-color:var(--go-d);background:var(--go-d);} .cal-cell.selected .cc-day,.cal-cell.selected .cc-event{color:#fff!important;}
-.cal-cell.other-m{opacity:.4;}
-.cc-day{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);margin-bottom:3px;}
-.cc-event{font-size:9px;color:var(--go-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.cal-cell.sel{border-color:var(--go-d);background:var(--go);}.cal-cell.sel .cc-day{color:#fff;}
+.cal-cell.other{opacity:.35;}
+.cc-day{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br-d);margin-bottom:2px;}
+.cc-ev{font-size:9px;color:var(--go-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;line-height:1.3;}
 .cal-dh{font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-align:center;text-transform:uppercase;letter-spacing:.06em;padding:6px 0;}
-.cal-detail{padding:14px 18px;border-top:1px solid var(--bd);max-height:200px;overflow-y:auto;}
-.cal-det-title{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+.cal-det{padding:12px 16px;border-top:1px solid var(--bd);overflow-y:auto;max-height:180px;}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--br);color:var(--go-l);border:1px solid var(--go-d);border-radius:var(--rl);padding:9px 22px;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.06em;z-index:9999;transition:opacity var(--tt);box-shadow:0 4px 20px var(--sh);}
-.toast.hidden{opacity:0;pointer-events:none;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--br);color:var(--go-l);border:1px solid var(--go-d);border-radius:var(--rl);padding:9px 22px;font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.06em;z-index:9999;transition:opacity var(--tt);box-shadow:0 4px 20px var(--sh);pointer-events:none;}
+.toast.hidden{opacity:0;}
 
-/* ════════════════════════════════════════
-   RESPONSIVE — MOBILE
-════════════════════════════════════════ */
+/* FAB */
+.fab{position:fixed;bottom:22px;right:18px;width:50px;height:50px;border-radius:50%;background:var(--go);color:#fff;font-size:26px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(123,79,30,.4);display:flex;align-items:center;justify-content:center;z-index:50;transition:all var(--tt);}
+.fab:hover{background:var(--go-l);transform:scale(1.08);}
+
+/* RESPONSIVE */
 @media(max-width:700px){
   .sidebar{position:fixed;top:0;left:0;bottom:0;transform:translateX(-100%);transition:transform var(--tt);box-shadow:4px 0 24px var(--sh);}
   .sidebar.open{transform:translateX(0);}
-  .sb-ov.on{display:block;}
   .topbar{display:flex;}
   #s-app{padding-top:var(--tb);}
   .main-area{width:100%;}
-  .top-nav{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .top-nav::-webkit-scrollbar{display:none;}
-  .nt{padding:12px 10px;font-size:10px;white-space:nowrap;}
   .dash-grid{grid-template-columns:1fr 1fr;}
+  .dt-lbl{font-size:12px;}.dt-val{font-size:14px;}
 }
 </style>
 </head>
@@ -274,100 +273,98 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 <!-- AUTH -->
 <div id="s-auth" class="scr on">
   <div class="auth-card">
-    <div class="auth-badge">LC</div>
-    <div class="auth-title">Life-control</div>
-    <div class="auth-sub">Твоя система. Твои правила.</div>
-    <button class="auth-btn ab-g" id="btn-google">
+    <div class="a-badge">LC</div>
+    <div class="a-title">Life-control</div>
+    <div class="a-sub">Твоя система. Твои правила.</div>
+    <button class="a-btn a-g" id="btn-g">
       <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
       Войти через Google
     </button>
-    <button class="auth-btn ab-y" id="btn-yandex">
+    <button class="a-btn a-y" id="btn-y">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#fff"/><path d="M13.32 6H11.5C9.57 6 8.25 7.08 8.25 8.92c0 1.6.77 2.5 2.17 3.44L8 18h2.25l2.2-5.35-.6-.38C10.6 11.4 10.1 10.75 10.1 8.97c0-.97.6-1.47 1.43-1.47h1.27V18H15V6h-1.68z" fill="#CC0000"/></svg>
       Войти через Яндекс
     </button>
-    <p class="auth-note">Данные хранятся в Firebase — только для вас</p>
+    <p class="a-note">Данные хранятся в Firebase — только для вас</p>
   </div>
 </div>
 
 <!-- APP -->
 <div id="s-app" class="scr">
-  <!-- mobile topbar -->
   <header class="topbar">
-    <button class="tb-burger" id="burger"><span></span><span></span><span></span></button>
-    <span class="tb-title" id="tb-title">Дашборд</span>
-    <button class="tb-new" id="tb-new-btn">+ Новая</button>
+    <button class="tb-burg" id="burger"><span></span><span></span><span></span></button>
+    <span class="tb-ttl" id="tb-ttl">Дашборд</span>
+    <button class="tb-new" id="tb-new">+ Новая</button>
   </header>
-
-  <!-- sidebar overlay -->
   <div class="sb-ov" id="sb-ov"></div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="sb-profile">
-      <div class="sb-month" id="sb-month"></div>
+    <div class="sb-prof">
+      <div class="sb-mo" id="sb-mo"></div>
       <div class="sb-av" id="sb-av">?</div>
-      <span class="sb-uname" id="sb-uname">—</span>
-      <span class="sb-uemail" id="sb-uemail"></span>
-      <button class="sb-new" id="sb-new-btn">✦ Новая запись</button>
-      <div class="sb-acts">
-        <button class="sb-act" id="btn-logout">Выйти</button>
-        <button class="sb-act" onclick="showCal()">Календарь</button>
+      <span class="sb-un" id="sb-un">—</span>
+      <span class="sb-ue" id="sb-ue"></span>
+      <button class="sb-new" id="sb-new">✦ Новая запись</button>
+      <div class="sb-btns">
+        <button class="sb-btn" id="btn-logout">Выйти</button>
+        <button class="sb-btn" onclick="openCal()">Календарь</button>
       </div>
     </div>
-    <div class="sb-extra" id="sb-extra">
-      <!-- dynamic: goals, week goals, templates -->
-    </div>
+    <div class="sb-body" id="sb-body"></div>
   </aside>
 
-  <!-- MAIN AREA -->
+  <!-- MAIN -->
   <div class="main-area">
-    <!-- top nav -->
     <nav class="top-nav">
-      <button class="nt on" data-tab="dashboard">Дашборд</button>
+      <button class="nt on"  data-tab="dashboard">Дашборд</button>
       <button class="nt" data-tab="plan">План дня</button>
       <button class="nt" data-tab="goals">Цели</button>
       <button class="nt" data-tab="ideas">Идеи</button>
       <button class="nt" data-tab="diary">Дневник</button>
     </nav>
-
-    <!-- modules -->
     <div class="mwrap">
 
       <!-- DASHBOARD -->
       <div id="tab-dashboard" class="mod on">
-        <div class="mod-hd"><span class="mod-title">Дашборд</span></div>
+        <div class="mod-hd"><span class="mod-ttl">Дашборд</span></div>
         <div class="mod-body" id="dash-body"></div>
       </div>
 
       <!-- ПЛАН ДНЯ -->
       <div id="tab-plan" class="mod">
         <div class="mod-hd">
-          <span class="mod-title">План дня</span>
-          <button class="dn-cal" onclick="showCal()">📅 Календарь</button>
+          <span class="mod-ttl">План дня</span>
+          <button class="dn-cal-btn" onclick="openCal()">📅</button>
         </div>
         <div class="mod-body" id="plan-body"></div>
       </div>
 
-      <!-- ЦЕЛИ (mind map) -->
-      <div id="tab-goals" class="mod" style="flex-direction:column;">
+      <!-- ЦЕЛИ -->
+      <div id="tab-goals" class="mod" style="overflow:hidden;">
         <div class="mod-hd">
-          <span class="mod-title" id="mm-title">Mind Map</span>
-          <div style="display:flex;gap:6px">
-            <button class="dn-cal" id="mm-add-goal-btn">+ Цель</button>
-            <button class="dn-cal" id="mm-reset-btn">⟳ Сброс</button>
+          <span class="mod-ttl" id="mm-ttl">Mind Map</span>
+          <div style="display:flex;gap:6px;">
+            <button class="dn-cal-btn" id="mm-zoom-in" title="Приблизить">＋</button>
+            <button class="dn-cal-btn" id="mm-zoom-out" title="Отдалить">－</button>
+            <button class="dn-cal-btn" id="mm-reset" title="Сброс вида">⌖</button>
           </div>
         </div>
-        <div class="mm-canvas" id="mm-canvas">
-          <svg class="mm-svg" id="mm-svg"></svg>
-          <div class="mm-info">Перетаскивайте блоки • Клик — выбрать • Двойной клик — добавить дочерний</div>
+        <div class="mm-wrap" id="mm-wrap">
+          <svg class="mm-svg" id="mm-svg" style="width:100%;height:100%;position:absolute;inset:0;"></svg>
+          <!-- nodes injected here -->
+          <div class="mm-tb">
+            <button class="mm-tb-btn" onclick="openNewModal('task',null,null,'goals')">+ Задача</button>
+            <button class="mm-tb-btn" onclick="openNewModal('goal',null,null,'goals')">+ Цель</button>
+          </div>
+          <div class="mm-hint" id="mm-hint">Клик — выбрать · Двойной клик — добавить · Перетаскивание — перемещать · Прокрутка — масштаб</div>
         </div>
       </div>
 
       <!-- ИДЕИ -->
       <div id="tab-ideas" class="mod">
         <div class="mod-hd">
-          <span class="mod-title">Идеи</span>
-          <button class="dn-cal" onclick="showCal()">📅 Календарь</button>
+          <span class="mod-ttl">Идеи</span>
+          <button class="dn-cal-btn" onclick="openCal()">📅</button>
         </div>
         <div class="mod-body" id="ideas-body"></div>
       </div>
@@ -375,8 +372,8 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
       <!-- ДНЕВНИК -->
       <div id="tab-diary" class="mod">
         <div class="mod-hd">
-          <span class="mod-title">Дневник</span>
-          <button class="dn-cal" onclick="showCal()">📅 Календарь</button>
+          <span class="mod-ttl">Дневник</span>
+          <button class="dn-cal-btn" onclick="openCal()">📅</button>
         </div>
         <div class="mod-body" id="diary-body"></div>
       </div>
@@ -389,12 +386,16 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 <div id="m-ov" class="m-ov hidden">
   <div class="m-box">
     <div class="m-hd">
-      <span class="m-ttl" id="m-ttl">Новая запись</span>
-      <span class="m-date-badge" id="m-date"></span>
+      <span class="m-ttl" id="m-ttl"></span>
+      <span class="m-date-b" id="m-date"></span>
       <button class="m-x" id="m-x">✕</button>
     </div>
-    <div class="m-body" id="m-bd"></div>
-    <div class="m-ft" id="m-ft"></div>
+    <div class="m-tabs" id="m-tabs" style="display:none;"></div>
+    <div class="m-body" id="m-body"></div>
+    <div class="m-ft">
+      <button class="btn-cl" id="m-cancel">Отмена</button>
+      <button class="btn-sv" id="m-save">Сохранить</button>
+    </div>
   </div>
 </div>
 
@@ -403,21 +404,18 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   <div class="cal-box">
     <div class="cal-hd">
       <button class="cal-nav" id="cal-pm">‹</button>
-      <span class="cal-month" id="cal-month"></span>
+      <span class="cal-mo" id="cal-mo"></span>
       <button class="cal-nav" id="cal-nm">›</button>
-      <button class="cal-close" onclick="hideCal()">✕</button>
+      <button class="cal-cl" onclick="closeCal()">✕</button>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
-    <div class="cal-detail" id="cal-detail"></div>
+    <div class="cal-det" id="cal-det"></div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast hidden" id="toast"></div>
 
-<!-- ════════════════════════════════════════
-     FIREBASE + APP
-════════════════════════════════════════ -->
+<!-- ════════════════════════════ SCRIPT ════════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
@@ -427,7 +425,7 @@ import { getAuth, GoogleAuthProvider, OAuthProvider,
          signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// ════ 🔧 ВСТАВЬ СВОИ ДАННЫЕ FIREBASE ════
+// ════ 🔧 FIREBASE CONFIG ════
 const firebaseConfig = {
   apiKey:            "AIzaSyA5mVDOI7rINUKbSdjs2tGFbS9sfTaBNBQ",
   authDomain:        "life-control-70663.firebaseapp.com",
@@ -436,77 +434,373 @@ const firebaseConfig = {
   messagingSenderId: "418774873271",
   appId:             "1:418774873271:web:634a24c0f811cc55160932"
 };
-// ════════════════════════════════════════
+// ════════════════════════════
 
-const fbApp = initializeApp(firebaseConfig);
-const auth  = getAuth(fbApp);
-const db    = getFirestore(fbApp);
-let uid = null;
+const fbApp=initializeApp(firebaseConfig);
+const auth=getAuth(fbApp), db=getFirestore(fbApp);
+let uid=null;
 
-const uc  = col => collection(db,"users",uid,col);
-const ud  = (col,id) => doc(db,"users",uid,col,id);
-const $   = id => document.getElementById(id);
-const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const p2  = n => String(n).padStart(2,"0");
-const dstr= d => { if(!d)return""; const dt=d instanceof Date?d:d.toDate?d.toDate():new Date(d); return `${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`; };
-const fdt = d => { if(!d)return""; const dt=d instanceof Date?d:d.toDate?d.toDate():new Date(d); return `${p2(dt.getDate())}.${p2(dt.getMonth()+1)}.${dt.getFullYear()}. ${p2(dt.getHours())}:${p2(dt.getMinutes())}`; };
-const todayStr = () => dstr(new Date());
-const isOverdue = d => { if(!d)return false; const dt=d.toDate?d.toDate():new Date(d); return dt < new Date(); };
-
-async function sget(q){ try{ const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }catch(e){console.warn(e);return [];} }
-
-// ── STATE ──
-let curTab = "dashboard";
-let planDate = new Date(); planDate.setHours(0,0,0,0);
-let ideasDate = new Date(); ideasDate.setHours(0,0,0,0);
-let diaryDate = new Date(); diaryDate.setHours(0,0,0,0);
-let showAllPlan=false, showAllIdeas=false, showAllDiary=false;
-let weekOffset=0;
-let calDate = new Date();
-let entryTypeIdx=0;
-let selectedGoalId=null;
+const uc=col=>collection(db,"users",uid,col);
+const ud=(col,id)=>doc(db,"users",uid,col,id);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const p2=n=>String(n).padStart(2,"0");
+const dstr=d=>{if(!d)return"";const dt=d instanceof Date?d:d.toDate?d.toDate():new Date(d);return`${dt.getFullYear()}-${p2(dt.getMonth()+1)}-${p2(dt.getDate())}`;};
+const fdt=d=>{if(!d)return"";const dt=d instanceof Date?d:d.toDate?d.toDate():new Date(d);return`${p2(dt.getDate())}.${p2(dt.getMonth()+1)}.${dt.getFullYear()}. ${p2(dt.getHours())}:${p2(dt.getMinutes())}`;};
+const today=()=>dstr(new Date());
+const isOv=d=>{if(!d)return false;const dt=d.toDate?d.toDate():new Date(d);return dt<new Date();};
+async function sg(q){try{const s=await getDocs(q);return s.docs.map(d=>({id:d.id,...d.data()}));}catch(e){console.warn(e);return[];}}
 
 const GCOLS=["#C06070","#A07840","#9060A0","#507860","#6060A0","#704040","#407060"];
 const MONTHS=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
 const MGEN=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 const DS=["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
-// ── TOAST ──
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.add("hidden"),2800); }
+// ── STATE ──
+let curTab="dashboard";
+let planDate=new Date(); planDate.setHours(0,0,0,0);
+let ideasDate=new Date(); ideasDate.setHours(0,0,0,0);
+let diaryDate=new Date(); diaryDate.setHours(0,0,0,0);
+let showAllPlan=false, showAllIdeas=false, showAllDiary=false;
+let weekOff=0;
+let calDate=new Date();
+let modalSaveFn=null;
 
-// ── MODAL ──
-function openModal(title,body){
+// ── TOAST ──
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.remove("hidden");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add("hidden"),2600);}
+
+// ═══════════════════════════════════════
+//  MODAL SYSTEM
+// ═══════════════════════════════════════
+function openModal(title,bodyHtml,saveFn,tabs=null){
   const now=new Date();
   $("m-ttl").textContent=title;
   $("m-date").textContent=`${now.getDate()} ${MGEN[now.getMonth()]} ${now.getFullYear()}`;
-  $("m-bd").innerHTML=body;
-  $("m-ft").innerHTML=`<button class="btn-cancel" id="m-cancel">Отмена</button><button class="btn-save" id="m-save">Сохранить</button>`;
+  $("m-body").innerHTML=bodyHtml;
+  modalSaveFn=saveFn;
+  const tabsEl=$("m-tabs");
+  if(tabs&&tabs.length){
+    tabsEl.style.display="flex";
+    tabsEl.innerHTML=tabs.map((t,i)=>`<button class="m-tab ${i===0?"on":""}" data-ti="${i}">${t.label}</button>`).join("");
+    tabsEl.querySelectorAll(".m-tab").forEach(tb=>tb.addEventListener("click",()=>{
+      tabsEl.querySelectorAll(".m-tab").forEach(x=>x.classList.remove("on"));
+      tb.classList.add("on");
+      tabs[parseInt(tb.dataset.ti)].render();
+    }));
+  } else {
+    tabsEl.style.display="none";
+    tabsEl.innerHTML="";
+  }
   $("m-ov").classList.remove("hidden");
-  $("m-cancel").onclick=closeModal;
 }
-function closeModal(){ $("m-ov").classList.add("hidden"); $("m-bd").innerHTML=""; }
+function closeModal(){$("m-ov").classList.add("hidden");$("m-body").innerHTML="";modalSaveFn=null;}
 $("m-x").onclick=closeModal;
-$("m-ov").addEventListener("click",e=>{ if(e.target===$("m-ov"))closeModal(); });
+$("m-cancel").onclick=closeModal;
+$("m-save").onclick=()=>{if(modalSaveFn)modalSaveFn();};
+$("m-ov").addEventListener("click",e=>{if(e.target===$("m-ov"))closeModal();});
 
-// ── DAY NAV ──
-function buildDayNav(selDate, datesWT, showAll, cid, onDay, onAll){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const lbl = dstr(selDate)===dstr(today)
-    ? `Сегодня, ${selDate.getDate()} ${MGEN[selDate.getMonth()].charAt(0).toUpperCase()+MGEN[selDate.getMonth()].slice(1)}`
-    : `${selDate.getDate()} ${MGEN[selDate.getMonth()]} ${selDate.getFullYear()}`;
+// Expose globally
+window.openNewModal=openNewModal;
+window.openCal=openCal;
+window.closeCal=closeCal;
+window.delItem=delItem;
+window.toggleTask=toggleTask;
+window.addSub=addSub;
+window.rmSub=btn=>btn.closest(".sub-row").remove();
+window.switchTab=switchTab;
+window.editTask=editTask;
+window.editIdea=editIdea;
+window.editDiary=editDiary;
+window.openMindMap=()=>switchTab("goals");
+
+// ═══════════════════════════════════════
+//  TASK MODAL — rich form like reference
+// ═══════════════════════════════════════
+async function openNewModal(type="task", parentGoalId=null, parentProjId=null, fromTab=null){
+  const tab=fromTab||curTab;
+
+  // Modal title depends on tab and type
+  const titles={
+    task:{plan:"Новая задача",goals:"Новая задача",dashboard:"Новая задача",ideas:"Новая задача",diary:"Новая задача"},
+    goal:{goals:"Новая цель",plan:"Новая цель",dashboard:"Новая цель",ideas:"Новая цель",diary:"Новая цель"},
+    project:{goals:"Новый проект"},
+    idea:{ideas:"Новая идея",dashboard:"Новая идея",plan:"Новая идея",diary:"Новая идея"},
+    diary:{diary:"Новая запись в дневник",dashboard:"Новая запись",plan:"Новая запись",ideas:"Новая запись"},
+    template:{diary:"Новый шаблон"},
+  };
+  const title=(titles[type]&&titles[type][tab])||("Новая "+type);
+
+  if(type==="task") await buildTaskModal(title,parentGoalId,parentProjId);
+  else if(type==="goal") await buildGoalModal(title);
+  else if(type==="project") await buildProjectModal(title,parentGoalId);
+  else if(type==="idea") buildIdeaModal(title);
+  else if(type==="diary") await buildDiaryModal(title);
+  else if(type==="template") buildTemplateModal(title);
+}
+
+async function buildTaskModal(title,defGoalId=null,defProjId=null){
+  const [goals,projects]=await Promise.all([sg(uc("goals")),sg(uc("projects"))]);
+  let selectedGoalId=defGoalId||"";
+  let selectedProjId=defProjId||"";
+  let priority="med";
+
+  const render=()=>{
+    const filteredProjs=selectedGoalId?projects.filter(p=>p.goalId===selectedGoalId):projects;
+    $("m-body").innerHTML=`
+      <div class="m-section"><div class="m-section-ttl">Основное</div>
+        <div class="fg"><label class="fl">Название задачи *</label>
+          <input class="inp" id="t-title" placeholder="Введите название задачи"/></div>
+        <div class="fg"><label class="fl">Примечание</label>
+          <textarea class="txta" id="t-note" placeholder="Введите примечание..."></textarea></div>
+      </div>
+      <div class="m-section"><div class="m-section-ttl">Привязка</div>
+        <div class="fg"><label class="fl">Цель</label>
+          <select class="sel" id="t-goal">
+            <option value="">— Корневая (Мои цели) —</option>
+            ${goals.map(g=>`<option value="${g.id}" ${g.id===selectedGoalId?"selected":""}>${esc(g.title)}</option>`).join("")}
+          </select></div>
+        <div class="fg"><label class="fl">Проект</label>
+          <select class="sel" id="t-proj">
+            <option value="">— Без проекта —</option>
+            ${filteredProjs.map(p=>`<option value="${p.id}" ${p.id===selectedProjId?"selected":""}>${esc(p.name)}</option>`).join("")}
+          </select></div>
+      </div>
+      <div class="m-section"><div class="m-section-ttl">Сроки</div>
+        <div class="inp-row">
+          <div class="fg" style="flex:1"><label class="fl">Начать</label><input class="inp" id="t-start" type="datetime-local"/></div>
+          <div class="fg" style="flex:1"><label class="fl">Закончить до</label><input class="inp" id="t-dl" type="datetime-local"/></div>
+        </div>
+      </div>
+      <div class="m-section"><div class="m-section-ttl">Приоритет</div>
+        <div class="pri-row">
+          <button class="pri-btn ${priority==="high"?"on-high":""}" onclick="setPri('high')">🔴 Высокий</button>
+          <button class="pri-btn ${priority==="med"?"on-med":""}" onclick="setPri('med')">🟡 Средний</button>
+          <button class="pri-btn ${priority==="low"?"on-low":""}" onclick="setPri('low')">🟢 Низкий</button>
+        </div>
+      </div>
+      <div class="m-section"><div class="m-section-ttl">Подзадачи</div>
+        <div id="sub-list" class="sub-list"></div>
+        <button class="add-sub" onclick="addSub()">+ Добавить подзадачу</button>
+      </div>`;
+
+    // Goal change → filter projects
+    $("t-goal")?.addEventListener("change",e=>{selectedGoalId=e.target.value;render();});
+  };
+  render();
+  window.setPri=(p)=>{priority=p;render();const ti=setTimeout(()=>$("t-title")?.focus(),50);};
+
+  openModal(title,$("m-body").innerHTML,async()=>{
+    const titleVal=($("t-title")?.value||"").trim();
+    if(!titleVal){alert("Введите название задачи");return;}
+    const dl=$("t-dl")?.value, st=$("t-start")?.value;
+    const goalId=$("t-goal")?.value||null;
+    const projId=$("t-proj")?.value||null;
+    const note=($("t-note")?.value||"").trim();
+    const subs=[...$("sub-list")?.querySelectorAll("input")||[]].map(i=>i.value.trim()).filter(Boolean);
+    await addDoc(uc("tasks"),{
+      title:titleVal, note, goalId, projId, priority, subtasks:subs,
+      date:today(),
+      deadline:dl?Timestamp.fromDate(new Date(dl)):null,
+      startDate:st?Timestamp.fromDate(new Date(st)):null,
+      done:false, createdAt:serverTimestamp()
+    });
+    toast("Задача добавлена ✓");
+    closeModal();
+    await refreshAll();
+  });
+  // Re-render body after openModal (openModal replaces innerHTML)
+  render();
+}
+
+async function buildGoalModal(title){
+  openModal(title,`
+    <div class="fg"><label class="fl">Название цели *</label>
+      <input class="inp" id="g-title" placeholder="Чего хочу достичь?"/></div>
+    <div class="fg"><label class="fl">Описание</label>
+      <textarea class="txta" id="g-desc" placeholder="Описание цели..."></textarea></div>
+    <div class="fg"><label class="fl">Дедлайн</label>
+      <input class="inp" id="g-dl" type="date"/></div>`,
+    async()=>{
+      const t=($("g-title")?.value||"").trim();
+      if(!t){alert("Введите название");return;}
+      await addDoc(uc("goals"),{title:t,desc:($("g-desc")?.value||"").trim(),deadline:$("g-dl")?.value||null,createdAt:serverTimestamp()});
+      toast("Цель создана ✓"); closeModal(); await refreshAll();
+    });
+}
+
+async function buildProjectModal(title,goalId=null){
+  const goals=await sg(uc("goals"));
+  openModal(title,`
+    <div class="fg"><label class="fl">Название проекта *</label>
+      <input class="inp" id="p-title" placeholder="Название проекта"/></div>
+    <div class="fg"><label class="fl">Цель</label>
+      <select class="sel" id="p-goal">
+        <option value="">— Без цели —</option>
+        ${goals.map(g=>`<option value="${g.id}" ${g.id===goalId?"selected":""}>${esc(g.title)}</option>`).join("")}
+      </select></div>`,
+    async()=>{
+      const t=($("p-title")?.value||"").trim();
+      if(!t){alert("Введите название");return;}
+      await addDoc(uc("projects"),{name:t,goalId:$("p-goal")?.value||null,createdAt:serverTimestamp()});
+      toast("Проект создан ✓"); closeModal(); await refreshAll();
+    });
+}
+
+function buildIdeaModal(title){
+  openModal(title,`
+    <div class="fg"><label class="fl">Заголовок</label>
+      <input class="inp" id="i-title" placeholder="Заголовок идеи"/></div>
+    <div class="fg"><label class="fl">Текст идеи</label>
+      <textarea class="txta" id="i-text" placeholder="Опишите идею..." style="min-height:120px"></textarea></div>
+    <div class="fg"><label class="fl">Дедлайн (необязательно)</label>
+      <input class="inp" id="i-dl" type="datetime-local"/></div>`,
+    async()=>{
+      const t=($("i-title")?.value||"").trim(), tx=($("i-text")?.value||"").trim();
+      if(!t&&!tx){alert("Введите текст или заголовок");return;}
+      const dl=$("i-dl")?.value;
+      await addDoc(uc("ideas"),{title:t,text:tx,date:today(),deadline:dl?Timestamp.fromDate(new Date(dl)):null,createdAt:serverTimestamp()});
+      toast("Идея сохранена ✓"); closeModal(); if(curTab==="ideas")renderIdeas(); else await refreshAll();
+    });
+}
+
+async function buildDiaryModal(title,tmpl=null){
+  const goals=await sg(uc("goals"));
+  openModal(title,`
+    <div class="fg"><label class="fl">Категория</label>
+      <select class="sel" id="d-goal"><option value="">— Общее —</option>
+        ${goals.map(g=>`<option value="${g.id}">${esc(g.title)}</option>`).join("")}
+      </select></div>
+    <div class="fg"><label class="fl">Заголовок</label>
+      <input class="inp" id="d-title" placeholder="Заголовок записи" value="${esc(tmpl?.title||"")}"/></div>
+    <div class="fg"><label class="fl">Текст</label>
+      <textarea class="txta" id="d-text" style="min-height:140px">${esc(tmpl?.text||"")}</textarea></div>`,
+    async()=>{
+      const t=($("d-title")?.value||"").trim(), tx=($("d-text")?.value||"").trim();
+      if(!t&&!tx){alert("Введите текст");return;}
+      const now=new Date();
+      await addDoc(uc("diary"),{title:t,text:tx,goalId:$("d-goal")?.value||null,date:today(),time:`${p2(now.getHours())}:${p2(now.getMinutes())}`,createdAt:serverTimestamp()});
+      toast("Запись сохранена ✓"); closeModal(); if(curTab==="diary")renderDiary(); else await refreshAll();
+    });
+}
+
+function buildTemplateModal(title){
+  openModal(title,`
+    <div class="fg"><label class="fl">Название шаблона *</label>
+      <input class="inp" id="tp-title" placeholder="Название"/></div>
+    <div class="fg"><label class="fl">Текст шаблона</label>
+      <textarea class="txta" id="tp-text" style="min-height:130px" placeholder="Текст, который подставляется при выборе шаблона..."></textarea></div>`,
+    async()=>{
+      const t=($("tp-title")?.value||"").trim();
+      if(!t){alert("Введите название");return;}
+      await addDoc(uc("templates"),{title:t,text:($("tp-text")?.value||"").trim(),createdAt:serverTimestamp()});
+      toast("Шаблон сохранён ✓"); closeModal(); if(curTab==="diary")renderDiary();
+    });
+}
+
+window.addSub=()=>{const row=document.createElement("div");row.className="sub-row";row.innerHTML=`<input class="inp" placeholder="Подзадача"/><button class="rm-sub" onclick="rmSub(this)">×</button>`;$("sub-list")?.appendChild(row);};
+
+// ═══════════════════════════════════════
+//  EDIT MODALS
+// ═══════════════════════════════════════
+async function editTask(id){
+  const all=await sg(uc("tasks")); const t=all.find(x=>x.id===id); if(!t)return;
+  const [goals,projects]=await Promise.all([sg(uc("goals")),sg(uc("projects"))]);
+  const dlVal=t.deadline?(t.deadline.toDate?t.deadline.toDate():new Date(t.deadline)).toISOString().slice(0,16):"";
+  const stVal=t.startDate?(t.startDate.toDate?t.startDate.toDate():new Date(t.startDate)).toISOString().slice(0,16):"";
+  const filtP=t.goalId?projects.filter(p=>p.goalId===t.goalId):projects;
+  openModal("Редактировать задачу",`
+    <div class="fg"><label class="fl">Название</label><input class="inp" id="et-ttl" value="${esc(t.title)}"/></div>
+    <div class="fg"><label class="fl">Примечание</label><textarea class="txta" id="et-note">${esc(t.note||"")}</textarea></div>
+    <div class="fg"><label class="fl">Цель</label><select class="sel" id="et-goal">
+      <option value="">— Корневая —</option>
+      ${goals.map(g=>`<option value="${g.id}" ${g.id===t.goalId?"selected":""}>${esc(g.title)}</option>`).join("")}
+    </select></div>
+    <div class="fg"><label class="fl">Проект</label><select class="sel" id="et-proj">
+      <option value="">— Без проекта —</option>
+      ${filtP.map(p=>`<option value="${p.id}" ${p.id===t.projId?"selected":""}>${esc(p.name)}</option>`).join("")}
+    </select></div>
+    <div class="inp-row">
+      <div class="fg" style="flex:1"><label class="fl">Начало</label><input class="inp" type="datetime-local" id="et-st" value="${stVal}"/></div>
+      <div class="fg" style="flex:1"><label class="fl">Дедлайн</label><input class="inp" type="datetime-local" id="et-dl" value="${dlVal}"/></div>
+    </div>
+    <div class="fg"><label class="fl">Приоритет</label>
+      <select class="sel" id="et-pri">
+        <option value="high" ${t.priority==="high"?"selected":""}>🔴 Высокий</option>
+        <option value="med" ${(!t.priority||t.priority==="med")?"selected":""}>🟡 Средний</option>
+        <option value="low" ${t.priority==="low"?"selected":""}>🟢 Низкий</option>
+      </select></div>`,
+    async()=>{
+      const dl=$("et-dl")?.value, st=$("et-st")?.value;
+      await updateDoc(ud("tasks",id),{
+        title:$("et-ttl").value.trim(), note:$("et-note").value.trim(),
+        goalId:$("et-goal").value||null, projId:$("et-proj").value||null,
+        priority:$("et-pri").value,
+        deadline:dl?Timestamp.fromDate(new Date(dl)):null,
+        startDate:st?Timestamp.fromDate(new Date(st)):null
+      });
+      toast("Сохранено ✓"); closeModal(); await refreshAll();
+    });
+}
+
+async function editIdea(id){
+  const all=await sg(uc("ideas")); const x=all.find(a=>a.id===id); if(!x)return;
+  openModal("Редактировать идею",`
+    <div class="fg"><label class="fl">Заголовок</label><input class="inp" id="ei-t" value="${esc(x.title||"")}"/></div>
+    <div class="fg"><label class="fl">Текст</label><textarea class="txta" id="ei-tx">${esc(x.text||"")}</textarea></div>`,
+    async()=>{await updateDoc(ud("ideas",id),{title:$("ei-t").value.trim(),text:$("ei-tx").value.trim()});toast("Сохранено ✓");closeModal();renderIdeas();});
+}
+
+async function editDiary(id){
+  const all=await sg(uc("diary")); const x=all.find(a=>a.id===id); if(!x)return;
+  openModal("Редактировать запись",`
+    <div class="fg"><label class="fl">Заголовок</label><input class="inp" id="ed-t" value="${esc(x.title||"")}"/></div>
+    <div class="fg"><label class="fl">Текст</label><textarea class="txta" id="ed-tx" style="min-height:120px">${esc(x.text||"")}</textarea></div>`,
+    async()=>{await updateDoc(ud("diary",id),{title:$("ed-t").value.trim(),text:$("ed-tx").value.trim()});toast("Сохранено ✓");closeModal();renderDiary();});
+}
+
+async function toggleTask(id){
+  const all=await sg(uc("tasks")); const t=all.find(x=>x.id===id); if(!t)return;
+  await updateDoc(ud("tasks",id),{done:!t.done}); await refreshAll();
+}
+
+async function delItem(col,id){
+  if(!confirm("Удалить?"))return;
+  await deleteDoc(ud(col,id)); toast("Удалено"); await refreshAll();
+}
+
+// ═══════════════════════════════════════
+//  REFRESH ALL
+// ═══════════════════════════════════════
+async function refreshAll(){
+  if(curTab==="dashboard") await renderDashboard();
+  else if(curTab==="plan") await renderPlan();
+  else if(curTab==="goals") await renderGoals();
+  else if(curTab==="ideas") await renderIdeas();
+  else if(curTab==="diary") await renderDiary();
+  await renderSidebar();
+}
+
+// ═══════════════════════════════════════
+//  DAY NAV BUILDER
+// ═══════════════════════════════════════
+function buildDayNav(selDate,datesWT,showAll,cid,onDay,onAll){
+  const today2=new Date(); today2.setHours(0,0,0,0);
+  const lbl=dstr(selDate)===dstr(today2)
+    ?`Сегодня, ${selDate.getDate()} ${MGEN[selDate.getMonth()].charAt(0).toUpperCase()+MGEN[selDate.getMonth()].slice(1)}`
+    :`${selDate.getDate()} ${MGEN[selDate.getMonth()]} ${selDate.getFullYear()}`;
 
   const mon=new Date(selDate);
-  const dow=mon.getDay(); mon.setDate(mon.getDate()-(dow===0?6:dow-1)+weekOffset*7);
+  const dow=mon.getDay(); mon.setDate(mon.getDate()-(dow===0?6:dow-1)+weekOff*7);
   let btns="";
   for(let i=0;i<7;i++){
     const d=new Date(mon); d.setDate(mon.getDate()+i);
     const isSel=dstr(d)===dstr(selDate), hasDot=datesWT.has(dstr(d));
-    btns+=`<button class="ds-btn ${isSel?"on":""}" data-date="${dstr(d)}" style="${hasDot?"box-shadow:0 0 0 2px rgba(192,64,48,.6)":""}">${d.getDate()}</button>`;
+    btns+=`<button class="ds-day ${isSel?"on":""} ${hasDot?"has-dot":""}" data-date="${dstr(d)}">${d.getDate()}</button>`;
   }
 
   $(cid).innerHTML=`
-    <div class="day-nav-row">
-      <div class="dn-date" onclick="window._cal_${cid}()">${lbl}</div>
+    <div class="dn-row">
+      <button class="dn-date" onclick="window._dc_${cid}()">${lbl}</button>
     </div>
     <div class="day-strip">
       <button class="ds-arr" id="${cid}-pw">←</button>
@@ -515,647 +809,593 @@ function buildDayNav(selDate, datesWT, showAll, cid, onDay, onAll){
       <button class="ds-all ${showAll?"on":""}" id="${cid}-all">Все</button>
     </div>`;
 
-  window[`_cal_${cid}`]=()=>showCalForDate(d=>{onDay(d);});
-  $(`${cid}-pw`).onclick=()=>{weekOffset--;renderTab(curTab);};
-  $(`${cid}-nw`).onclick=()=>{weekOffset++;renderTab(curTab);};
+  window[`_dc_${cid}`]=()=>openCalForDate(d=>{onDay(d);});
+  $(`${cid}-pw`).onclick=()=>{weekOff--;refreshAll();};
+  $(`${cid}-nw`).onclick=()=>{weekOff++;refreshAll();};
   $(`${cid}-all`).onclick=()=>onAll();
-  $(cid).querySelectorAll(".ds-btn").forEach(b=>b.addEventListener("click",()=>{
-    weekOffset=0; onDay(new Date(b.dataset.date));
-  }));
+  $(cid).querySelectorAll(".ds-day").forEach(b=>b.addEventListener("click",()=>{weekOff=0;onDay(new Date(b.dataset.date));}));
 }
 
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
 //  DASHBOARD
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
 async function renderDashboard(){
-  $("tb-title").textContent="Дашборд";
-  const today=todayStr();
-  const [tasks,ideas,goals,diary]=await Promise.all([
-    sget(uc("tasks")), sget(uc("ideas")), sget(uc("goals")), sget(uc("diary"))
-  ]);
-  const todayTasks=tasks.filter(t=>t.date===today);
-  const openToday=todayTasks.filter(t=>!t.done).length;
-  const doneToday=todayTasks.filter(t=>t.done).length;
-  const overdueTasks=tasks.filter(t=>!t.done&&t.deadline&&isOverdue(t.deadline)).length;
-  const d=new Date();
-  const gr=d.getHours()<12?"Доброе утро":d.getHours()<17?"Добрый день":"Добрый вечер";
-  const fname=(($("sb-uname").textContent)||"друг").split(" ")[0];
+  $("tb-ttl").textContent="Дашборд";
+  const td=today();
+  const [tasks,ideas,goals,diary]=await Promise.all([sg(uc("tasks")),sg(uc("ideas")),sg(uc("goals")),sg(uc("diary"))]);
+  const tt=tasks.filter(t=>t.date===td);
+  const open=tt.filter(t=>!t.done).length, done2=tt.filter(t=>t.done).length;
+  const ov=tasks.filter(t=>!t.done&&t.deadline&&isOv(t.deadline)).length;
+  const d=new Date(), h=d.getHours();
+  const gr=h<5?"Доброй ночи":h<12?"Доброе утро":h<17?"Добрый день":"Добрый вечер";
+  const fname=(($("sb-un").textContent)||"").split(" ")[0]||"друг";
   const WD=["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 
   $("dash-body").innerHTML=`
-    <div class="dash-greeting">
+    <div class="dash-greet">
       <div class="dg-date">${WD[d.getDay()]}, ${d.getDate()} ${MGEN[d.getMonth()]} ${d.getFullYear()}</div>
       <div class="dg-hello">${gr},<br/><span>${esc(fname)}</span> 👋</div>
     </div>
+    ${ov?`<div style="background:rgba(192,64,48,.1);border:1px solid rgba(192,64,48,.35);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--red);font-weight:600;">⚠️ Просрочено задач: ${ov}</div>`:""}
     <div class="dash-grid">
       <div class="dash-tile" onclick="switchTab('plan')">
-        <div class="dt-ico">📋</div>
-        <div class="dt-lbl">Задачи сегодня</div>
-        <div class="dt-val">${openToday} открытых · ${doneToday} готово</div>
+        <div class="dt-ico">📋</div><div class="dt-lbl">Задачи сегодня</div>
+        <div class="dt-val">${open} открытых · ${done2} готово</div>
       </div>
       <div class="dash-tile" onclick="switchTab('goals')">
-        <div class="dt-ico">🎯</div>
-        <div class="dt-lbl">Цели</div>
+        <div class="dt-ico">🎯</div><div class="dt-lbl">Цели</div>
         <div class="dt-val">${goals.length} целей</div>
       </div>
       <div class="dash-tile" onclick="switchTab('ideas')">
-        <div class="dt-ico">💡</div>
-        <div class="dt-lbl">Идеи</div>
+        <div class="dt-ico">💡</div><div class="dt-lbl">Идеи</div>
         <div class="dt-val">${ideas.length} записей</div>
       </div>
       <div class="dash-tile" onclick="switchTab('diary')">
-        <div class="dt-ico">📖</div>
-        <div class="dt-lbl">Дневник</div>
+        <div class="dt-ico">📖</div><div class="dt-lbl">Дневник</div>
         <div class="dt-val">${diary.length} записей</div>
       </div>
     </div>
-    ${overdueTasks?`<div style="background:rgba(192,64,48,.1);border:1px solid rgba(192,64,48,.35);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--red)">⚠ Просрочено задач: ${overdueTasks}</div>`:""}
-    <div style="font-family:var(--fd);font-size:10px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Задачи на сегодня</div>
-    ${todayTasks.length
-      ? todayTasks.map(t=>`<div class="icard ${t.done?"done":""}">
-          <div class="ic-chk ${t.done?"on":""}" onclick="toggleTask('${t.id}')">${t.done?"✓":""}</div>
-          <div class="ic-body"><div class="ic-title">${esc(t.title)}</div>${t.deadline?`<div class="ic-sub ${isOverdue(t.deadline)?"ov":""}">${fdt(t.deadline)}</div>`:""}</div>
-        </div>`).join("")
-      : '<div class="empty"><div class="ei">📋</div><p>На сегодня задач нет</p></div>'}`;
+    <div class="sec-lbl">Задачи на сегодня</div>
+    ${tt.length?tt.map(t=>renderTaskCard(t,goals,[])).join("")
+      :'<div class="empty"><div class="ei">📋</div><p>На сегодня задач нет</p></div>'}
+    <button class="fab" onclick="openNewModal('task',null,null,'dashboard')">+</button>`;
 }
 
-// ════════════════════════════════════════
-//  ПЛАН ДНЯ
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
+//  PLAN
+// ═══════════════════════════════════════
 async function renderPlan(){
-  $("tb-title").textContent="План дня";
-  const all=await sget(uc("tasks"));
-  const datesWT=new Set(all.filter(x=>x.date).map(x=>x.date));
-
-  // sidebar: week goals + goals list
-  const goals=await sget(uc("goals"));
-  const wgArr=await sget(uc("weekgoals"));
-  const wg=wgArr[0]||{id:null};
-  renderSidebarGoals(goals,"plan");
-  const sbEx=$("sb-extra");
-  const goalsHtml=goals.length
-    ? goals.map((g,i)=>`<div class="goal-pill" style="background:${GCOLS[i%GCOLS.length]}">${esc(g.title)}<span class="gp-cnt">${all.filter(t=>t.goalId===g.id).length}</span></div>`).join("")
-    : '<p style="font-size:11px;color:var(--tx-l)">Целей нет</p>';
-  sbEx.innerHTML=`
-    <div class="sb-sec">Цели</div>
-    ${goalsHtml}
-    <div style="margin-top:16px">
-      <div class="sb-sec">Цель недели</div>
-      <div class="wg-block"><div class="wg-val" contenteditable id="wg-week" data-ph="Введите цель..." onblur="saveWG('week',this.textContent,'${wg.id||""}')">${esc(wg.week||"")}</div></div>
-      <div class="sb-sec">Цель на месяц</div>
-      <div class="wg-block"><div class="wg-val" contenteditable id="wg-month" data-ph="Введите цель..." onblur="saveWG('month',this.textContent,'${wg.id||""}')">${esc(wg.month||"")}</div></div>
-      <div class="sb-sec">Цель на год</div>
-      <div class="wg-block"><div class="wg-val" contenteditable id="wg-year" data-ph="Введите цель..." onblur="saveWG('year',this.textContent,'${wg.id||""}')">${esc(wg.year||"")}</div></div>
-    </div>`;
-
+  $("tb-ttl").textContent="План дня";
+  const [tasks,goals,projects]=await Promise.all([sg(uc("tasks")),sg(uc("goals")),sg(uc("projects"))]);
+  const datesWT=new Set(tasks.filter(x=>x.date).map(x=>x.date));
   const body=$("plan-body");
-  body.innerHTML=`<div id="plan-daynav"></div><div id="plan-list"></div><div id="plan-done"></div>`;
+  body.innerHTML=`<div id="plan-dn"></div><div id="plan-open"></div><div id="plan-done-sec"></div>`;
 
-  buildDayNav(planDate,datesWT,showAllPlan,"plan-daynav",
+  buildDayNav(planDate,datesWT,showAllPlan,"plan-dn",
     d=>{planDate=d;showAllPlan=false;renderPlan();},
     ()=>{showAllPlan=!showAllPlan;renderPlan();});
 
-  const items=showAllPlan?all:all.filter(t=>t.date===dstr(planDate));
+  const items=(showAllPlan?tasks:tasks.filter(t=>t.date===dstr(planDate)));
   const open=items.filter(t=>!t.done).sort((a,b)=>(a.deadline||"")>(b.deadline||"")?1:-1);
   const done=items.filter(t=>t.done);
 
-  const renderT=t=>{
-    const dl=t.deadline;
-    const ov=dl&&isOverdue(dl);
-    const goalName=goals.find(g=>g.id===t.goalId)?.title||"";
-    const subs=t.subtasks?.length?`<div style="margin-top:6px">${t.subtasks.map(s=>`<div style="font-size:11px;color:var(--tx-m);padding:2px 0 2px 12px;border-left:2px solid var(--bd)">— ${esc(s)}</div>`).join("")}</div>`:"";
-    return`<div class="icard ${t.done?"done":""}">
-      <div class="ic-chk ${t.done?"on":""}" onclick="toggleTask('${t.id}')">${t.done?"✓":""}</div>
-      <div class="ic-body">
-        <div class="ic-title">${esc(t.title)}</div>
-        ${dl?`<div class="ic-sub ${ov?"ov":""}">${fdt(dl)}</div>`:""}
-        ${goalName?`<div style="font-size:10px;color:var(--tx-l)">↳ ${esc(goalName)}</div>`:""}
-        ${subs}
-      </div>
-      <div class="ic-acts">
-        <button class="ib" onclick="editTaskModal('${t.id}')">✎</button>
-        <button class="ib del" onclick="delItem('tasks','${t.id}','plan')">🗑</button>
-      </div>
-    </div>`;
-  };
-
-  $("plan-list").innerHTML=open.length?open.map(renderT).join(""):'<div class="empty"><div class="ei">📋</div><p>Задач нет. Нажмите «Новая запись»</p></div>';
+  $("plan-open").innerHTML=open.length?open.map(t=>renderTaskCard(t,goals,projects)).join("")
+    :'<div class="empty"><div class="ei">📋</div><p>Задач нет — нажмите «+»</p></div>';
 
   if(done.length){
-    $("plan-done").innerHTML=`<div style="height:1px;background:var(--bd);margin:14px 0;"></div>
-      <div style="font-family:var(--fd);font-size:9px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Выполнено (${done.length})</div>
-      ${done.map(renderT).join("")}`;
+    $("plan-done-sec").innerHTML=`<div class="sec-div"></div><div class="sec-lbl">Выполнено (${done.length})</div>`+done.map(t=>renderTaskCard(t,goals,projects)).join("");
   }
 
-  // Fab
-  body.insertAdjacentHTML("beforeend",`<button style="position:fixed;bottom:24px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--go);color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(123,79,30,.35);display:flex;align-items:center;justify-content:center;z-index:50" onclick="newEntry('Задача')">+</button>`);
+  body.insertAdjacentHTML("beforeend",`<button class="fab" onclick="openNewModal('task',null,null,'plan')">+</button>`);
 }
 
-window.saveWG=async(field,val,id)=>{
-  if(id&&id!=="null"){ await updateDoc(ud("weekgoals",id),{[field]:val.trim()}); }
-  else { await addDoc(uc("weekgoals"),{[field]:val.trim(),createdAt:serverTimestamp()}); }
-};
-window.toggleTask=async id=>{
-  const all=await sget(uc("tasks")); const t=all.find(x=>x.id===id); if(!t)return;
-  await updateDoc(ud("tasks",id),{done:!t.done}); renderTab(curTab);
-};
-window.delItem=async(col,id,tab)=>{
-  if(!confirm("Удалить?"))return;
-  await deleteDoc(ud(col,id)); toast("Удалено"); renderTab(tab||curTab);
-};
+function renderTaskCard(t,goals,projects){
+  const dl=t.deadline, ov=dl&&isOv(dl)&&!t.done;
+  const goalName=goals.find(g=>g.id===t.goalId)?.title||"";
+  const projName=projects.find(p=>p.id===t.projId)?.name||"";
+  const priTag=t.priority==="high"?'<span class="ic-tag tag-pri-high">🔴 Высокий</span>':
+    t.priority==="low"?'<span class="ic-tag tag-pri-low">🟢 Низкий</span>':'';
+  const subs=t.subtasks?.length?`<div class="ic-sub-list">${t.subtasks.map(s=>`<div class="ic-sub-item">— ${esc(s)}</div>`).join("")}</div>`:"";
+  return`<div class="icard ${t.done?"done":""}" onclick="editTask('${t.id}')">
+    <div class="ic-chk ${t.done?"on":""}" onclick="event.stopPropagation();toggleTask('${t.id}')">${t.done?"✓":""}</div>
+    <div class="ic-body">
+      <div class="ic-ttl">${esc(t.title)}</div>
+      <div class="ic-meta">
+        ${dl?`<span class="ic-tag tag-dl ${ov?"ov":""}">${fdt(dl)}</span>`:""}
+        ${goalName?`<span class="ic-tag tag-goal">↳ ${esc(goalName)}</span>`:""}
+        ${projName?`<span class="ic-tag tag-proj">${esc(projName)}</span>`:""}
+        ${priTag}
+      </div>
+      ${subs}
+      ${t.note?`<div style="font-size:11px;color:var(--tx-m);margin-top:4px">${esc(t.note)}</div>`:""}
+    </div>
+    <div class="ic-acts">
+      <button class="ib del" onclick="event.stopPropagation();delItem('tasks','${t.id}')">🗑</button>
+    </div>
+  </div>`;
+}
 
-// ════════════════════════════════════════
-//  ЦЕЛИ — MIND MAP
-// ════════════════════════════════════════
-let mmNodes=[], mmEdges=[], mmDragging=null, mmDragOff={x:0,y:0}, mmPan={x:0,y:0}, mmScale=1;
-let mmSelected=null, mmPanning=false, mmPanStart={x:0,y:0};
+// ═══════════════════════════════════════
+//  MIND MAP — proper drag & drop
+// ═══════════════════════════════════════
+let mmNodes=[], mmEdges=[], mmDrag=null, mmDragOff={x:0,y:0};
+let mmPan={x:0,y:0}, mmScale=1, mmPanning=false, mmPanStart={x:0,y:0};
+let mmSel=null, mmCtxMenu=null;
 
 async function renderGoals(){
-  $("tb-title").textContent="Цели";
-  const goals=await sget(uc("goals"));
-  renderSidebarGoals(goals,"goals");
+  $("tb-ttl").textContent="Цели";
+  await renderSidebar("goals");
 
-  // Load or init node positions
-  const posArr=await sget(uc("mmpositions"));
-  const posMap={}; posArr.forEach(p=>{ posMap[p.nodeId]=p; });
+  const [goals,projects,tasks,posArr]=await Promise.all([
+    sg(uc("goals")),sg(uc("projects")),sg(uc("tasks")),sg(uc("mmpos"))
+  ]);
+  const posMap={}; posArr.forEach(p=>{posMap[p.nid]={x:p.x,y:p.y};});
 
-  // Build nodes
-  const canvas=$("mm-canvas");
-  const cw=canvas.offsetWidth||600, ch=canvas.offsetHeight||400;
+  const wrap=$("mm-wrap");
+  const cw=wrap.offsetWidth||600, ch=wrap.offsetHeight||400;
+  const cx=cw/2, cy=ch/2;
 
-  // Root node
-  mmNodes=[{id:"root",type:"root",label:"МОИ ЦЕЛИ",x:cw/2-60,y:ch/2-25,w:120,h:50}];
-  mmEdges=[];
+  // Build node tree
+  mmNodes=[];mmEdges=[];
 
-  const goalItems=await sget(uc("tasks"));
+  // Root
+  mmNodes.push({id:"root",type:"root",label:"МОИ ЦЕЛИ",
+    x:posMap["root"]?.x??(cx-65), y:posMap["root"]?.y??(cy-25), w:130, h:50});
+
   goals.forEach((g,gi)=>{
     const angle=(2*Math.PI*gi/Math.max(goals.length,1))-(Math.PI/2);
-    const r=Math.min(cw,ch)*0.3;
-    const pos=posMap[g.id]||{x:cw/2+r*Math.cos(angle)-60,y:ch/2+r*Math.sin(angle)-18};
-    mmNodes.push({id:g.id,type:"goal",label:g.title,x:pos.x,y:pos.y,w:120,h:36,color:GCOLS[gi%GCOLS.length]});
+    const r=Math.min(cw,ch)*0.28;
+    const def={x:cx+r*Math.cos(angle)-60, y:cy+r*Math.sin(angle)-18};
+    const pos=posMap[g.id]||def;
+    mmNodes.push({id:g.id,type:"goal",label:g.title,
+      x:pos.x,y:pos.y,w:120,h:36,color:GCOLS[gi%GCOLS.length]});
     mmEdges.push({from:"root",to:g.id});
 
-    // Tasks under this goal
-    const gTasks=goalItems.filter(t=>t.goalId===g.id).slice(0,5);
-    gTasks.forEach((t,ti)=>{
-      const ta=angle+(ti-Math.floor(gTasks.length/2))*0.3;
+    // Projects of this goal
+    const gProjs=projects.filter(p=>p.goalId===g.id);
+    gProjs.forEach((proj,pi)=>{
+      const pa=angle+(pi-Math.floor(gProjs.length/2))*0.35;
+      const pr=r*0.6;
+      const pdef={x:pos.x+pr*Math.cos(pa)-50, y:pos.y+pr*Math.sin(pa)-15};
+      const ppos=posMap[proj.id]||pdef;
+      mmNodes.push({id:proj.id,type:"project",label:proj.name,
+        x:ppos.x,y:ppos.y,w:110,h:32});
+      mmEdges.push({from:g.id,to:proj.id});
+
+      // Tasks of this project
+      tasks.filter(t=>t.projId===proj.id).slice(0,4).forEach((t,ti)=>{
+        const ta=pa+(ti-1)*0.3;
+        const tr=pr*0.6;
+        const tdef={x:ppos.x+tr*Math.cos(ta)-45, y:ppos.y+tr*Math.sin(ta)-14};
+        const tpos=posMap[t.id]||tdef;
+        mmNodes.push({id:t.id,type:"task",label:t.title,done:t.done,
+          x:tpos.x,y:tpos.y,w:100,h:28});
+        mmEdges.push({from:proj.id,to:t.id});
+      });
+    });
+
+    // Tasks directly under goal (no project)
+    tasks.filter(t=>t.goalId===g.id&&!t.projId).slice(0,5).forEach((t,ti)=>{
+      const ta=angle+(ti-2)*0.25;
       const tr=r*0.65;
-      const tpos=posMap[t.id]||{x:pos.x+tr*Math.cos(ta),y:pos.y+tr*Math.sin(ta)};
-      mmNodes.push({id:t.id,type:"task",label:t.title,x:tpos.x,y:tpos.y,w:110,h:30,done:t.done});
+      const tdef={x:pos.x+tr*Math.cos(ta)-45, y:pos.y+tr*Math.sin(ta)-14};
+      const tpos=posMap[t.id]||tdef;
+      mmNodes.push({id:t.id,type:"task",label:t.title,done:t.done,
+        x:tpos.x,y:tpos.y,w:100,h:28});
       mmEdges.push({from:g.id,to:t.id});
     });
   });
 
+  // Tasks with no goal
+  tasks.filter(t=>!t.goalId&&!t.projId).slice(0,6).forEach((t,ti)=>{
+    const angle=Math.PI/4+ti*(Math.PI/8);
+    const r2=Math.min(cw,ch)*0.25;
+    const def={x:cx+r2*Math.cos(angle)-45, y:cy+r2*Math.sin(angle)-14};
+    const tpos=posMap[t.id]||def;
+    mmNodes.push({id:t.id,type:"task",label:t.title,done:t.done,
+      x:tpos.x,y:tpos.y,w:100,h:28});
+    mmEdges.push({from:"root",to:t.id});
+  });
+
   drawMM();
+  setupMMEvents(wrap);
 }
 
 function drawMM(){
-  const canvas=$("mm-canvas");
-  // Remove old node divs
-  canvas.querySelectorAll(".mm-node").forEach(n=>n.remove());
+  const wrap=$("mm-wrap");
+  if(!wrap)return;
+  // Remove old nodes
+  wrap.querySelectorAll(".mm-node,.mm-ctx-menu").forEach(n=>n.remove());
   const svg=$("mm-svg");
-  // Draw edges
+
+  // Draw SVG edges
   let lines="";
   mmEdges.forEach(e=>{
-    const from=mmNodes.find(n=>n.id===e.from);
-    const to=mmNodes.find(n=>n.id===e.to);
-    if(!from||!to)return;
-    const x1=from.x+from.w/2+mmPan.x, y1=from.y+from.h/2+mmPan.y;
-    const x2=to.x+to.w/2+mmPan.x,   y2=to.y+to.h/2+mmPan.y;
+    const fn=mmNodes.find(n=>n.id===e.from), tn=mmNodes.find(n=>n.id===e.to);
+    if(!fn||!tn)return;
+    const x1=(fn.x+fn.w/2)*mmScale+mmPan.x, y1=(fn.y+fn.h/2)*mmScale+mmPan.y;
+    const x2=(tn.x+tn.w/2)*mmScale+mmPan.x, y2=(tn.y+tn.h/2)*mmScale+mmPan.y;
     const mx=(x1+x2)/2;
-    lines+=`<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" stroke="${to.type==="task"?"rgba(123,79,30,.3)":"rgba(123,79,30,.6)"}" stroke-width="${to.type==="task"?"1.5":"2"}" fill="none" stroke-dasharray="${to.type==="task"?"4,3":"none"}"/>`;
+    const isDashed=tn.type==="task";
+    lines+=`<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" stroke="${isDashed?"rgba(123,79,30,.25)":"rgba(123,79,30,.55)"}" stroke-width="${tn.type==="goal"?2:1.5}" fill="none" ${isDashed?'stroke-dasharray="4,3"':''}/>`;
   });
   svg.innerHTML=lines;
 
   // Draw nodes
   mmNodes.forEach(n=>{
     const el=document.createElement("div");
-    el.className=`mm-node type-${n.type} ${n.id===mmSelected?"selected":""}`;
+    el.className=`mm-node type-${n.type}${n.id===mmSel?" sel":""}${n.done?" done":""}`;
     el.dataset.id=n.id;
     el.textContent=n.label;
-    if(n.type==="goal") el.style.background=n.color;
-    if(n.done) el.style.opacity="0.5";
-    el.style.left=(n.x+mmPan.x)+"px";
-    el.style.top=(n.y+mmPan.y)+"px";
-    el.style.width=n.w+"px";
-    canvas.appendChild(el);
+    if(n.type==="goal"&&n.color) el.style.background=n.color;
+    el.style.left=(n.x*mmScale+mmPan.x)+"px";
+    el.style.top=(n.y*mmScale+mmPan.y)+"px";
+    el.style.width=(n.w*mmScale)+"px";
+    el.style.fontSize=(n.type==="root"?13:n.type==="task"?10:11)*mmScale+"px";
+    wrap.appendChild(el);
 
-    // Drag
-    el.addEventListener("mousedown",e=>{ e.stopPropagation(); startDrag(e,n); });
-    el.addEventListener("touchstart",e=>{ e.stopPropagation(); startDrag(e.touches[0],n); },{passive:true});
-
-    // Single click = select
-    el.addEventListener("click",e=>{ e.stopPropagation(); selectNode(n); });
-
+    // Mouse drag
+    el.addEventListener("mousedown",e=>{
+      e.stopPropagation();
+      if(e.detail===2)return; // let dblclick handle
+      mmDrag=n; mmDragOff={x:e.clientX-n.x*mmScale-mmPan.x, y:e.clientY-n.y*mmScale-mmPan.y};
+    });
+    // Touch drag
+    el.addEventListener("touchstart",e=>{
+      e.stopPropagation();
+      const t2=e.touches[0];
+      mmDrag=n; mmDragOff={x:t2.clientX-n.x*mmScale-mmPan.x, y:t2.clientY-n.y*mmScale-mmPan.y};
+    },{passive:true});
+    // Single click = select + show actions
+    el.addEventListener("click",e=>{e.stopPropagation();selectMMNode(n,e);});
     // Double click = add child
-    el.addEventListener("dblclick",e=>{ e.stopPropagation(); addChildNode(n); });
+    el.addEventListener("dblclick",e=>{e.stopPropagation();addMMChild(n);});
   });
 }
 
-function startDrag(e,node){
-  mmDragging=node;
-  mmDragOff={x:e.clientX-node.x-mmPan.x, y:e.clientY-node.y-mmPan.y};
+function setupMMEvents(wrap){
+  // Avoid double binding
+  const oldWrap=wrap.cloneNode(false);
+  // Instead just manage via window events (already set up once per session)
+  if(wrap._mmBound) return;
+  wrap._mmBound=true;
+
+  // Pan on canvas mousedown
+  wrap.addEventListener("mousedown",e=>{
+    if(e.target===wrap||e.target===$("mm-svg")){
+      closeMMCtx();
+      mmPanning=true; mmPanStart={x:e.clientX-mmPan.x, y:e.clientY-mmPan.y};
+      wrap.style.cursor="grabbing";
+    }
+  });
+
+  // Canvas click = context menu
+  wrap.addEventListener("click",e=>{
+    if(e.target===wrap||e.target===$("mm-svg")){
+      closeMMCtx(); mmSel=null; drawMM();
+      showMMCtxMenu(e.clientX,e.clientY,null,e);
+    }
+  });
+
+  // Scroll = zoom
+  wrap.addEventListener("wheel",e=>{
+    e.preventDefault();
+    const delta=e.deltaY<0?0.1:-0.1;
+    const newScale=Math.max(0.4,Math.min(2.5,mmScale+delta));
+    const rect=wrap.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    mmPan.x=mx-(mx-mmPan.x)*(newScale/mmScale);
+    mmPan.y=my-(my-mmPan.y)*(newScale/mmScale);
+    mmScale=newScale; drawMM();
+  },{passive:false});
+
+  // Two-finger pinch (trackpad/mobile)
+  let lastPinchDist=0;
+  wrap.addEventListener("touchstart",e=>{
+    if(e.touches.length===2){
+      lastPinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    }
+  },{passive:true});
+  wrap.addEventListener("touchmove",e=>{
+    if(e.touches.length===2&&lastPinchDist>0){
+      e.preventDefault();
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      const ratio=d/lastPinchDist;
+      mmScale=Math.max(0.4,Math.min(2.5,mmScale*ratio));
+      lastPinchDist=d; drawMM();
+    }
+  },{passive:false});
 }
 
-function selectNode(node){
-  mmSelected=node.id===mmSelected?null:node.id;
-  drawMM();
-  if(mmSelected&&node.type!=="root"){
-    // show context in sidebar
-    const extra=$("sb-extra");
-    const isGoal=node.type==="goal";
-    extra.insertAdjacentHTML("afterbegin",`<div id="mm-ctx" style="background:var(--bg-w);border:1px solid var(--bd);border-radius:var(--r);padding:10px;margin-bottom:10px">
-      <div style="font-family:var(--fd);font-size:10px;font-weight:700;color:var(--br);margin-bottom:8px;text-transform:uppercase">${esc(node.label)}</div>
-      ${isGoal?`<button style="width:100%;margin-bottom:6px;" class="sb-new" onclick="newEntry('Задача','${node.id}')">+ Добавить задачу</button>`:""}
-      <button style="width:100%;background:rgba(192,64,48,.15);border:1px solid rgba(192,64,48,.3);color:var(--red);padding:7px;border-radius:var(--r);font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer" onclick="delMMNode('${node.id}','${node.type}')">Удалить</button>
-    </div>`);
-  } else {
-    $("mm-ctx")?.remove();
-  }
-}
-
-window.delMMNode=async(id,type)=>{
-  if(!confirm("Удалить?"))return;
-  if(type==="goal") await deleteDoc(ud("goals",id));
-  else await deleteDoc(ud("tasks",id));
-  toast("Удалено"); mmSelected=null; $("mm-ctx")?.remove(); renderGoals();
-};
-
-async function addChildNode(parentNode){
-  if(parentNode.type==="root"){ newEntry("Цель"); return; }
-  if(parentNode.type==="goal"){ newEntry("Задача",parentNode.id); return; }
-}
-
-// Canvas pan
-const canvas=$("mm-canvas");
-canvas.addEventListener("mousedown",e=>{
-  if(e.target===canvas||e.target===$("mm-svg")){ mmPanning=true; mmPanStart={x:e.clientX-mmPan.x,y:e.clientY-mmPan.y}; canvas.classList.add("grabbing"); }
-});
 window.addEventListener("mousemove",e=>{
-  if(mmDragging){ mmDragging.x=e.clientX-mmDragOff.x-mmPan.x; mmDragging.y=e.clientY-mmDragOff.y-mmPan.y; drawMM(); }
-  else if(mmPanning){ mmPan={x:e.clientX-mmPanStart.x,y:e.clientY-mmPanStart.y}; drawMM(); }
+  if(mmDrag){
+    mmDrag.x=(e.clientX-mmDragOff.x-mmPan.x)/mmScale;
+    mmDrag.y=(e.clientY-mmDragOff.y-mmPan.y)/mmScale;
+    drawMM();
+  } else if(mmPanning){
+    mmPan={x:e.clientX-mmPanStart.x, y:e.clientY-mmPanStart.y}; drawMM();
+    document.getElementById("mm-wrap")?.style && (document.getElementById("mm-wrap").style.cursor="grabbing");
+  }
 });
 window.addEventListener("mouseup",async e=>{
-  if(mmDragging){
-    // Save position
-    const n=mmDragging;
-    const posArr=await sget(uc("mmpositions"));
-    const existing=posArr.find(p=>p.nodeId===n.id);
-    if(existing) await updateDoc(ud("mmpositions",existing.id),{x:n.x,y:n.y});
-    else await addDoc(uc("mmpositions"),{nodeId:n.id,x:n.x,y:n.y,createdAt:serverTimestamp()});
-    mmDragging=null;
+  if(mmDrag){
+    const n=mmDrag; mmDrag=null;
+    const posArr=await sg(uc("mmpos"));
+    const ex=posArr.find(p=>p.nid===n.id);
+    if(ex) await updateDoc(ud("mmpos",ex.id),{x:n.x,y:n.y});
+    else await addDoc(uc("mmpos"),{nid:n.id,x:n.x,y:n.y});
+    document.getElementById("mm-wrap")&&(document.getElementById("mm-wrap").style.cursor="");
   }
-  if(mmPanning){ mmPanning=false; canvas.classList.remove("grabbing"); }
+  if(mmPanning){mmPanning=false; document.getElementById("mm-wrap")&&(document.getElementById("mm-wrap").style.cursor="");}
 });
-
-// Touch drag
-canvas.addEventListener("touchmove",e=>{
-  if(mmDragging){ const t=e.touches[0]; mmDragging.x=t.clientX-mmDragOff.x-mmPan.x; mmDragging.y=t.clientY-mmDragOff.y-mmPan.y; drawMM(); e.preventDefault(); }
+window.addEventListener("touchend",async()=>{
+  if(mmDrag){const n=mmDrag;mmDrag=null;const pa=await sg(uc("mmpos"));const ex=pa.find(p=>p.nid===n.id);if(ex)await updateDoc(ud("mmpos",ex.id),{x:n.x,y:n.y});else await addDoc(uc("mmpos"),{nid:n.id,x:n.x,y:n.y});}
+});
+window.addEventListener("touchmove",e=>{
+  if(mmDrag&&e.touches.length===1){const t=e.touches[0];mmDrag.x=(t.clientX-mmDragOff.x-mmPan.x)/mmScale;mmDrag.y=(t.clientY-mmDragOff.y-mmPan.y)/mmScale;drawMM();e.preventDefault();}
 },{passive:false});
-canvas.addEventListener("touchend",async()=>{ if(mmDragging){const n=mmDragging;mmDragging=null;const posArr=await sget(uc("mmpositions"));const ex=posArr.find(p=>p.nodeId===n.id);if(ex)await updateDoc(ud("mmpositions",ex.id),{x:n.x,y:n.y});else await addDoc(uc("mmpositions"),{nodeId:n.id,x:n.x,y:n.y,createdAt:serverTimestamp()});} });
 
-$("mm-add-goal-btn").onclick=()=>newEntry("Цель");
-$("mm-reset-btn").onclick=()=>{ mmPan={x:0,y:0}; renderGoals(); };
+// Context menu
+function showMMCtxMenu(cx,cy,node,originalEvent){
+  closeMMCtx();
+  const wrap=$("mm-wrap"); if(!wrap)return;
+  const rect=wrap.getBoundingClientRect();
+  const menu=document.createElement("div");
+  menu.className="mm-ctx-menu"; menu.id="mm-ctx";
+  menu.style.left=(cx-rect.left)+"px";
+  menu.style.top=(cy-rect.top)+"px";
 
-// ════════════════════════════════════════
-//  ИДЕИ
-// ════════════════════════════════════════
+  if(!node){
+    menu.innerHTML=`
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('task',null,null,'goals')">+ Задача</button>
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('goal',null,null,'goals')">+ Цель</button>
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('project',null,null,'goals')">+ Проект</button>`;
+  } else if(node.type==="root"){
+    menu.innerHTML=`
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('goal',null,null,'goals')">+ Добавить цель</button>`;
+  } else if(node.type==="goal"){
+    menu.innerHTML=`
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('task','${node.id}',null,'goals')">+ Задача</button>
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('project','${node.id}',null,'goals')">+ Проект</button>
+      <button class="mm-ctx-item danger" onclick="closeMMCtx();delItem('goals','${node.id}')">Удалить цель</button>`;
+  } else if(node.type==="project"){
+    menu.innerHTML=`
+      <button class="mm-ctx-item" onclick="closeMMCtx();openNewModal('task',null,'${node.id}','goals')">+ Задача</button>
+      <button class="mm-ctx-item danger" onclick="closeMMCtx();delItem('projects','${node.id}')">Удалить проект</button>`;
+  } else if(node.type==="task"){
+    menu.innerHTML=`
+      <button class="mm-ctx-item" onclick="closeMMCtx();editTask('${node.id}')">✎ Редактировать</button>
+      <button class="mm-ctx-item" onclick="closeMMCtx();toggleTask('${node.id}')">✓ ${node.done?"Открыть":"Выполнить"}</button>
+      <button class="mm-ctx-item danger" onclick="closeMMCtx();delItem('tasks','${node.id}')">Удалить</button>`;
+  }
+  wrap.appendChild(menu);
+  mmCtxMenu=menu;
+  // Close on outside click
+  setTimeout(()=>document.addEventListener("click",closeMMCtxOnOutside),50);
+}
+function closeMMCtxOnOutside(e){if(mmCtxMenu&&!mmCtxMenu.contains(e.target)){closeMMCtx();document.removeEventListener("click",closeMMCtxOnOutside);}}
+window.closeMMCtx=()=>{mmCtxMenu?.remove();mmCtxMenu=null;};
+
+function selectMMNode(node,e){
+  mmSel=node.id===mmSel?null:node.id;
+  drawMM();
+  if(mmSel) showMMCtxMenu(e.clientX,e.clientY,node,e);
+}
+function addMMChild(parent){
+  if(parent.type==="root") openNewModal("goal",null,null,"goals");
+  else if(parent.type==="goal") openNewModal("task",parent.id,null,"goals");
+  else if(parent.type==="project") openNewModal("task",null,parent.id,"goals");
+  else editTask(parent.id);
+}
+
+$("mm-reset").onclick=()=>{mmPan={x:0,y:0};mmScale=1;drawMM();};
+$("mm-zoom-in").onclick=()=>{mmScale=Math.min(2.5,mmScale+0.2);drawMM();};
+$("mm-zoom-out").onclick=()=>{mmScale=Math.max(0.4,mmScale-0.2);drawMM();};
+
+// ═══════════════════════════════════════
+//  IDEAS
+// ═══════════════════════════════════════
 async function renderIdeas(){
-  $("tb-title").textContent="Идеи";
-  renderSidebarEmpty("ideas");
-  const all=await sget(uc("ideas"));
+  $("tb-ttl").textContent="Идеи";
+  const all=await sg(uc("ideas"));
   const datesWT=new Set(all.map(x=>x.date).filter(Boolean));
   const body=$("ideas-body");
   body.innerHTML=`<div id="ideas-dn"></div><div id="ideas-list"></div>`;
-
   buildDayNav(ideasDate,datesWT,showAllIdeas,"ideas-dn",
     d=>{ideasDate=d;showAllIdeas=false;renderIdeas();},
     ()=>{showAllIdeas=!showAllIdeas;renderIdeas();});
-
-  const items=(showAllIdeas?all:all.filter(x=>x.date===dstr(ideasDate)))
-    .sort((a,b)=>{ const ad=a.createdAt?.toDate?.()||0,bd=b.createdAt?.toDate?.()||0; return bd-ad; });
-
+  const items=(showAllIdeas?all:all.filter(x=>x.date===dstr(ideasDate))).sort((a,b)=>(b.createdAt?.toDate?.()??0)-(a.createdAt?.toDate?.()??0));
   $("ideas-list").innerHTML=items.length?items.map(x=>`
-    <div class="icard">
+    <div class="icard" onclick="editIdea('${x.id}')">
       <div class="ic-body">
-        <div class="ic-title">${esc(x.title||"Без заголовка")}</div>
-        ${x.text?`<div class="ic-text">${esc(x.text)}</div>`:""}
-        ${x.deadline?`<div class="ic-sub ${isOverdue(x.deadline)?"ov":""}">${fdt(x.deadline)}</div>`:""}
+        <div class="ic-ttl">${esc(x.title||"Без заголовка")}</div>
+        ${x.text?`<div style="font-size:12px;color:var(--tx-m);margin-top:4px">${esc(x.text)}</div>`:""}
+        ${x.deadline?`<div class="ic-meta"><span class="ic-tag tag-dl ${isOv(x.deadline)?"ov":""}">${fdt(x.deadline)}</span></div>`:""}
       </div>
-      <div class="ic-acts">
-        <button class="ib" onclick="editIdeaModal('${x.id}')">✎</button>
-        <button class="ib del" onclick="delItem('ideas','${x.id}','ideas')">🗑</button>
-      </div>
+      <div class="ic-acts"><button class="ib del" onclick="event.stopPropagation();delItem('ideas','${x.id}')">🗑</button></div>
     </div>`).join("")
-    :'<div class="empty"><div class="ei">💡</div><p>Идей нет. Нажмите «Новая запись»</p></div>';
-
-  body.insertAdjacentHTML("beforeend",`<button style="position:fixed;bottom:24px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--go);color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(123,79,30,.35);display:flex;align-items:center;justify-content:center;z-index:50" onclick="newEntry('Идея')">+</button>`);
+    :'<div class="empty"><div class="ei">💡</div><p>Нет идей — нажмите «+»</p></div>';
+  body.insertAdjacentHTML("beforeend",`<button class="fab" onclick="openNewModal('idea',null,null,'ideas')">+</button>`);
 }
 
-// ════════════════════════════════════════
-//  ДНЕВНИК
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
+//  DIARY
+// ═══════════════════════════════════════
 async function renderDiary(){
-  $("tb-title").textContent="Дневник";
-  const [entries,templates]=await Promise.all([sget(uc("diary")),sget(uc("templates"))]);
+  $("tb-ttl").textContent="Дневник";
+  const [entries,templates]=await Promise.all([sg(uc("diary")),sg(uc("templates"))]);
   const datesWT=new Set(entries.map(x=>x.date).filter(Boolean));
 
-  // Sidebar: templates
-  const sbEx=$("sb-extra");
-  sbEx.innerHTML=`<div class="sb-sec">Шаблоны</div>
+  // sidebar
+  const sb=$("sb-body");
+  sb.innerHTML=`<div class="sb-sec">Шаблоны</div>
     ${templates.length?templates.map(t=>`
-      <div class="tmpl-pill">
+      <div class="tmpl-pill" onclick="useTmpl('${t.id}')">
         <span>${esc(t.title)}</span>
-        <div style="display:flex;gap:4px">
-          <button class="ib" onclick="useTmpl('${t.id}')">→</button>
-          <button class="ib del" onclick="delItem('templates','${t.id}','diary')">🗑</button>
-        </div>
-      </div>`).join("")
-      :'<p style="font-size:11px;color:var(--tx-l)">Шаблонов нет</p>'}
-    <button class="sb-new" style="margin-top:12px" onclick="newEntry('Шаблон')">+ Новый шаблон</button>`;
+        <button class="ib del" onclick="event.stopPropagation();delItem('templates','${t.id}')">🗑</button>
+      </div>`).join(""):'<p style="font-size:11px;color:var(--tx-l)">Шаблонов нет</p>'}
+    <button class="sb-new" style="margin-top:10px" onclick="openNewModal('template',null,null,'diary')">+ Шаблон</button>`;
 
   const body=$("diary-body");
   body.innerHTML=`<div id="diary-dn"></div><div id="diary-list"></div>`;
-
   buildDayNav(diaryDate,datesWT,showAllDiary,"diary-dn",
     d=>{diaryDate=d;showAllDiary=false;renderDiary();},
     ()=>{showAllDiary=!showAllDiary;renderDiary();});
-
-  const items=(showAllDiary?entries:entries.filter(x=>x.date===dstr(diaryDate)))
-    .sort((a,b)=>{ const ad=a.createdAt?.toDate?.()||0,bd=b.createdAt?.toDate?.()||0; return bd-ad; });
-
+  const items=(showAllDiary?entries:entries.filter(x=>x.date===dstr(diaryDate))).sort((a,b)=>(b.createdAt?.toDate?.()??0)-(a.createdAt?.toDate?.()??0));
   $("diary-list").innerHTML=items.length?items.map(x=>`
-    <div class="icard">
+    <div class="icard" onclick="editDiary('${x.id}')">
       <div class="ic-body">
-        <div class="ic-title">${esc(x.title||"Без заголовка")}</div>
-        ${x.text?`<div class="ic-text">${esc(x.text.slice(0,120))}${x.text.length>120?"…":""}</div>`:""}
-        <div class="ic-sub">${x.date||""} ${x.time||""}</div>
+        <div class="ic-ttl">${esc(x.title||"Без заголовка")}</div>
+        ${x.text?`<div style="font-size:12px;color:var(--tx-m);margin-top:4px">${esc(x.text.slice(0,130))}${x.text.length>130?"…":""}</div>`:""}
+        <div class="ic-meta"><span class="ic-tag tag-dl">${x.date||""} ${x.time||""}</span></div>
       </div>
-      <div class="ic-acts">
-        <button class="ib" onclick="editDiaryModal('${x.id}')">✎</button>
-        <button class="ib del" onclick="delItem('diary','${x.id}','diary')">🗑</button>
-      </div>
+      <div class="ic-acts"><button class="ib del" onclick="event.stopPropagation();delItem('diary','${x.id}')">🗑</button></div>
     </div>`).join("")
-    :'<div class="empty"><div class="ei">📖</div><p>Записей нет. Нажмите «Новая запись»</p></div>';
-
-  body.insertAdjacentHTML("beforeend",`<button style="position:fixed;bottom:24px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--go);color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(123,79,30,.35);display:flex;align-items:center;justify-content:center;z-index:50" onclick="newEntry('Запись в дневник')">+</button>`);
+    :'<div class="empty"><div class="ei">📖</div><p>Записей нет — нажмите «+»</p></div>';
+  body.insertAdjacentHTML("beforeend",`<button class="fab" onclick="openNewModal('diary',null,null,'diary')">+</button>`);
 }
 
-window.useTmpl=async(id)=>{
-  const all=await sget(uc("templates")); const t=all.find(x=>x.id===id); if(!t)return;
-  newEntry("Запись в дневник",null,t);
-};
+window.useTmpl=async(id)=>{const all=await sg(uc("templates"));const t=all.find(x=>x.id===id);if(!t)return;buildDiaryModal("Новая запись в дневник",t);};
 
-// ════════════════════════════════════════
-//  SIDEBAR HELPERS
-// ════════════════════════════════════════
-function renderSidebarGoals(goals,tab){
-  if(tab==="plan"||tab==="goals"||tab==="dashboard") return; // handled separately
-  renderSidebarEmpty(tab);
-}
-function renderSidebarEmpty(tab){
-  if(tab!=="diary") $("sb-extra").innerHTML="";
-}
+// ═══════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════
+async function renderSidebar(tab=null){
+  const t=tab||curTab;
+  if(t==="diary")return; // diary renders its own sidebar
+  const [goals,tasks]=await Promise.all([sg(uc("goals")),sg(uc("tasks"))]);
+  const sb=$("sb-body");
 
-// ════════════════════════════════════════
-//  NEW ENTRY MODAL
-// ════════════════════════════════════════
-const ENTRY_TYPES=["Идея","Цель","Задача","Запись в дневник","Шаблон"];
-
-function newEntry(forceType=null,forceGoalId=null,tmplData=null){
-  if(forceType) entryTypeIdx=ENTRY_TYPES.indexOf(forceType);
-  if(entryTypeIdx<0) entryTypeIdx=0;
-  buildEntryModal(forceGoalId,tmplData);
-}
-window.newEntry=newEntry;
-
-async function buildEntryModal(forceGoalId=null,tmplData=null){
-  const type=ENTRY_TYPES[entryTypeIdx];
-  const goals=await sget(uc("goals"));
-  const today=todayStr();
-  const sw=`<div class="type-sw">
-    <button class="tsw-arr" id="tsw-p">←</button>
-    <span class="tsw-lbl">${type}</span>
-    <button class="tsw-arr" id="tsw-n">→</button>
-  </div>`;
-
-  let fields="";
-  if(type==="Идея"){
-    fields=`
-      <div class="fg"><label class="fl">Заголовок</label><input class="inp" id="f-title" placeholder="Заголовок идеи"/></div>
-      <div class="fg"><label class="fl">Текст</label><textarea class="txta" id="f-text" placeholder="Опишите идею..."></textarea></div>
-      <div class="fg"><label class="fl">Дедлайн (необязательно)</label><input class="inp" id="f-dl" type="datetime-local"/></div>`;
-  } else if(type==="Цель"){
-    fields=`
-      <div class="fg"><label class="fl">Название цели</label><input class="inp" id="f-title" placeholder="Чего хочу достичь?"/></div>
-      <div class="fg"><label class="fl">Задача (необязательно)</label><input class="inp" id="f-task" placeholder="Первый шаг к цели"/></div>
-      <div class="fg"><label class="fl">Подзадачи</label>
-        <div id="sub-list" class="sub-list"><div class="sub-row"><input class="inp" placeholder="Подзадача 1"/><button class="rm-sub" onclick="rmSub(this)">×</button></div></div>
-        <button class="add-sub" onclick="addSub()">+ Добавить подзадачу</button>
+  if(t==="plan"||t==="dashboard"||t==="goals"){
+    const wgArr=await sg(uc("weekgoals"));
+    const wg=wgArr[0]||{id:null};
+    sb.innerHTML=`
+      <div class="sb-sec">Мои цели</div>
+      ${goals.length?goals.map((g,i)=>`
+        <div class="goal-pill" style="background:${GCOLS[i%GCOLS.length]}" onclick="switchTab('goals')">
+          ${esc(g.title)}<span class="gp-cnt">${tasks.filter(x=>x.goalId===g.id).length}</span>
+        </div>`).join(""):'<p style="font-size:11px;color:var(--tx-l)">Целей нет</p>'}
+      <div style="margin-top:14px">
+        <div class="sb-sec">Цель недели</div>
+        <div class="wg-block"><div class="wg-val" contenteditable id="wg-w" data-ph="Введите цель..." onblur="saveWG('week',this.textContent,'${wg.id||""}')">${esc(wg.week||"")}</div></div>
+        <div class="sb-sec">Цель на месяц</div>
+        <div class="wg-block"><div class="wg-val" contenteditable id="wg-m" data-ph="Введите цель..." onblur="saveWG('month',this.textContent,'${wg.id||""}')">${esc(wg.month||"")}</div></div>
+        <div class="sb-sec">Цель на год</div>
+        <div class="wg-block"><div class="wg-val" contenteditable id="wg-y" data-ph="Введите цель..." onblur="saveWG('year',this.textContent,'${wg.id||""}')">${esc(wg.year||"")}</div></div>
       </div>`;
-  } else if(type==="Задача"){
-    const gOpts=goals.map(g=>`<option value="${g.id}" ${g.id===forceGoalId?"selected":""}>${esc(g.title)}</option>`).join("");
-    fields=`
-      <div class="fg"><label class="fl">Название *</label><input class="inp" id="f-title" placeholder="Что нужно сделать?"/></div>
-      <div class="fg"><label class="fl">Дедлайн</label><input class="inp" id="f-dl" type="datetime-local"/></div>
-      <div class="fg"><label class="fl">Привязать к цели</label>
-        <select class="sel" id="f-goal"><option value="">— Без цели —</option>${gOpts}</select>
-      </div>
-      <div class="fg"><label class="fl">Подзадачи</label>
-        <div id="sub-list" class="sub-list"></div>
-        <button class="add-sub" onclick="addSub()">+ Добавить подзадачу</button>
-      </div>
-      <div class="fg"><label class="fl">Заметка</label><textarea class="txta" id="f-note" placeholder="Дополнительно..."></textarea></div>`;
-  } else if(type==="Запись в дневник"){
-    const gOpts=goals.map(g=>`<option value="${g.id}">${esc(g.title)}</option>`).join("");
-    fields=`
-      <div class="fg"><label class="fl">Категория</label>
-        <select class="sel" id="f-goal"><option value="">— Общее —</option>${gOpts}</select>
-      </div>
-      <div class="fg"><label class="fl">Заголовок</label><input class="inp" id="f-title" placeholder="Заголовок записи" value="${esc(tmplData?.title||"")}"/></div>
-      <div class="fg"><label class="fl">Текст</label><textarea class="txta" id="f-text" placeholder="Текст записи..." style="min-height:130px">${esc(tmplData?.text||"")}</textarea></div>`;
-  } else if(type==="Шаблон"){
-    fields=`
-      <div class="fg"><label class="fl">Название шаблона</label><input class="inp" id="f-title" placeholder="Название"/></div>
-      <div class="fg"><label class="fl">Текст</label><textarea class="txta" id="f-text" placeholder="Текст шаблона..." style="min-height:120px"></textarea></div>`;
+  } else {
+    sb.innerHTML="";
   }
-
-  openModal("Новая запись", sw+fields);
-  $("tsw-p").onclick=()=>{ entryTypeIdx=(entryTypeIdx-1+ENTRY_TYPES.length)%ENTRY_TYPES.length; buildEntryModal(forceGoalId); };
-  $("tsw-n").onclick=()=>{ entryTypeIdx=(entryTypeIdx+1)%ENTRY_TYPES.length; buildEntryModal(forceGoalId); };
-  $("m-save").onclick=()=>saveEntry(type,today,forceGoalId);
 }
 
-window.addSub=()=>{
-  const row=document.createElement("div"); row.className="sub-row";
-  row.innerHTML=`<input class="inp" placeholder="Подзадача"/><button class="rm-sub" onclick="rmSub(this)">×</button>`;
-  $("sub-list")?.appendChild(row);
+window.saveWG=async(f,v,id)=>{
+  if(id&&id!=="null")await updateDoc(ud("weekgoals",id),{[f]:v.trim()});
+  else await addDoc(uc("weekgoals"),{[f]:v.trim(),createdAt:serverTimestamp()});
 };
-window.rmSub=btn=>btn.closest(".sub-row").remove();
 
-async function saveEntry(type,today,forceGoalId){
-  if(type==="Идея"){
-    const title=($("f-title")?.value||"").trim(), text=($("f-text")?.value||"").trim();
-    if(!title&&!text){alert("Введите текст или заголовок");return;}
-    const dl=$("f-dl")?.value;
-    await addDoc(uc("ideas"),{title,text,date:today,deadline:dl?Timestamp.fromDate(new Date(dl)):null,createdAt:serverTimestamp()});
-    toast("Идея сохранена ✦"); closeModal(); renderIdeas();
-
-  } else if(type==="Цель"){
-    const title=($("f-title")?.value||"").trim();
-    if(!title){alert("Введите название цели");return;}
-    const gRef=await addDoc(uc("goals"),{title,createdAt:serverTimestamp()});
-    const task=($("f-task")?.value||"").trim();
-    const subs=[...$("sub-list")?.querySelectorAll("input")||[]].map(i=>i.value.trim()).filter(Boolean);
-    if(task) await addDoc(uc("tasks"),{title:task,goalId:gRef.id,date:today,done:false,subtasks:subs,createdAt:serverTimestamp()});
-    toast("Цель создана ✦"); closeModal(); renderGoals();
-
-  } else if(type==="Задача"){
-    const title=($("f-title")?.value||"").trim();
-    if(!title){alert("Введите название");return;}
-    const dl=$("f-dl")?.value, goalId=$("f-goal")?.value||forceGoalId||null;
-    const note=($("f-note")?.value||"").trim();
-    const subs=[...$("sub-list")?.querySelectorAll("input")||[]].map(i=>i.value.trim()).filter(Boolean);
-    await addDoc(uc("tasks"),{title,date:today,deadline:dl?Timestamp.fromDate(new Date(dl)):null,goalId,note,subtasks:subs,done:false,createdAt:serverTimestamp()});
-    toast("Задача добавлена ✦"); closeModal(); renderPlan();
-
-  } else if(type==="Запись в дневник"){
-    const title=($("f-title")?.value||"").trim(), text=($("f-text")?.value||"").trim();
-    if(!title&&!text){alert("Введите текст");return;}
-    const goalId=$("f-goal")?.value||null;
-    const now=new Date();
-    await addDoc(uc("diary"),{title,text,goalId,date:today,time:`${p2(now.getHours())}:${p2(now.getMinutes())}`,createdAt:serverTimestamp()});
-    toast("Запись сохранена ✦"); closeModal(); renderDiary();
-
-  } else if(type==="Шаблон"){
-    const title=($("f-title")?.value||"").trim(), text=($("f-text")?.value||"").trim();
-    if(!title){alert("Введите название");return;}
-    await addDoc(uc("templates"),{title,text,createdAt:serverTimestamp()});
-    toast("Шаблон сохранён ✦"); closeModal(); renderDiary();
-  }
-}
-
-// Edit modals (simplified)
-window.editTaskModal=async(id)=>{ const all=await sget(uc("tasks")); const t=all.find(x=>x.id===id); if(!t)return; const goals=await sget(uc("goals")); const dlVal=t.deadline?(t.deadline.toDate?t.deadline.toDate():new Date(t.deadline)).toISOString().slice(0,16):""; openModal("Редактировать задачу",`<div class="fg"><label class="fl">Название</label><input class="inp" id="et-title" value="${esc(t.title)}"/></div><div class="fg"><label class="fl">Дедлайн</label><input class="inp" type="datetime-local" id="et-dl" value="${dlVal}"/></div><div class="fg"><label class="fl">Цель</label><select class="sel" id="et-goal"><option value="">— Без цели —</option>${goals.map(g=>`<option value="${g.id}" ${g.id===t.goalId?"selected":""}>${esc(g.title)}</option>`).join("")}</select></div><div class="fg"><label class="fl">Заметка</label><textarea class="txta" id="et-note">${esc(t.note||"")}</textarea></div>`); $("m-save").onclick=async()=>{ const dl=$("et-dl")?.value; await updateDoc(ud("tasks",id),{title:$("et-title").value.trim(),deadline:dl?Timestamp.fromDate(new Date(dl)):null,goalId:$("et-goal").value||null,note:$("et-note").value.trim()}); closeModal(); toast("Сохранено"); renderPlan(); }; };
-window.editIdeaModal=async(id)=>{ const all=await sget(uc("ideas")); const x=all.find(a=>a.id===id); if(!x)return; openModal("Редактировать идею",`<div class="fg"><label class="fl">Заголовок</label><input class="inp" id="ei-title" value="${esc(x.title||"")}"/></div><div class="fg"><label class="fl">Текст</label><textarea class="txta" id="ei-text">${esc(x.text||"")}</textarea></div>`); $("m-save").onclick=async()=>{ await updateDoc(ud("ideas",id),{title:$("ei-title").value.trim(),text:$("ei-text").value.trim()}); closeModal(); toast("Сохранено"); renderIdeas(); }; };
-window.editDiaryModal=async(id)=>{ const all=await sget(uc("diary")); const x=all.find(a=>a.id===id); if(!x)return; openModal("Редактировать запись",`<div class="fg"><label class="fl">Заголовок</label><input class="inp" id="ed-title" value="${esc(x.title||"")}"/></div><div class="fg"><label class="fl">Текст</label><textarea class="txta" id="ed-text" style="min-height:120px">${esc(x.text||"")}</textarea></div>`); $("m-save").onclick=async()=>{ await updateDoc(ud("diary",id),{title:$("ed-title").value.trim(),text:$("ed-text").value.trim()}); closeModal(); toast("Сохранено"); renderDiary(); }; };
-
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
 //  CALENDAR
-// ════════════════════════════════════════
-async function showCal(selectCb=null){
-  $("cal-ov").classList.remove("hidden");
-  await renderCal(selectCb);
-}
-async function renderCal(selectCb=null){
+// ═══════════════════════════════════════
+let calSelectCb=null;
+async function openCal(cb=null){calSelectCb=cb||null;$("cal-ov").classList.remove("hidden");await renderCal();}
+async function openCalForDate(cb){await openCal(cb);}
+function closeCal(){$("cal-ov").classList.add("hidden");calSelectCb=null;}
+
+async function renderCal(){
   const y=calDate.getFullYear(), m=calDate.getMonth();
-  $("cal-month").textContent=`${MONTHS[m]} ${y}`;
+  $("cal-mo").textContent=`${MONTHS[m]} ${y}`;
   const fd=new Date(y,m,1).getDay(), off=fd===0?6:fd-1;
   const days=new Date(y,m+1,0).getDate();
-  const today=new Date(); today.setHours(0,0,0,0);
-
-  // load all data for dots
-  const [tasks,ideas,diary]=await Promise.all([sget(uc("tasks")),sget(uc("ideas")),sget(uc("diary"))]);
-  const allDates=new Set([...tasks,...ideas,...diary].map(x=>x.date).filter(Boolean));
+  const tod=new Date(); tod.setHours(0,0,0,0);
+  const [tasks,ideas,diary]=await Promise.all([sg(uc("tasks")),sg(uc("ideas")),sg(uc("diary"))]);
+  const allD=new Set([...tasks,...ideas,...diary].map(x=>x.date).filter(Boolean));
 
   let html=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(d=>`<div class="cal-dh">${d}</div>`).join("");
-  for(let i=0;i<off;i++){const pd=new Date(y,m,-off+i+1); html+=`<div class="cal-cell other-m"><div class="cc-day">${pd.getDate()}</div></div>`;}
+  for(let i=0;i<off;i++){const pd=new Date(y,m,-off+i+1);html+=`<div class="cal-cell other"><div class="cc-day">${pd.getDate()}</div></div>`;}
   for(let d=1;d<=days;d++){
-    const dt=new Date(y,m,d);
-    const ds=dstr(dt);
-    const isTod=dstr(dt)===dstr(today);
-    const dayTasks=tasks.filter(t=>t.date===ds);
-    const evts=dayTasks.slice(0,2).map(t=>`<div class="cc-event">▸ ${esc(t.title)}</div>`).join("");
-    html+=`<div class="cal-cell ${isTod?"today":""}" data-date="${ds}">
-      <div class="cc-day">${d}</div>
-      ${evts}
-      ${allDates.has(ds)&&!dayTasks.length?'<div class="cc-event">•</div>':""}
-    </div>`;
+    const dt=new Date(y,m,d), ds=dstr(dt), isTod=ds===dstr(tod);
+    const dt2=tasks.filter(t=>t.date===ds);
+    const evs=dt2.slice(0,2).map(t=>`<div class="cc-ev">▸ ${esc(t.title)}</div>`).join("");
+    html+=`<div class="cal-cell ${isTod?"today":""}" data-date="${ds}"><div class="cc-day">${d}</div>${evs}${allD.has(ds)&&!dt2.length?'<div class="cc-ev">•</div>':""}</div>`;
   }
   $("cal-grid").innerHTML=html;
-  $("cal-detail").innerHTML="";
+  $("cal-det").innerHTML="";
 
-  $("cal-grid").querySelectorAll(".cal-cell:not(.other-m)").forEach(cell=>{
+  $("cal-grid").querySelectorAll(".cal-cell:not(.other)").forEach(cell=>{
     cell.addEventListener("click",async()=>{
-      $("cal-grid").querySelectorAll(".cal-cell").forEach(c=>c.classList.remove("selected"));
-      cell.classList.add("selected");
+      $("cal-grid").querySelectorAll(".cal-cell").forEach(c=>c.classList.remove("sel"));
+      cell.classList.add("sel");
       const ds=cell.dataset.date;
-      if(selectCb){ selectCb(new Date(ds)); hideCal(); return; }
-      // Show detail
+      if(calSelectCb){calSelectCb(new Date(ds));closeCal();return;}
       const dt=tasks.filter(t=>t.date===ds);
       const di=ideas.filter(x=>x.date===ds);
       const dd=diary.filter(x=>x.date===ds);
-      let det=`<div class="cal-det-title">${ds}</div>`;
-      if(dt.length) det+=dt.map(t=>`<div class="icard" style="margin-bottom:6px"><div class="ic-chk ${t.done?"on":""}">${t.done?"✓":""}</div><div class="ic-body"><div class="ic-title">${esc(t.title)}</div></div></div>`).join("");
-      if(di.length) det+=di.map(x=>`<div style="font-size:11px;color:var(--go-d);padding:4px 0">💡 ${esc(x.title||x.text)}</div>`).join("");
-      if(dd.length) det+=dd.map(x=>`<div style="font-size:11px;color:var(--tx-m);padding:4px 0">📖 ${esc(x.title||x.text)}</div>`).join("");
+      let det=`<div style="font-family:var(--fd);font-size:11px;font-weight:700;color:var(--br);margin-bottom:8px;text-transform:uppercase;">${ds}</div>`;
+      if(dt.length) det+=dt.map(t=>`<div style="font-size:12px;padding:3px 0;color:var(--br-d)">📋 ${esc(t.title)}</div>`).join("");
+      if(di.length) det+=di.map(x=>`<div style="font-size:12px;padding:3px 0;color:var(--go-d)">💡 ${esc(x.title||x.text)}</div>`).join("");
+      if(dd.length) det+=dd.map(x=>`<div style="font-size:12px;padding:3px 0;color:var(--tx-m)">📖 ${esc(x.title||x.text)}</div>`).join("");
       if(!dt.length&&!di.length&&!dd.length) det+=`<p style="font-size:12px;color:var(--tx-l)">Нет записей</p>`;
-      $("cal-detail").innerHTML=det;
+      $("cal-det").innerHTML=det;
     });
   });
 }
-$("cal-pm").onclick=()=>{ calDate.setMonth(calDate.getMonth()-1); renderCal(); };
-$("cal-nm").onclick=()=>{ calDate.setMonth(calDate.getMonth()+1); renderCal(); };
-window.showCal=()=>showCal();
-window.showCalForDate=(cb)=>showCal(cb);
-window.hideCal=()=>$("cal-ov").classList.add("hidden");
-$("cal-ov").addEventListener("click",e=>{ if(e.target===$("cal-ov"))hideCal(); });
+$("cal-pm").onclick=()=>{calDate.setMonth(calDate.getMonth()-1);renderCal();};
+$("cal-nm").onclick=()=>{calDate.setMonth(calDate.getMonth()+1);renderCal();};
+$("cal-ov").addEventListener("click",e=>{if(e.target===$("cal-ov"))closeCal();});
 
-// ════════════════════════════════════════
+// ═══════════════════════════════════════
 //  ROUTING
-// ════════════════════════════════════════
-const tabTitles={dashboard:"Дашборд",plan:"План дня",goals:"Цели",ideas:"Идеи",diary:"Дневник"};
-function switchTab(id){
-  curTab=id; weekOffset=0;
+// ═══════════════════════════════════════
+async function switchTab(id){
+  curTab=id; weekOff=0;
   document.querySelectorAll(".nt").forEach(t=>t.classList.toggle("on",t.dataset.tab===id));
   document.querySelectorAll(".mod").forEach(m=>m.classList.remove("on"));
   $("tab-"+id)?.classList.add("on");
-  renderTab(id);
-}
-window.switchTab=switchTab;
-
-function renderTab(id){
-  if(id==="dashboard") renderDashboard();
-  else if(id==="plan") renderPlan();
-  else if(id==="goals") renderGoals();
-  else if(id==="ideas") renderIdeas();
-  else if(id==="diary") renderDiary();
+  await renderSidebar(id);
+  if(id==="dashboard") await renderDashboard();
+  else if(id==="plan") await renderPlan();
+  else if(id==="goals") await renderGoals();
+  else if(id==="ideas") await renderIdeas();
+  else if(id==="diary") await renderDiary();
+  document.querySelector(`.sidebar.open`)&&closeSb();
 }
 
 document.querySelectorAll(".nt").forEach(t=>t.addEventListener("click",()=>switchTab(t.dataset.tab)));
 
-// ════════════════════════════════════════
-//  SIDEBAR MOBILE
-// ════════════════════════════════════════
-$("burger").onclick=()=>{ $("sidebar").classList.add("open"); $("sb-ov").classList.add("on"); };
-$("sb-ov").onclick=()=>{ $("sidebar").classList.remove("open"); $("sb-ov").classList.remove("on"); };
-function closeSb(){ $("sidebar").classList.remove("open"); $("sb-ov").classList.remove("on"); }
+// ═══════════════════════════════════════
+//  MOBILE SIDEBAR
+// ═══════════════════════════════════════
+$("burger").onclick=()=>{$("sidebar").classList.add("open");$("sb-ov").classList.add("on");};
+$("sb-ov").onclick=closeSb;
+function closeSb(){$("sidebar").classList.remove("open");$("sb-ov").classList.remove("on");}
 
-// ════════════════════════════════════════
+// "New entry" based on current tab
+function newEntryForTab(){
+  const map={dashboard:"task",plan:"task",goals:"goal",ideas:"idea",diary:"diary"};
+  openNewModal(map[curTab]||"task",null,null,curTab);
+}
+$("sb-new").onclick=()=>{closeSb();newEntryForTab();};
+$("tb-new").onclick=newEntryForTab;
+
+// ═══════════════════════════════════════
 //  AUTH
-// ════════════════════════════════════════
-$("btn-google").onclick=async()=>{ try{ await signInWithPopup(auth,new GoogleAuthProvider()); }catch(e){ alert("Ошибка: "+e.message); } };
-$("btn-yandex").onclick=async()=>{ try{ await signInWithPopup(auth,new OAuthProvider("yandex.com")); }catch(e){ alert("Яндекс: настройте в Firebase.\n"+e.message); } };
-$("btn-logout").onclick=async()=>{ if(confirm("Выйти?"))await signOut(auth); };
+// ═══════════════════════════════════════
+$("btn-g").onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());}catch(e){alert(e.message);}};
+$("btn-y").onclick=async()=>{try{await signInWithPopup(auth,new OAuthProvider("yandex.com"));}catch(e){alert("Яндекс: настройте в Firebase.\n"+e.message);}};
+$("btn-logout").onclick=async()=>{if(confirm("Выйти?"))await signOut(auth);};
 
-$("sb-new-btn").onclick=()=>{ closeSb(); newEntry(); };
-$("tb-new-btn").onclick=()=>newEntry();
-
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth,async user=>{
   if(user){
     uid=user.uid;
-    $("sb-uname").textContent=user.displayName||"Пользователь";
-    $("sb-uemail").textContent=user.email||"";
+    $("sb-un").textContent=user.displayName||"Пользователь";
+    $("sb-ue").textContent=user.email||"";
     const av=$("sb-av");
     av.innerHTML=user.photoURL?`<img src="${user.photoURL}" alt=""/>`:(user.displayName||"U")[0].toUpperCase();
-    const mn=new Date(); $("sb-month").textContent=MONTHS[mn.getMonth()].toUpperCase()+" "+mn.getFullYear();
-    $("s-auth").classList.remove("on");
-    $("s-app").classList.add("on");
-    switchTab("dashboard");
-  }else{
-    uid=null;
-    $("s-app").classList.remove("on");
-    $("s-auth").classList.add("on");
+    const mn=new Date(); $("sb-mo").textContent=MONTHS[mn.getMonth()].toUpperCase()+" "+mn.getFullYear();
+    $("s-auth").classList.remove("on"); $("s-app").classList.add("on");
+    await switchTab("dashboard");
+  } else {
+    uid=null; $("s-app").classList.remove("on"); $("s-auth").classList.add("on");
   }
 });
 </script>
