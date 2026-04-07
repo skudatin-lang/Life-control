@@ -499,19 +499,7 @@ $("m-cancel").onclick=closeModal;
 $("m-save").onclick=()=>{if(modalSaveFn)modalSaveFn();};
 $("m-ov").addEventListener("click",e=>{if(e.target===$("m-ov"))closeModal();});
 
-// Expose globally
-window.openNewModal=openNewModal;
-window.openCal=openCal;
-window.closeCal=closeCal;
-window.delItem=delItem;
-window.toggleTask=toggleTask;
-window.addSub=addSub;
-window.rmSub=btn=>btn.closest(".sub-row").remove();
-window.switchTab=switchTab;
-window.editTask=editTask;
-window.editIdea=editIdea;
-window.editDiary=editDiary;
-window.openMindMap=()=>switchTab("goals");
+// (window assignments moved to end)
 
 // ═══════════════════════════════════════
 //  TASK MODAL — rich form like reference
@@ -573,21 +561,21 @@ async function buildTaskModal(title,defGoalId=null,defProjId=null){
       </div>
       <div class="m-section"><div class="m-section-ttl">Приоритет</div>
         <div class="pri-row">
-          <button class="pri-btn ${priority==="high"?"on-high":""}" onclick="setPri('high')">🔴 Высокий</button>
-          <button class="pri-btn ${priority==="med"?"on-med":""}" onclick="setPri('med')">🟡 Средний</button>
-          <button class="pri-btn ${priority==="low"?"on-low":""}" onclick="setPri('low')">🟢 Низкий</button>
+          <button class="pri-btn ${priority==="high"?"on-high":""}" data-pri="high" onclick="window.setPri('high')">🔴 Высокий</button>
+          <button class="pri-btn ${priority==="med"?"on-med":""}" data-pri="med" onclick="window.setPri('med')">🟡 Средний</button>
+          <button class="pri-btn ${priority==="low"?"on-low":""}" data-pri="low" onclick="window.setPri('low')">🟢 Низкий</button>
         </div>
       </div>
       <div class="m-section"><div class="m-section-ttl">Подзадачи</div>
         <div id="sub-list" class="sub-list"></div>
-        <button class="add-sub" onclick="addSub()">+ Добавить подзадачу</button>
+        <button class="add-sub" onclick="window.addSub()">+ Добавить подзадачу</button>
       </div>`;
 
     // Goal change → filter projects
     $("t-goal")?.addEventListener("change",e=>{selectedGoalId=e.target.value;render();});
   };
   render();
-  window.setPri=(p)=>{priority=p;render();const ti=setTimeout(()=>$("t-title")?.focus(),50);};
+    // setPri defined globally
 
   openModal(title,$("m-body").innerHTML,async()=>{
     const titleVal=($("t-title")?.value||"").trim();
@@ -597,8 +585,10 @@ async function buildTaskModal(title,defGoalId=null,defProjId=null){
     const projId=$("t-proj")?.value||null;
     const note=($("t-note")?.value||"").trim();
     const subs=[...$("sub-list")?.querySelectorAll("input")||[]].map(i=>i.value.trim()).filter(Boolean);
+    const activePri = document.querySelector(".pri-btn.on-high") ? "high" :
+      document.querySelector(".pri-btn.on-low") ? "low" : "med";
     await addDoc(uc("tasks"),{
-      title:titleVal, note, goalId, projId, priority, subtasks:subs,
+      title:titleVal, note, goalId, projId, priority:activePri, subtasks:subs,
       date:today(),
       deadline:dl?Timestamp.fromDate(new Date(dl)):null,
       startDate:st?Timestamp.fromDate(new Date(st)):null,
@@ -697,7 +687,7 @@ function buildTemplateModal(title){
     });
 }
 
-window.addSub=()=>{const row=document.createElement("div");row.className="sub-row";row.innerHTML=`<input class="inp" placeholder="Подзадача"/><button class="rm-sub" onclick="rmSub(this)">×</button>`;$("sub-list")?.appendChild(row);};
+// addSub defined globally above
 
 // ═══════════════════════════════════════
 //  EDIT MODALS
@@ -1174,7 +1164,7 @@ function showMMCtxMenu(cx,cy,node,originalEvent){
   setTimeout(()=>document.addEventListener("click",closeMMCtxOnOutside),50);
 }
 function closeMMCtxOnOutside(e){if(mmCtxMenu&&!mmCtxMenu.contains(e.target)){closeMMCtx();document.removeEventListener("click",closeMMCtxOnOutside);}}
-window.closeMMCtx=()=>{mmCtxMenu?.remove();mmCtxMenu=null;};
+// closeMMCtx defined globally
 
 function selectMMNode(node,e){
   mmSel=node.id===mmSel?null:node.id;
@@ -1389,6 +1379,35 @@ $("btn-y").onclick=async()=>{
   catch(e){alert(e.code==="auth/unauthorized-domain"?"Добавьте skudatin-lang.github.io в Firebase Authorized domains.":"Яндекс: "+e.code);}
 };
 $("btn-logout").onclick=async()=>{if(confirm("Выйти?"))await signOut(auth);};
+
+
+// ═══════════════════════════════════════
+//  GLOBAL WINDOW EXPORTS
+// ═══════════════════════════════════════
+window.openNewModal = openNewModal;
+window.openCal      = openCal;
+window.closeCal     = closeCal;
+window.delItem      = delItem;
+window.toggleTask   = toggleTask;
+window.switchTab    = switchTab;
+window.editTask     = editTask;
+window.editIdea     = editIdea;
+window.editDiary    = editDiary;
+window.openMindMap  = ()=>switchTab("goals");
+window.closeMMCtx   = ()=>{ document.getElementById("mm-ctx")?.remove(); mmCtxMenu=null; };
+// saveWG and useTmpl defined directly as window.X above
+window.addSub       = ()=>{
+  const row=document.createElement("div"); row.className="sub-row";
+  row.innerHTML=`<input class="inp" placeholder="Подзадача"/><button class="rm-sub" onclick="window.rmSub(this)">×</button>`;
+  document.getElementById("sub-list")?.appendChild(row);
+};
+window.rmSub = btn=>btn.closest(".sub-row").remove();
+window.setPri = (p)=>{
+  document.querySelectorAll(".pri-btn").forEach(b=>{
+    b.className="pri-btn";
+    if(b.dataset.pri===p) b.classList.add("on-"+p);
+  });
+};
 
 onAuthStateChanged(auth,async user=>{
   if(user){
