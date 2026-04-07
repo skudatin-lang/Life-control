@@ -1380,8 +1380,14 @@ $("tb-new").onclick=newEntryForTab;
 // ═══════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════
-$("btn-g").onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());}catch(e){alert(e.message);}};
-$("btn-y").onclick=async()=>{try{await signInWithPopup(auth,new OAuthProvider("yandex.com"));}catch(e){alert("Яндекс: настройте в Firebase.\n"+e.message);}};
+$("btn-g").onclick=async()=>{
+  try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await signInWithPopup(auth,p);}
+  catch(e){const m={"auth/unauthorized-domain":"Домен не авторизован!\nОткройте Firebase Console → Authentication → Authorized domains\nДобавьте: skudatin-lang.github.io","auth/popup-blocked":"Разрешите всплывающие окна в браузере.","auth/popup-closed-by-user":"Вход отменён."};alert(m[e.code]||("Ошибка: "+e.code));}
+};
+$("btn-y").onclick=async()=>{
+  try{await signInWithPopup(auth,new OAuthProvider("yandex.com"));}
+  catch(e){alert(e.code==="auth/unauthorized-domain"?"Добавьте skudatin-lang.github.io в Firebase Authorized domains.":"Яндекс: "+e.code);}
+};
 $("btn-logout").onclick=async()=>{if(confirm("Выйти?"))await signOut(auth);};
 
 onAuthStateChanged(auth,async user=>{
