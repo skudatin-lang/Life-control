@@ -1,0 +1,130 @@
+// ════════════════════════════════════════
+//  ROUTER + DAY NAV
+//  js/router.js
+// ════════════════════════════════════════
+
+import { dstr } from "./db.js";
+
+const $ = id => document.getElementById(id);
+
+export let curTab   = "dashboard";
+export let weekOff  = 0;
+
+// ── Tab names ──
+const TAB_TITLES = {
+  dashboard: "Дашборд",
+  plan:      "План дня",
+  goals:     "Цели",
+  ideas:     "Идеи",
+  diary:     "Дневник"
+};
+
+// ── Tab renderers registry ──
+const renderers = {};
+export function registerTab(id, renderFn) {
+  renderers[id] = renderFn;
+}
+
+// ── Switch tab ──
+export async function switchTab(id) {
+  curTab  = id;
+  weekOff = 0;
+  document.querySelectorAll(".nt").forEach(t => t.classList.toggle("on", t.dataset.tab === id));
+  document.querySelectorAll(".mod").forEach(m => m.classList.remove("on"));
+  $("tab-" + id)?.classList.add("on");
+  $("tb-ttl").textContent = TAB_TITLES[id] || id;
+  closeSidebar();
+  if (renderers[id]) await renderers[id]();
+}
+
+// ── Sidebar ──
+export function openSidebar()  {
+  $("sidebar").classList.add("open");
+  $("sb-ov").classList.add("on");
+}
+export function closeSidebar() {
+  $("sidebar").classList.remove("open");
+  $("sb-ov").classList.remove("on");
+}
+
+// ── Month names ──
+const MGEN  = ["января","февраля","марта","апреля","мая","июня",
+               "июля","августа","сентября","октября","ноября","декабря"];
+const DS    = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+
+// ── Day nav builder ──
+// containerId — id of the <div> where nav is injected
+// onDay(date)  — called when user picks a day
+// onAll()      — called when "Все" is clicked
+export function buildDayNav(selDate, datesWT, showAll, containerId, onDay, onAll) {
+  const today2 = new Date(); today2.setHours(0,0,0,0);
+  const lbl = dstr(selDate) === dstr(today2)
+    ? `Сегодня, ${selDate.getDate()} ${capitalize(MGEN[selDate.getMonth()])}`
+    : `${selDate.getDate()} ${MGEN[selDate.getMonth()]} ${selDate.getFullYear()}`;
+
+  // Build 7-day strip starting from Monday
+  const mon = new Date(selDate);
+  const dow = mon.getDay();
+  mon.setDate(mon.getDate() - (dow === 0 ? 6 : dow - 1) + weekOff * 7);
+
+  let btns = "";
+  for (let i = 0; i < 7; i++) {
+    const d   = new Date(mon); d.setDate(mon.getDate() + i);
+    const sel = dstr(d) === dstr(selDate);
+    const dot = datesWT.has(dstr(d));
+    btns += `<button class="ds-day ${sel?"on":""} ${dot?"has-dot":""}"
+      data-date="${dstr(d)}">${d.getDate()}</button>`;
+  }
+
+  $(containerId).innerHTML = `
+    <div class="dn-row">
+      <button class="dn-date" id="${containerId}-lbl">${lbl}</button>
+    </div>
+    <div class="day-strip">
+      <button class="ds-arr" id="${containerId}-pw">←</button>
+      ${btns}
+      <button class="ds-arr" id="${containerId}-nw">→</button>
+      <button class="ds-all ${showAll?"on":""}" id="${containerId}-all">Все</button>
+    </div>`;
+
+  $(`${containerId}-lbl`).onclick = () => { window._calCb = d => onDay(d); window.openCal(); };
+  $(`${containerId}-pw`).onclick  = () => { weekOff--; if(renderers[curTab]) renderers[curTab](); };
+  $(`${containerId}-nw`).onclick  = () => { weekOff++; if(renderers[curTab]) renderers[curTab](); };
+  $(`${containerId}-all`).onclick = onAll;
+  $(containerId).querySelectorAll(".ds-day").forEach(b =>
+    b.addEventListener("click", () => { weekOff = 0; onDay(new Date(b.dataset.date)); })
+  );
+}
+
+// ── Item card builder (shared between plan, dashboard) ──
+export function taskCard(t, goals, projects, opts = {}) {
+  const { clickable = true } = opts;
+  const dl       = t.deadline;
+  const ov       = dl && window._isOv(dl) && !t.done;
+  const goalName = goals.find(g => g.id === t.goalId)?.title || "";
+  const projName = projects.find(p => p.id === t.projId)?.name || "";
+  const priTag   = t.priority === "high" ? `<span class="ic-tag tag-pri-high">🔴 Высокий</span>`
+    : t.priority === "low" ? `<span class="ic-tag tag-pri-low">🟢 Низкий</span>` : "";
+  const subs = t.subtasks?.length
+    ? `<div class="ic-sub-list">${t.subtasks.map(s => `<div class="ic-sub-item">— ${window._esc(s)}</div>`).join("")}</div>` : "";
+
+  return `<div class="icard ${t.done?"done":""}" ${clickable?`onclick="window.editTask('${t.id}')"`:""}>
+    <div class="ic-chk ${t.done?"on":""}" onclick="event.stopPropagation();window.toggleTask('${t.id}')">${t.done?"✓":""}</div>
+    <div class="ic-body">
+      <div class="ic-ttl">${window._esc(t.title)}</div>
+      <div class="ic-meta">
+        ${dl ? `<span class="ic-tag tag-dl ${ov?"ov":""}">${window._fdt(dl)}</span>` : ""}
+        ${goalName ? `<span class="ic-tag tag-goal">↳ ${window._esc(goalName)}</span>` : ""}
+        ${projName ? `<span class="ic-tag tag-proj">${window._esc(projName)}</span>` : ""}
+        ${priTag}
+      </div>
+      ${subs}
+      ${t.note ? `<div style="font-size:11px;color:var(--tx-m);margin-top:4px">${window._esc(t.note)}</div>` : ""}
+    </div>
+    <div class="ic-acts">
+      <button class="ib del" onclick="event.stopPropagation();window.delItem('tasks','${t.id}')">🗑</button>
+    </div>
+  </div>`;
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
