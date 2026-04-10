@@ -61,12 +61,12 @@ export async function renderDiary() {
     : '<div class="empty"><div class="ei">📖</div><p>Записей нет — нажмите «+»</p></div>';
 
   body.insertAdjacentHTML("beforeend",
-    `<button class="fab" onclick="window.openNewModal('diary',null,null,'diary')">+</button>`);
+    `<button class="fab" onclick="window.openNewModal('diary',null,null,'diary', '${dstr(diaryDate)}')">+</button>`);
 
   // Use template
   window._useTmpl = async id => {
     const all = await getTemplates();
     const t   = all.find(x => x.id===id); if (!t) return;
-    buildDiaryModal("Новая запись в дневник", t);
+    buildDiaryModal("Новая запись в дневник", t, dstr(diaryDate));
   };
 }

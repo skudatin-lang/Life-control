@@ -4,7 +4,7 @@
 //  Все модальные формы создания/редактирования
 // ════════════════════════════════════════
 
-import { openModal, closeModal, toast, getSubtasks, getActivePriority, setPriority } from "./modal.js";
+import { openModal, closeModal, toast, getSubtasks, getActivePriority, setPriority, addSubRow } from "./modal.js";
 import {
   addTask, updateTask, deleteTask,
   addGoal, addProject,
@@ -12,7 +12,7 @@ import {
   addDiaryEntry, updateDiaryEntry,
   addTemplate,
   getGoals, getProjects,
-  esc, toTS, today
+  esc, toTS, today, dstr
 } from "./db.js";
 import { curTab } from "./router.js";
 
@@ -29,22 +29,25 @@ const TITLES = {
 const $ = id => document.getElementById(id);
 
 // ── Open new entry modal (called from anywhere) ──
-export async function openNewModal(type = "task", parentGoalId = null, parentProjId = null, fromTab = null) {
+export async function openNewModal(type = "task", parentGoalId = null, parentProjId = null, fromTab = null, defaultDate = null) {
   const tab   = fromTab || curTab;
   const title = TITLES[type]?.[tab] || ("Новая " + type);
-  if      (type === "task")     await buildTaskModal(title, parentGoalId, parentProjId);
+  if      (type === "task")     await buildTaskModal(title, parentGoalId, parentProjId, defaultDate);
   else if (type === "goal")     await buildGoalModal(title);
   else if (type === "project")  await buildProjectModal(title, parentGoalId);
   else if (type === "idea")          buildIdeaModal(title);
-  else if (type === "diary")    await buildDiaryModal(title);
+  else if (type === "diary")    await buildDiaryModal(title, null, defaultDate);
   else if (type === "template")      buildTemplateModal(title);
 }
 
 // ════════════════ TASK FORM ════════════════
-async function buildTaskModal(title, defGoalId = null, defProjId = null) {
+async function buildTaskModal(title, defGoalId = null, defProjId = null, defaultDate = null) {
   const [goals, projects] = await Promise.all([getGoals(), getProjects()]);
   let selectedGoalId = defGoalId || "";
   let priority       = "med";
+  // дата выполнения по умолчанию: сегодня или переданная
+  const taskDate = defaultDate ? new Date(defaultDate) : new Date();
+  const dateValue = dstr(taskDate);
 
   function render() {
     const filtP = selectedGoalId ? projects.filter(p => p.goalId === selectedGoalId) : projects;
@@ -74,6 +77,8 @@ async function buildTaskModal(title, defGoalId = null, defProjId = null) {
           <div class="fg" style="flex:1"><label class="fl">Закончить до</label>
             <input class="inp" id="t-dl" type="datetime-local"/></div>
         </div>
+        <div class="fg"><label class="fl">Дата выполнения</label>
+          <input class="inp" id="t-date" type="date" value="${dateValue}"/></div>
       </div>
       <div class="m-section"><div class="m-section-ttl">Приоритет</div>
         <div class="pri-row">
@@ -106,7 +111,8 @@ async function buildTaskModal(title, defGoalId = null, defProjId = null) {
       deadline:  $("t-dl")?.value    || null,
       startDate: $("t-start")?.value || null,
       priority:  getActivePriority(),
-      subtasks:  getSubtasks()
+      subtasks:  getSubtasks(),
+      date:      $("t-date")?.value  || today()
     });
     toast("Задача добавлена ✓");
     closeModal();
@@ -170,14 +176,17 @@ function buildIdeaModal(title) {
 }
 
 // ════════════════ DIARY FORM ════════════════
-export async function buildDiaryModal(title, tmpl = null) {
+export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
   const goals = await getGoals();
+  const diaryDate = defaultDate ? dstr(new Date(defaultDate)) : today();
   openModal(title, `
     <div class="fg"><label class="fl">Категория</label>
       <select class="sel" id="d-goal">
         <option value="">— Общее —</option>
         ${goals.map(g => `<option value="${g.id}">${esc(g.title)}</option>`).join("")}
       </select></div>
+    <div class="fg"><label class="fl">Дата записи</label>
+      <input class="inp" id="d-date" type="date" value="${diaryDate}"/></div>
     <div class="fg"><label class="fl">Заголовок</label>
       <input class="inp" id="d-title" placeholder="Заголовок записи"
         value="${esc(tmpl?.title || "")}"/></div>
@@ -192,7 +201,8 @@ export async function buildDiaryModal(title, tmpl = null) {
       await addDiaryEntry({
         title: t, text: tx,
         goalId: $("d-goal")?.value || null,
-        time: `${p2(now.getHours())}:${p2(now.getMinutes())}`
+        time: `${p2(now.getHours())}:${p2(now.getMinutes())}`,
+        date: $("d-date")?.value || today()
       });
       toast("Запись сохранена ✓"); closeModal(); window._refreshAll?.();
     });
@@ -223,6 +233,7 @@ export async function editTaskModal(id) {
   const dlVal = t.deadline  ? (t.deadline.toDate  ? t.deadline.toDate()  : new Date(t.deadline)).toISOString().slice(0,16) : "";
   const stVal = t.startDate ? (t.startDate.toDate ? t.startDate.toDate() : new Date(t.startDate)).toISOString().slice(0,16) : "";
   const filtP = t.goalId ? projects.filter(p => p.goalId === t.goalId) : projects;
+  const taskDate = t.date || today();
 
   openModal("Редактировать задачу", `
     <div class="fg"><label class="fl">Название</label>
@@ -245,25 +256,38 @@ export async function editTaskModal(id) {
       <div class="fg" style="flex:1"><label class="fl">Дедлайн</label>
         <input class="inp" type="datetime-local" id="et-dl" value="${dlVal}"/></div>
     </div>
+    <div class="fg"><label class="fl">Дата выполнения</label>
+      <input class="inp" type="date" id="et-date" value="${taskDate}"/></div>
     <div class="fg"><label class="fl">Приоритет</label>
       <select class="sel" id="et-pri">
         <option value="high" ${t.priority==="high"?"selected":""}>🔴 Высокий</option>
         <option value="med"  ${(!t.priority||t.priority==="med")?"selected":""}>🟡 Средний</option>
         <option value="low"  ${t.priority==="low"?"selected":""}>🟢 Низкий</option>
       </select></div>
+    <div class="m-section"><div class="m-section-ttl">Подзадачи</div>
+      <div id="edit-sub-list" class="sub-list">
+        ${(t.subtasks || []).map(sub => `
+          <div class="sub-row"><input class="inp" value="${esc(sub)}" placeholder="Подзадача"/><button class="rm-sub" onclick="this.closest('.sub-row').remove()">×</button></div>
+        `).join("")}
+      </div>
+      <button class="add-sub" onclick="window._addSub('edit-sub-list')">+ Добавить подзадачу</button>
+    </div>
     <div class="modal-footer-btns" style="display:flex;gap:8px;margin-top:8px">
       <button class="btn-cl" style="flex:1;color:var(--red);border-color:rgba(192,64,48,.3)"
         onclick="window._delTask('${id}')">🗑 Удалить задачу</button>
     </div>`,
     async () => {
+      const newSubtasks = [...($("#edit-sub-list")?.querySelectorAll("input") || [])].map(i => i.value.trim()).filter(Boolean);
       await updateTask(id, {
-        title:     $("et-ttl").value.trim(),
-        note:      $("et-note").value.trim(),
-        goalId:    $("et-goal").value  || null,
-        projId:    $("et-proj").value  || null,
-        priority:  $("et-pri").value,
-        deadline:  $("et-dl")?.value   || null,
-        startDate: $("et-st")?.value   || null
+        title:     $("#et-ttl").value.trim(),
+        note:      $("#et-note").value.trim(),
+        goalId:    $("#et-goal").value  || null,
+        projId:    $("#et-proj").value  || null,
+        priority:  $("#et-pri").value,
+        deadline:  $("#et-dl")?.value   || null,
+        startDate: $("#et-st")?.value   || null,
+        date:      $("#et-date")?.value || today(),
+        subtasks:  newSubtasks
       });
       toast("Сохранено ✓"); closeModal(); window._refreshAll?.();
     });
@@ -278,7 +302,7 @@ export async function editIdeaModal(id) {
     <div class="fg"><label class="fl">Текст</label>
       <textarea class="txta" id="ei-tx">${esc(x.text||"")}</textarea></div>`,
     async () => {
-      await updateIdea(id, { title: $("ei-t").value.trim(), text: $("ei-tx").value.trim() });
+      await updateIdea(id, { title: $("#ei-t").value.trim(), text: $("#ei-tx").value.trim() });
       toast("Сохранено ✓"); closeModal(); window._refreshAll?.();
     });
 }
@@ -287,12 +311,18 @@ export async function editDiaryModal(id) {
   const all = await window._getDiary?.() || [];
   const x   = all.find(a => a.id === id); if (!x) return;
   openModal("Редактировать запись", `
+    <div class="fg"><label class="fl">Дата записи</label>
+      <input class="inp" type="date" id="ed-date" value="${x.date || today()}"/></div>
     <div class="fg"><label class="fl">Заголовок</label>
       <input class="inp" id="ed-t" value="${esc(x.title||"")}"/></div>
     <div class="fg"><label class="fl">Текст</label>
       <textarea class="txta" id="ed-tx" style="min-height:120px">${esc(x.text||"")}</textarea></div>`,
     async () => {
-      await updateDiaryEntry(id, { title: $("ed-t").value.trim(), text: $("ed-tx").value.trim() });
+      await updateDiaryEntry(id, { 
+        title: $("#ed-t").value.trim(), 
+        text: $("#ed-tx").value.trim(),
+        date: $("#ed-date").value
+      });
       toast("Сохранено ✓"); closeModal(); window._refreshAll?.();
     });
 }

@@ -59,7 +59,7 @@ export const addTask = data => addDoc(uc("tasks"), {
   projId:    data.projId    || null,
   priority:  data.priority  || "med",
   subtasks:  data.subtasks  || [],
-  date:      today(),
+  date:      data.date      || today(),      // теперь можно передать любую дату
   deadline:  toTS(data.deadline),
   startDate: toTS(data.startDate),
   done:      false,
@@ -91,13 +91,13 @@ export const deleteProject = id      => deleteDoc(ud("projects", id));
 
 // ════════════════ IDEAS ════════════════
 export const getIdeas   = ()      => sg(uc("ideas"));
-export const addIdea    = data    => addDoc(uc("ideas"), { ...data, date: today(), createdAt: ss() });
+export const addIdea    = data    => addDoc(uc("ideas"), { ...data, date: data.date || today(), createdAt: ss() });
 export const updateIdea = (id, d) => updateDoc(ud("ideas", id), d);
 export const deleteIdea = id      => deleteDoc(ud("ideas", id));
 
 // ════════════════ DIARY ════════════════
 export const getDiary        = ()      => sg(uc("diary"));
-export const addDiaryEntry   = data    => addDoc(uc("diary"), { ...data, date: today(), createdAt: ss() });
+export const addDiaryEntry   = data    => addDoc(uc("diary"), { ...data, date: data.date || today(), createdAt: ss() });
 export const updateDiaryEntry= (id, d) => updateDoc(ud("diary", id), d);
 export const deleteDiaryEntry= id      => deleteDoc(ud("diary", id));
 
