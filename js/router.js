@@ -53,9 +53,6 @@ const MGEN  = ["января","февраля","марта","апреля","ма
 const DS    = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
 // ── Day nav builder ──
-// containerId — id of the <div> where nav is injected
-// onDay(date)  — called when user picks a day
-// onAll()      — called when "Все" is clicked
 export function buildDayNav(selDate, datesWT, showAll, containerId, onDay, onAll) {
   const today2 = new Date(); today2.setHours(0,0,0,0);
   const lbl = dstr(selDate) === dstr(today2)
@@ -108,6 +105,13 @@ export function taskCard(t, goals, projects, opts = {}) {
   const subs = t.subtasks?.length
     ? `<div class="ic-sub-list">${t.subtasks.map(s => `<div class="ic-sub-item">— ${window._esc(s)}</div>`).join("")}</div>` : "";
 
+  // Если есть вложения, показываем иконку
+  const attachIcon = t.attachments?.length ? `<span class="ic-tag" style="background:rgba(123,79,30,.1)">📎 ${t.attachments.length}</span>` : "";
+  // Если есть напоминание, иконка
+  const remindIcon = t.reminder ? `<span class="ic-tag" style="background:rgba(200,150,62,.15)">🔔</span>` : "";
+  // Если повторяющаяся
+  const recurIcon = t.recurrence && t.recurrence.type !== 'none' ? `<span class="ic-tag" style="background:rgba(74,138,74,.15)">🔄</span>` : "";
+
   return `<div class="icard ${t.done?"done":""}" ${clickable?`onclick="window.editTask('${t.id}')"`:""}>
     <div class="ic-chk ${t.done?"on":""}" onclick="event.stopPropagation();window.toggleTask('${t.id}')">${t.done?"✓":""}</div>
     <div class="ic-body">
@@ -117,6 +121,9 @@ export function taskCard(t, goals, projects, opts = {}) {
         ${goalName ? `<span class="ic-tag tag-goal">↳ ${window._esc(goalName)}</span>` : ""}
         ${projName ? `<span class="ic-tag tag-proj">${window._esc(projName)}</span>` : ""}
         ${priTag}
+        ${attachIcon}
+        ${remindIcon}
+        ${recurIcon}
       </div>
       ${subs}
       ${t.note ? `<div style="font-size:11px;color:var(--tx-m);margin-top:4px">${window._esc(t.note)}</div>` : ""}

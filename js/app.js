@@ -16,7 +16,9 @@ import { switchTab, registerTab,
 import { openCal, closeCal,
          initCalendar }                from "./calendar.js";
 import { openNewModal, editTaskModal,
-         editIdeaModal, editDiaryModal } from "./forms.js";
+         editIdeaModal, editDiaryModal,
+         buildTaskModal }              from "./forms.js";
+import { initStorage }                 from "./storage.js";
 import { initDashboard }               from "./tabs/dashboard.js";
 import { initPlan, renderPlan }        from "./tabs/plan.js";
 import { initGoals, renderGoals }      from "./tabs/goals.js";
@@ -48,7 +50,7 @@ window._esc         = esc;
 window._fdt         = fdt;
 window._isOv        = isOv;
 window._setPri      = setPriority;
-window._addSub      = () => addSubRow("sub-list");
+window._addSub      = (containerId = "sub-list") => addSubRow(containerId);
 window._saveWG      = saveWeekGoal;
 
 window._getTasks    = getTasks;
@@ -99,6 +101,7 @@ async function refreshAll() {
 function initApp() {
   initModal();
   initCalendar();
+  initStorage(); // инициализация Firebase Storage
   initDashboard();
   initPlan();
   initGoals();
