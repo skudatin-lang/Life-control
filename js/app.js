@@ -99,9 +99,9 @@ async function refreshAll() {
 //  INIT
 // ════════════════════════════════════════
 function initApp() {
+  initStorage();        // ← Инициализация Firebase Storage для файлов
   initModal();
   initCalendar();
-  initStorage(); // инициализация Firebase Storage
   initDashboard();
   initPlan();
   initGoals();

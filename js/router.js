@@ -93,7 +93,7 @@ export function buildDayNav(selDate, datesWT, showAll, containerId, onDay, onAll
   );
 }
 
-// ── Item card builder (shared between plan, dashboard) ──
+// ── Item card builder (shared between plan, dashboard) с поддержкой clickable ──
 export function taskCard(t, goals, projects, opts = {}) {
   const { clickable = true } = opts;
   const dl       = t.deadline;
@@ -104,13 +104,8 @@ export function taskCard(t, goals, projects, opts = {}) {
     : t.priority === "low" ? `<span class="ic-tag tag-pri-low">🟢 Низкий</span>` : "";
   const subs = t.subtasks?.length
     ? `<div class="ic-sub-list">${t.subtasks.map(s => `<div class="ic-sub-item">— ${window._esc(s)}</div>`).join("")}</div>` : "";
-
-  // Если есть вложения, показываем иконку
-  const attachIcon = t.attachments?.length ? `<span class="ic-tag" style="background:rgba(123,79,30,.1)">📎 ${t.attachments.length}</span>` : "";
-  // Если есть напоминание, иконка
-  const remindIcon = t.reminder ? `<span class="ic-tag" style="background:rgba(200,150,62,.15)">🔔</span>` : "";
-  // Если повторяющаяся
-  const recurIcon = t.recurrence && t.recurrence.type !== 'none' ? `<span class="ic-tag" style="background:rgba(74,138,74,.15)">🔄</span>` : "";
+  const attachments = t.attachments?.length ? `<div class="ic-meta"><span class="ic-tag">📎 ${t.attachments.length} файл(ов)</span></div>` : "";
+  const reminder = t.reminder ? `<span class="ic-tag tag-dl">🔔 ${window._fdt(t.reminder)}</span>` : "";
 
   return `<div class="icard ${t.done?"done":""}" ${clickable?`onclick="window.editTask('${t.id}')"`:""}>
     <div class="ic-chk ${t.done?"on":""}" onclick="event.stopPropagation();window.toggleTask('${t.id}')">${t.done?"✓":""}</div>
@@ -118,12 +113,11 @@ export function taskCard(t, goals, projects, opts = {}) {
       <div class="ic-ttl">${window._esc(t.title)}</div>
       <div class="ic-meta">
         ${dl ? `<span class="ic-tag tag-dl ${ov?"ov":""}">${window._fdt(dl)}</span>` : ""}
+        ${reminder}
         ${goalName ? `<span class="ic-tag tag-goal">↳ ${window._esc(goalName)}</span>` : ""}
         ${projName ? `<span class="ic-tag tag-proj">${window._esc(projName)}</span>` : ""}
         ${priTag}
-        ${attachIcon}
-        ${remindIcon}
-        ${recurIcon}
+        ${attachments}
       </div>
       ${subs}
       ${t.note ? `<div style="font-size:11px;color:var(--tx-m);margin-top:4px">${window._esc(t.note)}</div>` : ""}
