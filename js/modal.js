@@ -3,20 +3,17 @@
 //  js/modal.js
 // ════════════════════════════════════════
 
-import { esc } from "./db.js";
-
 let _saveFn = null;
 
-const $  = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 const ov = () => $("m-ov");
 const bd = () => $("m-body");
 
-// ── Open modal ──
 export function openModal(title, bodyHtml, saveFn) {
   const now = new Date();
   const MGEN = ["января","февраля","марта","апреля","мая","июня",
                 "июля","августа","сентября","октября","ноября","декабря"];
-  $("m-ttl").textContent  = title;
+  $("m-ttl").textContent = title;
   $("m-date").textContent = `${now.getDate()} ${MGEN[now.getMonth()]} ${now.getFullYear()}`;
   bd().innerHTML = bodyHtml;
   _saveFn = saveFn;
@@ -24,22 +21,19 @@ export function openModal(title, bodyHtml, saveFn) {
   ov().classList.remove("hidden");
 }
 
-// ── Close modal ──
 export function closeModal() {
   ov().classList.add("hidden");
   bd().innerHTML = "";
   _saveFn = null;
 }
 
-// ── Wire static buttons ──
 export function initModal() {
-  $("m-x").onclick      = closeModal;
+  $("m-x").onclick = closeModal;
   $("m-cancel").onclick = closeModal;
-  $("m-save").onclick   = () => { if (_saveFn) _saveFn(); };
+  $("m-save").onclick = () => { if (_saveFn) _saveFn(); };
   ov().addEventListener("click", e => { if (e.target === ov()) closeModal(); });
 }
 
-// ── Toast ──
 export function toast(msg, ms = 2600) {
   const t = $("toast");
   t.textContent = msg;
@@ -48,7 +42,6 @@ export function toast(msg, ms = 2600) {
   t._t = setTimeout(() => t.classList.add("hidden"), ms);
 }
 
-// ── Shared form helpers ──
 export function addSubRow(containerId = "sub-list") {
   const row = document.createElement("div");
   row.className = "sub-row";
@@ -64,7 +57,7 @@ export function getSubtasks(containerId = "sub-list") {
 
 export function getActivePriority() {
   if (document.querySelector(".pri-btn.on-high")) return "high";
-  if (document.querySelector(".pri-btn.on-low"))  return "low";
+  if (document.querySelector(".pri-btn.on-low")) return "low";
   return "med";
 }
 
