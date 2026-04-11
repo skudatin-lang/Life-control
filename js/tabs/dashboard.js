@@ -1,12 +1,13 @@
 // ════════════════════════════════════════
-//  TAB: DASHBOARD (с напоминаниями)
+//  TAB: DASHBOARD
 //  js/tabs/dashboard.js
 // ════════════════════════════════════════
 
 import { registerTab, switchTab, taskCard } from "../router.js";
 import { getStats, esc, isOv, getTasks, dstr } from "../db.js";
 
-const MGEN = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const MGEN = ["января","февраля","марта","апреля","мая","июня",
+              "июля","августа","сентября","октября","ноября","декабря"];
 const WD   = ["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 
 export function initDashboard() { registerTab("dashboard", renderDashboard); }
@@ -14,13 +15,11 @@ export function initDashboard() { registerTab("dashboard", renderDashboard); }
 async function getReminders() {
   const tasks = await getTasks();
   const now = new Date();
-  const todayStr = dstr(now);
   return tasks.filter(t => {
     if (!t.reminder || t.done) return false;
     const remDate = t.reminder.toDate ? t.reminder.toDate() : new Date(t.reminder);
-    // напоминание за 24 часа до дедлайна или сегодня
     const diff = (remDate - now) / (1000 * 3600);
-    return diff <= 24 && diff >= -1; // напоминание за сутки и немного после
+    return diff <= 24 && diff >= -1;
   }).slice(0,5);
 }
 
@@ -31,8 +30,12 @@ async function renderDashboard() {
   const gr = h<5 ? "Доброй ночи" : h<12 ? "Доброе утро" : h<17 ? "Добрый день" : "Добрый вечер";
   const fname = (document.getElementById("sb-un").textContent || "").split(" ")[0] || "друг";
   const reminders = await getReminders();
+
   el.innerHTML = `
-    <div class="dash-greet"><div class="dg-date">${WD[d.getDay()]}, ${d.getDate()} ${MGEN[d.getMonth()]} ${d.getFullYear()}</div><div class="dg-hello">${gr},<br/><span>${esc(fname)}</span> 👋</div></div>
+    <div class="dash-greet">
+      <div class="dg-date">${WD[d.getDay()]}, ${d.getDate()} ${MGEN[d.getMonth()]} ${d.getFullYear()}</div>
+      <div class="dg-hello">${gr},<br/><span>${esc(fname)}</span> 👋</div>
+    </div>
     ${s.overdue ? `<div style="background:rgba(192,64,48,.1);border:1px solid rgba(192,64,48,.35);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--red);font-weight:600;">⚠️ Просрочено задач: ${s.overdue}</div>` : ""}
     ${reminders.length ? `<div class="sec-lbl">🔔 Напоминания</div>${reminders.map(t => taskCard(t, s.goals, [], {clickable:true})).join("")}<div class="sec-div"></div>` : ""}
     <div class="dash-grid">

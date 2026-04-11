@@ -1,5 +1,5 @@
 // ════════════════════════════════════════
-//  TAB: ПЛАН ДНЯ (расширенный)
+//  TAB: ПЛАН ДНЯ
 //  js/tabs/plan.js
 // ════════════════════════════════════════
 
@@ -16,9 +16,9 @@ export async function renderPlan() {
   document.getElementById("tb-ttl").textContent = "План дня";
   const [tasks, goals, projects, wgArr] = await Promise.all([getTasks(), getGoals(), getProjects(), getWeekGoals()]);
   const wg = wgArr[0] || { id: null };
-  // sidebar (без изменений)
+  // Sidebar
   const sb = document.getElementById("sb-body");
-  sb.innerHTML = `<div class="sb-sec">Мои цели</div>${goals.length ? goals.map((g,i)=>`<div class="goal-pill" style="background:${GCOLS[i%GCOLS.length]}" onclick="window.switchTab('goals')">${esc(g.title)}<span class="gp-cnt">${tasks.filter(t=>t.goalId===g.id).length}</span></div>`).join(""):'<p>Нет целей</p>'}<div style="margin-top:14px"><div class="sb-sec">Цель недели</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-w" data-ph="Введите цель..." onblur="window._saveWG('week',this.textContent,'${wg.id||""}')">${esc(wg.week||"")}</div></div><div class="sb-sec">Цель на месяц</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-m" onblur="window._saveWG('month',this.textContent,'${wg.id||""}')">${esc(wg.month||"")}</div></div><div class="sb-sec">Цель на год</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-y" onblur="window._saveWG('year',this.textContent,'${wg.id||""}')">${esc(wg.year||"")}</div></div></div>`;
+  sb.innerHTML = `<div class="sb-sec">Мои цели</div>${goals.length ? goals.map((g,i)=>`<div class="goal-pill" style="background:${GCOLS[i%GCOLS.length]}" onclick="window.switchTab('goals')">${esc(g.title)}<span class="gp-cnt">${tasks.filter(t=>t.goalId===g.id).length}</span></div>`).join(""):'<p style="font-size:11px;color:var(--tx-l)">Целей нет</p>'}<div style="margin-top:14px"><div class="sb-sec">Цель недели</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-w" data-ph="Введите цель..." onblur="window._saveWG('week',this.textContent,'${wg.id||""}')">${esc(wg.week||"")}</div></div><div class="sb-sec">Цель на месяц</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-m" data-ph="Введите цель..." onblur="window._saveWG('month',this.textContent,'${wg.id||""}')">${esc(wg.month||"")}</div></div><div class="sb-sec">Цель на год</div><div class="wg-block"><div class="wg-val" contenteditable id="wg-y" data-ph="Введите цель..." onblur="window._saveWG('year',this.textContent,'${wg.id||""}')">${esc(wg.year||"")}</div></div></div>`;
 
   const body = document.getElementById("plan-body");
   body.innerHTML = `<div id="plan-dn"></div><div id="plan-open"></div><div id="plan-done-sec"></div>`;
@@ -29,15 +29,9 @@ export async function renderPlan() {
   );
 
   const targetDateStr = dstr(planDate);
-  // Фильтрация: задача показывается, если:
-  // - её поле date === targetDateStr (однодневная)
-  // - ИЛИ startDate <= targetDateStr <= deadline (диапазон)
-  // - ИЛИ для повторяющихся задач проверяем попадание даты в правило (упрощённо: если есть recurrence, то показываем на все даты, но лучше проверять через сгенерированные дочерние задачи)
-  // Поскольку мы генерируем реальные дочерние задачи для повторяющихся, то они уже имеют свои date, поэтому достаточно проверить date.
-  // Для диапазонных задач без повторения: показываем, если дата в интервале.
+  // Фильтрация: дата точного выполнения ИЛИ диапазон startDate..deadline
   const filtered = showAll ? tasks : tasks.filter(t => {
     if (t.date === targetDateStr) return true;
-    // диапазонные задачи
     const start = t.startDate ? (t.startDate.toDate ? t.startDate.toDate() : new Date(t.startDate)) : null;
     const end = t.deadline ? (t.deadline.toDate ? t.deadline.toDate() : new Date(t.deadline)) : null;
     if (start && end && !t.date) {
