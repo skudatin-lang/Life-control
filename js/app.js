@@ -18,8 +18,7 @@ import { switchTab, registerTab,
 import { openCal, closeCal,
          initCalendar }                   from "./calendar.js";
 import { openNewModal, editTaskModal,
-         editIdeaModal, editDiaryModal,
-         buildTaskModal }                 from "./forms.js";
+         editIdeaModal, editDiaryModal }  from "./forms.js";
 import { initStorage }                    from "./storage.js";
 import { initDashboard }                  from "./tabs/dashboard.js";
 import { initPlan, renderPlan }           from "./tabs/plan.js";
