@@ -33,7 +33,7 @@ function progressRing(pct, size, stroke, color) {
   const fill = circ * (1 - pct / 100);
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
     <circle cx="${size/2}" cy="${size/2}" r="${r}"
-      fill="none" stroke="var(--bd-s)" stroke-width="${stroke}"/>
+      fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="${stroke}"/>
     <circle cx="${size/2}" cy="${size/2}" r="${r}"
       fill="none" stroke="${color}" stroke-width="${stroke}"
       stroke-dasharray="${circ}" stroke-dashoffset="${fill}"
@@ -74,7 +74,10 @@ export async function renderDashboard() {
   const todayDone = s.todayTasks.filter(t =>  t.done);
   const total     = s.todayTasks.length;
   const pct       = total ? Math.round(todayDone.length / total * 100) : 0;
-  const ringColor = pct >= 80 ? "var(--grn)" : pct >= 40 ? "var(--go)" : pct > 0 ? "var(--red)" : "var(--bd-s)";
+  const ringColor = pct >= 80 ? "var(--grn)" : pct >= 40 ? "var(--go)" : pct > 0 ? "var(--red)" : "var(--go)";
+
+  // Дата для отображения
+  const dateStr = `${WD[d.getDay()].toUpperCase()}, ${d.getDate()} ${MGEN[d.getMonth()].toUpperCase()} ${d.getFullYear()}`;
 
   el.innerHTML = `
 <div class="dash-layout">
@@ -94,13 +97,11 @@ export async function renderDashboard() {
     <!-- Просроченные — огоньки -->
     ${s.overdue ? `
     <button class="dash-overdue" onclick="window.switchTab('plan')">
-      ${"🔥".repeat(Math.min(s.overdue,5))}
-      <span>${s.overdue} просроченных</span>
+      🔥 ${s.overdue} просроченных
     </button>` : ""}
 
-    <!-- Кольцо прогресса — нажать раскрывает список -->
-    <div class="dash-ring-wrap ${pct > 0 || total > 0 ? "has-tasks" : ""}"
-         id="dash-ring-btn">
+    <!-- Кольцо прогресса -->
+    <div class="dash-ring-wrap" id="dash-ring-btn">
       <div class="dash-ring-svg">${progressRing(pct, 200, 14, ringColor)}</div>
       <div class="dash-ring-center">
         <div class="dash-ring-pct">${pct}%</div>
@@ -124,11 +125,11 @@ export async function renderDashboard() {
 
     <!-- Дата + приветствие -->
     <div class="dash-right-greet">
-      <div class="drg-date">${WD[d.getDay()]}, ${d.getDate()} ${MGEN[d.getMonth()]} ${d.getFullYear()}</div>
+      <div class="drg-date">${dateStr}</div>
       <div class="drg-hello">${gr}, <span>${esc(fname)}</span></div>
     </div>
 
-    <!-- 4 метрики -->
+    <!-- 4 метрики — 2×2 -->
     <div class="dash-metrics">
       <div class="dash-metric" onclick="window.switchTab('plan')">
         <div class="dm-ico">📋</div>
@@ -148,12 +149,12 @@ export async function renderDashboard() {
       </div>
       <div class="dash-metric">
         <div class="dm-ico">⚡</div>
-        <div class="dm-val">${efficiency}%</div>
+        <div class="dm-val dash-eff">${efficiency}%</div>
         <div class="dm-lbl">эффективность</div>
       </div>
     </div>
 
-    <!-- Банк идей (раскрывается) -->
+    <!-- Банк идей (раскрывается по клику на метрику) -->
     <div id="dash-inbox-panel" class="dash-inbox-panel hidden">
       <div class="sec-lbl" style="margin-bottom:8px">💡 Банк идей</div>
       ${inbox.length === 0
@@ -187,17 +188,7 @@ export async function renderDashboard() {
 
 <button class="fab" onclick="window.openNewModal('task',null,null,'dashboard')">+</button>`;
 
-  // ── Тоглы ──
-  window._toggleDashTasks = () => {
-    const panel   = document.getElementById("dash-task-list");
-    const def     = document.getElementById("dash-tasks-default");
-    const btn     = document.getElementById("dash-ring-btn");
-    const isOpen  = !panel.classList.contains("hidden");
-    panel.classList.toggle("hidden",  isOpen);
-    def.classList.toggle("hidden",   !isOpen);
-    btn.classList.toggle("active",   !isOpen);
-  };
-
+  // ── Тогл банка идей ──
   window._toggleInboxPanel = () => {
     document.getElementById("dash-inbox-panel")?.classList.toggle("hidden");
   };
