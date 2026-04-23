@@ -227,3 +227,27 @@ onAuthStateChanged(auth, async user => {
     $("s-auth").classList.add("on");
   }
 });
+
+// ════════════════════════════════════════
+//  THEME TOGGLE
+//  Переключение: светлая (оригинал) ↔ тёмная
+// ════════════════════════════════════════
+(function initTheme() {
+  // Читаем сохранённую тему (или берём системную)
+  const saved = localStorage.getItem("lc-theme");
+  const sysDark = window.matchMedia("(prefers-color-scheme:dark)").matches;
+  const isDark  = saved ? saved === "dark" : sysDark;
+  if (isDark) document.documentElement.classList.add("theme-dark");
+  updateThemeBtn(isDark);
+})();
+
+window._toggleTheme = () => {
+  const isDark = document.documentElement.classList.toggle("theme-dark");
+  localStorage.setItem("lc-theme", isDark ? "dark" : "light");
+  updateThemeBtn(isDark);
+};
+
+function updateThemeBtn(isDark) {
+  const btn = document.getElementById("theme-toggle");
+  if (btn) btn.textContent = isDark ? "☀️ Светлая" : "🌙 Тёмная";
+}
