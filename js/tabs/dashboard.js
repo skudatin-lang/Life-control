@@ -101,7 +101,7 @@ export async function renderDashboard() {
     <!-- Кольцо прогресса — нажать раскрывает список -->
     <div class="dash-ring-wrap ${pct > 0 || total > 0 ? "has-tasks" : ""}"
          id="dash-ring-btn" onclick="window._toggleDashTasks()">
-      <div class="dash-ring-svg">${progressRing(pct, 164, 13, ringColor)}</div>
+      <div class="dash-ring-svg">${progressRing(pct, 210, 14, ringColor)}</div>
       <div class="dash-ring-center">
         <div class="dash-ring-pct">${pct}%</div>
         <div class="dash-ring-sub">${todayDone.length} из ${total}</div>
