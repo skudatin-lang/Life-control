@@ -25,7 +25,7 @@
   --r:8px;--rl:14px;--rxl:20px;--rf:999px;
   --fd:'Cinzel',serif;--fb:'Raleway',sans-serif;
   --tt:170ms ease;
-  --sb:300px;--tb:54px;
+  --sb:520px;--tb:54px;
 }
 
 /* ═══════════════════════ ТЁМНАЯ ТЕМА (класс на html) ═══════════════════════ */
@@ -126,7 +126,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 .mod-body{flex:1;overflow-y:auto;padding:14px 16px 100px;}
 
 /* ═══════════════════════ DASHBOARD LAYOUT ═══════════════════════ */
-.dash-layout{display:grid;grid-template-columns:220px 1fr;height:100%;overflow:hidden;}
+.dash-layout{display:grid;grid-template-columns:260px 1fr;height:100%;overflow:hidden;}
 .dash-left{display:flex;flex-direction:column;align-items:center;padding:20px 14px;border-right:1px solid var(--bd);overflow-y:auto;background:var(--bg-p);}
 .dash-right{overflow-y:auto;padding:16px 20px 100px;background:var(--bg);}
 
@@ -377,3 +377,36 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   .dash-left{border-right:none;border-bottom:1px solid var(--bd);padding:14px;}
   .dash-metrics{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ═══════════════════════ ТЁМНАЯ ТЕМА — переопределения фонов ═══════════════════════ */
+.theme-dark body { background: var(--bg); color: var(--tx); }
+.theme-dark .dash-left  { background: var(--bg-p); }
+.theme-dark .dash-right { background: var(--bg); }
+.theme-dark .icard      { background: var(--cr); border-color: var(--bd); }
+.theme-dark .ic-ttl     { color: var(--br-d); }
+.theme-dark .dash-metric{ background: var(--cr); border-color: var(--bd); }
+.theme-dark .mod-hd     { background: var(--cr); border-color: var(--bd); }
+.theme-dark .mod-body   { background: var(--bg); }
+.theme-dark .m-box      { background: var(--bg-p); }
+.theme-dark .inp,.theme-dark .txta,.theme-dark .sel { background: var(--bg-w); color: var(--tx); border-color: var(--bd); }
+.theme-dark .auth-card  { background: var(--bg-w); }
+.theme-dark .cal-box    { background: var(--bg-p); }
+.theme-dark .cal-cell   { background: var(--bg-w); }
+.theme-dark .sidebar    { background: var(--bg-p); border-color: var(--bd); }
+.theme-dark .sb-body    { background: var(--bg-p); }
+.theme-dark .sb-foot-btn{ background: var(--cr-d); color: var(--br-d); }
+.theme-dark .mm-wrap    { background: var(--bg-w); }
+.theme-dark .mm-node.type-task { background: var(--bg-w); color: var(--tx); }
+.theme-dark .mm-node.type-project { background: var(--cr-d); color: var(--br-d); }
+.theme-dark .mm-ctx-menu { background: var(--bg-p); }
+.theme-dark .mm-ctx-item { color: var(--br-d); }
+.theme-dark .goal-pill  { }
+.theme-dark .wg-block   { background: var(--bg-w); }
+.theme-dark .wg-val     { color: var(--tx); }
+.theme-dark .tmpl-pill  { background: var(--cr-d); color: var(--br-d); }
+.theme-dark .dash-right-greet .drg-hello { color: var(--br-d); }
+.theme-dark .dash-ring-pct { color: var(--br-d); }
+.theme-dark .dash-av-name  { color: var(--br-d); }
+.theme-dark .sec-lbl    { color: var(--tx-l); }
+.theme-dark .m-ft       { border-color: var(--bd); }
+.theme-dark .btn-cl     { background: var(--cr-d); color: var(--br-d); border-color: var(--bd-s); }
