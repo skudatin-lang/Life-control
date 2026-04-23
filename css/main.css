@@ -78,11 +78,11 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 
 /* ═══════════════════════ MAIN ═══════════════════════ */
 .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.top-nav{display:flex;background:var(--br-d);border-bottom:2px solid var(--go-d);flex-shrink:0;overflow-x:auto;}
+.top-nav{display:flex;background:var(--go);border-bottom:2px solid var(--go-d);flex-shrink:0;overflow-x:auto;}
 .top-nav::-webkit-scrollbar{display:none;}
-.nt{flex:1;min-width:70px;padding:13px 6px;font-family:var(--fd);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.5);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;white-space:nowrap;}
-.nt:hover{color:rgba(255,255,255,.85);}
-.nt.on{color:var(--go-l);border-bottom-color:var(--go);}
+.nt{flex:1;min-width:70px;padding:13px 6px;font-family:var(--fd);font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--br-d);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;white-space:nowrap;opacity:.65;}
+.nt:hover{opacity:1;}
+.nt.on{color:var(--br-d);border-bottom-color:var(--br-d);opacity:1;background:rgba(255,255,255,.15);}
 .mwrap{flex:1;overflow:hidden;position:relative;}
 .mod{display:none;position:absolute;inset:0;flex-direction:column;overflow:hidden;}
 .mod.on{display:flex;}
@@ -348,3 +348,45 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   .dash-metrics{grid-template-columns:repeat(2,1fr);}
   .dash-goals-grid{grid-template-columns:repeat(3,1fr);}
 }
+
+/* ═══════════════════════ THEME TOGGLE ═══════════════════════ */
+.theme-toggle-btn{
+  position:fixed;top:10px;right:14px;z-index:500;
+  background:var(--go);color:var(--br-d);
+  border:2px solid var(--br-d);border-radius:var(--rf);
+  padding:5px 12px;font-family:var(--fd);font-size:9px;font-weight:700;
+  letter-spacing:.06em;cursor:pointer;transition:all var(--tt);
+  display:flex;align-items:center;gap:5px;
+}
+.theme-toggle-btn:hover{background:var(--go-l);}
+
+/* ═══════════════════════ DASHBOARD LEFT ═══════════════════════ */
+.dash-avatar-block{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;}
+.dash-av-img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--go);margin-bottom:8px;}
+.dash-av-placeholder{width:72px;height:72px;border-radius:50%;background:var(--br);border:3px solid var(--go);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:24px;font-weight:700;color:#fff;margin-bottom:8px;}
+.dash-av-name{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--br-d);text-align:center;}
+.dash-av-date{font-size:10px;color:var(--tx-l);text-align:center;margin-top:2px;}
+
+/* ═══════════════════════ DASHBOARD RIGHT GREET ═══════════════════════ */
+.dash-right-greet{margin-bottom:16px;}
+.drg-date{font-size:10px;color:var(--tx-l);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.drg-hello{font-family:var(--fd);font-size:18px;font-weight:900;color:var(--br-d);line-height:1.3;}
+.drg-hello span{color:var(--go);}
+
+/* ═══════════════════════ ТЁМНАЯ ТЕМА (через класс) ═══════════════════════ */
+.theme-dark{
+  --bg:#1A1208;--bg-s:#221808;--bg-p:#2A1E0A;--bg-w:#1E1610;
+  --br:#C8963E;--br-d:#E4B96A;--br-l:#A06A2E;
+  --go:#C8963E;--go-l:#E4B96A;--go-d:#9A6F28;
+  --cr:#2A1E0A;--cr-d:#221808;
+  --red:#E05040;--grn:#5AA05A;--blu:#5A8EC8;
+  --tx:#F0E8D0;--tx-m:#C8A878;--tx-l:#886848;
+  --bd:rgba(200,150,62,.18);--bd-s:rgba(200,150,62,.4);
+  --sh:rgba(0,0,0,.4);
+}
+.theme-dark body{background:var(--bg);color:var(--tx);}
+.theme-dark .top-nav{background:var(--br-d);}
+.theme-dark .nt{color:var(--go-l);opacity:.6;}
+.theme-dark .nt.on{color:var(--go-l);border-bottom-color:var(--go);opacity:1;background:rgba(255,255,255,.08);}
+.theme-dark .nt:hover{opacity:1;}
+.theme-dark #s-auth{background:linear-gradient(145deg,#3A2810,#1A1208);}
