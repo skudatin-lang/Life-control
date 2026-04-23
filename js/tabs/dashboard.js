@@ -100,8 +100,8 @@ export async function renderDashboard() {
 
     <!-- Кольцо прогресса — нажать раскрывает список -->
     <div class="dash-ring-wrap ${pct > 0 || total > 0 ? "has-tasks" : ""}"
-         id="dash-ring-btn" onclick="window._toggleDashTasks()">
-      <div class="dash-ring-svg">${progressRing(pct, 210, 14, ringColor)}</div>
+         id="dash-ring-btn">
+      <div class="dash-ring-svg">${progressRing(pct, 200, 14, ringColor)}</div>
       <div class="dash-ring-center">
         <div class="dash-ring-pct">${pct}%</div>
         <div class="dash-ring-sub">${todayDone.length} из ${total}</div>
@@ -170,31 +170,15 @@ export async function renderDashboard() {
           </div>`).join("")}
     </div>
 
-    <!-- Список задач на сегодня (раскрывается по клику на кольцо) -->
-    <div id="dash-task-list" class="dash-task-panel hidden">
-      <div class="sec-lbl">Задачи на сегодня</div>
-      ${total === 0
-        ? `<div class="empty" style="padding:16px 0"><div class="ei">📋</div><p>На сегодня задач нет</p></div>`
-        : todayOpen.map(t => taskCard(t, s.goals, [])).join("") +
-          (todayDone.length
-            ? `<div class="sec-lbl" style="margin-top:12px">Выполнено (${todayDone.length})</div>`
-              + todayDone.map(t => taskCard(t, s.goals, [])).join("")
-            : "")}
-    </div>
-
-    <!-- Задачи по умолчанию (если панель закрыта) -->
+    <!-- Список задач на сегодня -->
     <div id="dash-tasks-default">
       <div class="sec-lbl">Задачи на сегодня</div>
       ${total === 0
         ? `<div class="empty"><div class="ei">📋</div><p>На сегодня задач нет</p></div>`
-        : todayOpen.slice(0, 5).map(t => taskCard(t, s.goals, [])).join("") +
-          (todayOpen.length > 5
-            ? `<div style="font-size:11px;color:var(--tx-l);text-align:center;padding:6px 0;cursor:pointer"
-                onclick="window._toggleDashTasks()">ещё ${todayOpen.length - 5}... (показать все)</div>`
-            : "") +
+        : todayOpen.map(t => taskCard(t, s.goals, [])).join("") +
           (todayDone.length
             ? `<div class="sec-lbl" style="margin-top:12px">Выполнено (${todayDone.length})</div>`
-              + todayDone.slice(0,3).map(t => taskCard(t, s.goals, [])).join("")
+              + todayDone.map(t => taskCard(t, s.goals, [])).join("")
             : "")}
     </div>
 
