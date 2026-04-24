@@ -56,7 +56,7 @@ const DROP_TYPE = {
 export function initGoals() { registerTab("goals", renderGoals); }
 
 // ════════════════════════════════════════
-//  SIDEBAR — две вкладки: «Элемент» и «Стиль»
+//  SIDEBAR — панель форматирования (оригинальная)
 // ════════════════════════════════════════
 function renderSidebar(selNode) {
   const sb = document.getElementById("sb-body");
@@ -68,111 +68,61 @@ function renderSidebar(selNode) {
     "#4A8A4A","#3A6EA8","#C04030","#7B4F1E",
     "#5A3510","#A06A2E","#9A6F28","#EAE0C4",
   ];
-  const typeLabel = { root:"Корень", goal:"Цель", project:"Проект", task:"Задача" };
 
-  // ── Вкладка «Элемент» ──
-  const elTab = selNode && selNode.type !== "root" ? `
-
-    <!-- Название -->
+  sb.innerHTML = `
+    <!-- Выбранный элемент -->
     <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">✎</span> Название</div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <input class="inp" id="sb-node-name" value="${esc(selNode.label)}"
-          style="flex:1;font-size:13px"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();window._sbSaveName()}"/>
-        <button class="fmt-action-btn" onclick="window._sbSaveName()">✓</button>
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◈</span> Элемент</div>
+      <div class="fmt-sel-badge ${selNode ? "active" : ""}">
+        ${ selNode
+          ? `<span class="fmt-sel-type">${{root:"Корень",goal:"Цель",project:"Проект",task:"Задача"}[selNode.type]||""}</span>
+             <span class="fmt-sel-name">${esc(selNode.label)}</span>`
+          : `<span class="fmt-sel-none">Нажмите на элемент карты</span>` }
       </div>
     </div>
 
-    <!-- Тип -->
+    <!-- Заливка -->
     <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">◈</span> Тип</div>
-      <div class="sb-type-btns">
-        <button class="sb-type-btn ${selNode.type==="goal"?"on":""}"
-          onclick="window._sbChangeType('goal')">🎯 Цель</button>
-        <button class="sb-type-btn ${selNode.type==="project"?"on":""}"
-          onclick="window._sbChangeType('project')">📁 Проект</button>
-        <button class="sb-type-btn ${selNode.type==="task"?"on":""}"
-          onclick="window._sbChangeType('task')">✅ Задача</button>
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◉</span> Заливка
+        ${!selNode || selNode.type==="root" ? '<span style="font-size:9px;color:var(--tx-l);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0">(выберите элемент)</span>' : ""}
       </div>
-    </div>
-
-    <!-- Родитель -->
-    <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">↖</span> Родитель</div>
-      <select class="sel" id="sb-parent-sel" onchange="window._sbChangeParent(this.value)"
-        style="font-size:12px">
-        ${mmFlat.filter(n => n.id !== selNode.id && n.type !== "task"
-            && !isDescendant(selNode, n.id))
-          .map(n => `<option value="${n.id}" ${isDirectParent(selNode.id, n.id)?"selected":""}>${
-            "\u00a0".repeat(depthOf(n)*2)}${typeLabel[n.type]}: ${esc(n.label)}</option>`).join("")}
-      </select>
-    </div>
-
-    <!-- Действия -->
-    <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">⚡</span> Действия</div>
-      <div class="fmt-btn-row">
-        ${selNode.type === "task" ? `
-          <button class="fmt-action-btn" onclick="window._sbToggle()">
-            ${selNode.done ? "↩ Открыть" : "✓ Готово"}
-          </button>` : ""}
-        <button class="fmt-action-btn" onclick="window._sbAddChild()">+ Добавить</button>
-        <button class="fmt-action-btn danger" onclick="window._sbDeleteSubtree()">🗑 Удалить</button>
-      </div>
-    </div>
-
-    <!-- Цвет -->
-    <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">◉</span> Цвет</div>
       <div class="fmt-color-grid">
-        <div class="fmt-color-cell auto ${!nodeColors.get(selNode.id)?"sel":""}"
+        <div class="fmt-color-cell auto ${selNode && !nodeColors.get(selNode.id) ? "sel" : ""}"
           onclick="window._fmtSetColor('')" title="Авто"><span>авто</span></div>
-        ${COLORS.map(c=>`<div class="fmt-color-cell ${nodeColors.get(selNode.id)===c?"sel":""}"
-          style="background:${c}" onclick="window._fmtSetColor('${c}')"></div>`).join("")}
-      </div>
-    </div>` : `
-    <div class="fmt-section">
-      <div class="fmt-sel-badge">
-        <span class="fmt-sel-none">Нажмите на элемент карты чтобы редактировать</span>
+        ${COLORS.map(c => `
+          <div class="fmt-color-cell ${selNode && nodeColors.get(selNode.id)===c ? "sel" : ""}"
+            style="background:${c}" onclick="window._fmtSetColor('${c}')"></div>`).join("")}
       </div>
     </div>
-    <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">✦</span> Добавить</div>
-      <div class="fmt-add-btns">
-        <button class="fmt-add-btn" onclick="window.openNewModal('goal',null,null,'goals')">+ Цель</button>
-        <button class="fmt-add-btn" onclick="window.openNewModal('task',null,null,'goals')">+ Задача</button>
-        <button class="fmt-add-btn" onclick="window.openNewModal('project',null,null,'goals')">+ Проект</button>
-      </div>
-    </div>`;
 
-  // ── Вкладка «Стиль» ──
-  const styleTab = `
+    <!-- Форма ноды -->
     <div class="fmt-section">
       <div class="fmt-sec-title"><span class="fmt-sec-icon">▣</span> Форма</div>
       <div class="fmt-btn-row">
-        <button class="fmt-shape-btn ${fmtNodeShape==="rect"?"on":""}" onclick="window._fmtShape('rect')">
+        <button class="fmt-shape-btn ${fmtNodeShape==="rect"?"on":""}" onclick="window._fmtShape('rect')" title="Прямоугольник">
           <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
         </button>
-        <button class="fmt-shape-btn ${fmtNodeShape==="rounded"?"on":""}" onclick="window._fmtShape('rounded')">
+        <button class="fmt-shape-btn ${fmtNodeShape==="rounded"?"on":""}" onclick="window._fmtShape('rounded')" title="Скруглённый">
           <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
         </button>
-        <button class="fmt-shape-btn ${fmtNodeShape==="pill"?"on":""}" onclick="window._fmtShape('pill')">
+        <button class="fmt-shape-btn ${fmtNodeShape==="pill"?"on":""}" onclick="window._fmtShape('pill')" title="Таблетка">
           <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
         </button>
       </div>
     </div>
+
+    <!-- Ветки -->
     <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">⌇</span> Линии</div>
-      <div class="fmt-label">Стиль</div>
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">⌇</span> Ветки</div>
+      <div class="fmt-label">Стиль линий</div>
       <div class="fmt-btn-row">
-        <button class="fmt-line-btn ${fmtLineStyle==="curve"?"on":""}" onclick="window._fmtLine('curve')">
+        <button class="fmt-line-btn ${fmtLineStyle==="curve"?"on":""}" onclick="window._fmtLine('curve')" title="Кривая">
           <svg width="46" height="22"><path d="M4,14 C16,14 30,6 42,6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
         </button>
-        <button class="fmt-line-btn ${fmtLineStyle==="straight"?"on":""}" onclick="window._fmtLine('straight')">
+        <button class="fmt-line-btn ${fmtLineStyle==="straight"?"on":""}" onclick="window._fmtLine('straight')" title="Прямая">
           <svg width="46" height="22"><line x1="4" y1="11" x2="42" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
-        <button class="fmt-line-btn ${fmtLineStyle==="elbow"?"on":""}" onclick="window._fmtLine('elbow')">
+        <button class="fmt-line-btn ${fmtLineStyle==="elbow"?"on":""}" onclick="window._fmtLine('elbow')" title="Угловая">
           <svg width="46" height="22"><polyline points="4,18 20,18 20,4 42,4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
@@ -189,6 +139,8 @@ function renderSidebar(selNode) {
         </button>
       </div>
     </div>
+
+    <!-- Структура -->
     <div class="fmt-section">
       <div class="fmt-sec-title"><span class="fmt-sec-icon">⊞</span> Структура</div>
       <div class="fmt-btn-row">
@@ -216,6 +168,8 @@ function renderSidebar(selNode) {
         </button>
       </div>
     </div>
+
+    <!-- Вид -->
     <div class="fmt-section">
       <div class="fmt-sec-title"><span class="fmt-sec-icon">◎</span> Вид</div>
       <label class="fmt-toggle-row">
@@ -224,15 +178,16 @@ function renderSidebar(selNode) {
           <span class="fmt-toggle-knob"></span>
         </button>
       </label>
-    </div>`;
-
-  sb.innerHTML = `
-    <div class="sb-mm-tabs">
-      <button class="sb-mm-tab ${!window._sbStyleTab?"on":""}" onclick="window._sbTab(false)">Элемент</button>
-      <button class="sb-mm-tab ${window._sbStyleTab?"on":""}" onclick="window._sbTab(true)">Стиль</button>
     </div>
-    <div class="sb-mm-tab-body">
-      ${window._sbStyleTab ? styleTab : elTab}
+
+    <!-- Добавить -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">✦</span> Добавить</div>
+      <div class="fmt-add-btns">
+        <button class="fmt-add-btn" onclick="window.openNewModal('goal',null,null,'goals')">+ Цель</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('task',null,null,'goals')">+ Задача</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('project',null,null,'goals')">+ Проект</button>
+      </div>
     </div>`;
 }
 
@@ -421,14 +376,14 @@ function drawMM() {
     // ── Клик ──
     el.addEventListener("click", e => {
       e.stopPropagation();
-      if (drag?.moved) return; // был drag — игнорируем
+      if (drag?.moved) return;
       window._mmCancelInline?.();
-      mmSel = n.id===mmSel ? null : n.id;
-      window._sbStyleTab = false;
+      const wasSel = n.id === mmSel;
+      mmSel = wasSel ? null : n.id;
+      closeRadial();
       drawMM();
-      renderSidebar(mmFlat.find(x=>x.id===mmSel)||null);
-      // Фокус на поле имени в sidebar
-      setTimeout(()=>document.getElementById("sb-node-name")?.focus(),50);
+      renderSidebar(mmFlat.find(x => x.id === mmSel) || null);
+      if (!wasSel && n.type !== "root") showRadial(n, el);
     });
 
     // ── Двойной клик → inline rename ──
@@ -460,6 +415,188 @@ function drawMM() {
 }
 
 // ════════════════════════════════════════
+//  РАДИАЛЬНОЕ МЕНЮ (Miro-стиль)
+// ════════════════════════════════════════
+let radialEl = null;
+
+function closeRadial() {
+  radialEl?.remove();
+  radialEl = null;
+}
+
+function showRadial(node, nodeEl) {
+  closeRadial();
+  const wrap = document.getElementById("mm-wrap");
+  if (!wrap) return;
+
+  // Позиция центра ноды на экране
+  const nx = node.x * mmScale + mmPan.x;
+  const ny = node.y * mmScale + mmPan.y;
+  const nw = node.w * mmScale;
+  const nh = node.h * mmScale;
+  const cx = nx + nw / 2;
+  const cy = ny + nh / 2;
+
+  // Кнопки радиального меню в зависимости от типа
+  // Формат: { icon, label, action, danger? }
+  const BTNS = [];
+
+  // ➕ Добавить дочернюю
+  if (node.type === "root") {
+    BTNS.push({ icon:"🎯", label:"Цель",    action: () => window.openNewModal("goal",null,null,"goals") });
+  } else if (node.type === "goal") {
+    BTNS.push({ icon:"📁", label:"Проект",  action: () => window.openNewModal("project",node.id,null,"goals") });
+    BTNS.push({ icon:"✅", label:"Задача",  action: () => window.openNewModal("task",node.id,null,"goals") });
+  } else if (node.type === "project") {
+    BTNS.push({ icon:"✅", label:"Задача",  action: () => window.openNewModal("task",null,node.id,"goals") });
+  }
+
+  // ✎ Редактировать
+  if (node.type === "task") {
+    BTNS.push({ icon:"✎", label:"Изменить", action: () => { closeRadial(); window.editTask(node.id); } });
+    BTNS.push({ icon: node.done ? "↩" : "✓", label: node.done ? "Открыть" : "Готово",
+      action: async () => { closeRadial(); await toggleTask(node.id); window._refreshAll?.(); } });
+  }
+
+  // 🔀 Сменить тип (для не-root)
+  if (node.type !== "root") {
+    BTNS.push({ icon:"🔀", label:"Тип",     action: () => showTypeMenu(node, cx, cy) });
+  }
+
+  // ✕ Удалить
+  if (node.type !== "root") {
+    BTNS.push({ icon:"✕", label:"Удалить", danger:true,
+      action: async () => {
+        closeRadial();
+        const label = node.type==="goal" ? "цель и все её проекты/задачи"
+                    : node.type==="project" ? "проект и все задачи" : "задачу";
+        if (!confirm(`Удалить ${label}?`)) return;
+        await deleteSubtreeNode(node);
+        mmSel = null; window._refreshAll?.();
+      }
+    });
+  }
+
+  // Раскладываем кнопки по кругу
+  const R = 52;   // радиус в px
+  const total = BTNS.length;
+  // Начинаем сверху, идём по часовой
+  const startAngle = -Math.PI / 2;
+
+  const menu = document.createElement("div");
+  menu.className = "mm-radial-menu";
+  menu.style.cssText = `left:${cx}px;top:${cy}px;`;
+
+  BTNS.forEach((btn, i) => {
+    const angle = startAngle + (2 * Math.PI * i) / total;
+    const bx = Math.round(R * Math.cos(angle));
+    const by = Math.round(R * Math.sin(angle));
+
+    const b = document.createElement("button");
+    b.className = `mm-radial-btn${btn.danger ? " danger" : ""}`;
+    b.style.cssText = `transform:translate(${bx}px,${by}px);animation-delay:${i * 30}ms`;
+    b.innerHTML = `<span class="mm-rb-icon">${btn.icon}</span><span class="mm-rb-lbl">${btn.label}</span>`;
+    b.title = btn.label;
+    b.onclick = e => { e.stopPropagation(); btn.action(); };
+    menu.appendChild(b);
+  });
+
+  wrap.appendChild(menu);
+  radialEl = menu;
+
+  // Закрываем при клике вне
+  setTimeout(() => {
+    document.addEventListener("click", _radialOutside, { once: true });
+  }, 50);
+}
+
+function _radialOutside(e) {
+  if (radialEl && !radialEl.contains(e.target)) closeRadial();
+}
+
+// Подменю смены типа
+function showTypeMenu(node, cx, cy) {
+  closeRadial();
+  const wrap = document.getElementById("mm-wrap");
+  if (!wrap) return;
+
+  const types = [
+    { type:"goal",    icon:"🎯", label:"→ Цель"    },
+    { type:"project", icon:"📁", label:"→ Проект"  },
+    { type:"task",    icon:"✅", label:"→ Задача"  },
+  ].filter(t => t.type !== node.type);
+
+  const menu = document.createElement("div");
+  menu.className = "mm-radial-menu";
+  menu.style.cssText = `left:${cx}px;top:${cy}px;`;
+
+  const R = 52, total = types.length;
+  const startAngle = -Math.PI / 2;
+  types.forEach((t, i) => {
+    const angle = startAngle + (2 * Math.PI * i) / total;
+    const bx = Math.round(R * Math.cos(angle));
+    const by = Math.round(R * Math.sin(angle));
+    const b = document.createElement("button");
+    b.className = "mm-radial-btn";
+    b.style.cssText = `transform:translate(${bx}px,${by}px);animation-delay:${i*30}ms`;
+    b.innerHTML = `<span class="mm-rb-icon">${t.icon}</span><span class="mm-rb-lbl">${t.label}</span>`;
+    b.onclick = async e => {
+      e.stopPropagation();
+      closeRadial();
+      await changeNodeType(node, t.type);
+    };
+    menu.appendChild(b);
+  });
+
+  // Кнопка «назад»
+  const back = document.createElement("button");
+  back.className = "mm-radial-btn";
+  back.style.cssText = `transform:translate(0px,${52}px)`;
+  back.innerHTML = `<span class="mm-rb-icon">←</span><span class="mm-rb-lbl">Назад</span>`;
+  back.onclick = e => { e.stopPropagation(); closeRadial(); showRadial(node, null); };
+  menu.appendChild(back);
+
+  wrap.appendChild(menu);
+  radialEl = menu;
+  setTimeout(() => document.addEventListener("click", _radialOutside, { once:true }), 50);
+}
+
+// Смена типа через перемещение в дереве
+async function changeNodeType(node, newType) {
+  // Находим подходящего родителя для нового типа
+  let newParentId = null;
+  const parent = findParent(node.id);
+
+  if (newType === "goal") {
+    newParentId = "root";
+  } else if (newType === "project") {
+    // Ищем ближайшую цель — родительская или первая доступная
+    const goal = parent?.type === "goal" ? parent
+               : mmFlat.find(n => n.type === "goal");
+    newParentId = goal?.id || "root";
+    if (!goal) { newType = "goal"; newParentId = "root"; } // нет целей — делаем целью
+  } else { // task
+    const proj = parent?.type === "project" ? parent : null;
+    const goal = parent?.type === "goal" ? parent : mmFlat.find(n => n.type === "goal");
+    newParentId = proj?.id || goal?.id || "root";
+  }
+
+  const targetNode = mmFlat.find(n => n.id === newParentId) || mmFlat.find(n => n.type === "root");
+  if (targetNode) await doReparent(node, targetNode.id);
+}
+
+// Удаление поддерева
+async function deleteSubtreeNode(node) {
+  async function del(n) {
+    for (const c of n.children) await del(c);
+    if (n.type==="goal")         await deleteGoal(n.id);
+    else if (n.type==="project") await deleteProject(n.id);
+    else if (n.type==="task")    await deleteTask(n.id);
+  }
+  await del(node);
+}
+
+// ════════════════════════════════════════
 //  СОБЫТИЯ МЫШИ / TOUCH
 // ════════════════════════════════════════
 function setupEvents(wrap) {
@@ -467,6 +604,7 @@ function setupEvents(wrap) {
   wrap.addEventListener("click", e => {
     if (e.target===wrap || e.target===document.getElementById("mm-svg")) {
       window._mmCancelInline?.();
+      closeRadial();
       mmSel=null; drawMM(); renderSidebar(null);
     }
   });
@@ -572,9 +710,9 @@ function setupEvents(wrap) {
     cleanupDrag(); panning=false;
   });
 
-  // Escape — отмена drag
+  // Escape — отмена drag и радиального меню
   window.addEventListener("keydown", e => {
-    if (e.key==="Escape") { cleanupDrag(); window._mmCancelInline?.(); }
+    if (e.key==="Escape") { cleanupDrag(); closeRadial(); window._mmCancelInline?.(); }
   });
 }
 
@@ -688,70 +826,6 @@ window._mmSaveInline = async () => {
 window._mmCancelInline = () => {
   if (!window._mmInlineEdit) return;
   window._mmInlineEdit=false; drawMM();
-};
-
-// ════════════════════════════════════════
-//  SIDEBAR HANDLERS
-// ════════════════════════════════════════
-window._sbTab = (isStyle) => {
-  window._sbStyleTab=isStyle;
-  renderSidebar(mmFlat.find(n=>n.id===mmSel)||null);
-};
-
-window._sbSaveName = async () => {
-  const inp = document.getElementById("sb-node-name");
-  if (!inp || !mmSel) return;
-  const val = inp.value.trim(); if (!val) return;
-  const node = mmFlat.find(n=>n.id===mmSel); if (!node) return;
-  const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-  const { db } = await import("../firebase.js");
-  const uid = getUid();
-  const colName = node.type==="goal"?"goals":node.type==="project"?"projects":"tasks";
-  const field   = node.type==="project"?"name":"title";
-  await updateDoc(doc(db,"users",uid,colName,node.id),{[field]:val});
-  toast("Сохранено ✓"); window._refreshAll?.();
-};
-
-window._sbChangeType = async (newType) => {
-  const node = mmFlat.find(n=>n.id===mmSel); if (!node||node.type===newType) return;
-  const parent = findParent(node.id);
-  if (!parent) return;
-  await doReparent(node, parent.id);
-  // doReparent перестроит дерево
-};
-
-window._sbChangeParent = async (newParentId) => {
-  const node = mmFlat.find(n=>n.id===mmSel); if (!node) return;
-  await doReparent(node, newParentId);
-};
-
-window._sbToggle = async () => {
-  if (!mmSel) return;
-  await toggleTask(mmSel); window._refreshAll?.();
-};
-
-window._sbAddChild = () => {
-  const node = mmFlat.find(n=>n.id===mmSel);
-  if (!node) { window.openNewModal("task",null,null,"goals"); return; }
-  if      (node.type==="root")    window.openNewModal("goal",   null,      null,      "goals");
-  else if (node.type==="goal")    window.openNewModal("task",   node.id,   null,      "goals");
-  else if (node.type==="project") window.openNewModal("task",   null,      node.id,   "goals");
-  else                            window.openNewModal("task",   null,      null,      "goals");
-};
-
-window._sbDeleteSubtree = async () => {
-  const node = mmFlat.find(n=>n.id===mmSel); if (!node) return;
-  const label = node.type==="goal"?"цель и все её задачи/проекты"
-              : node.type==="project"?"проект и все его задачи":"задачу";
-  if (!confirm(`Удалить ${label}?`)) return;
-  async function del(n) {
-    for (const c of n.children) await del(c);
-    if (n.type==="goal")    await deleteGoal(n.id);
-    else if (n.type==="project") await deleteProject(n.id);
-    else if (n.type==="task")    await deleteTask(n.id);
-  }
-  await del(node);
-  mmSel=null; toast("Удалено ✓"); window._refreshAll?.();
 };
 
 // ════════════════════════════════════════
