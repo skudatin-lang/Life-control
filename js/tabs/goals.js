@@ -741,8 +741,8 @@ function moveDrag(clientX, clientY) {
   // Обновляем tooltip текст
   if (drag.tip) {
     drag.tip.textContent = hov
-      ? `→ ${{ goal:"Цель", project:"Проект", task:"Задача", root:"Корень" }[hov.type] || hov.type}: ${hov.label}`
-      : drag.node.label;
+      ? `→ ${hov.type}: ${hov.label}`
+      : `mx:${Math.round(mx)} my:${Math.round(my)} nodes:${mmFlat.length}`;
   }
 }
 
