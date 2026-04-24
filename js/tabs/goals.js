@@ -162,18 +162,20 @@ function openRadialMenu(node) {
   // Описываем кнопки
   const btns = [];
   if (node.type === "goal") {
-    btns.push({ ico:"📁", lbl:"Проект", fn: () => { closeRadialMenu(); window.openNewModal("project",node.id,null,"goals"); } });
-    btns.push({ ico:"✅", lbl:"Задача",  fn: () => { closeRadialMenu(); window.openNewModal("task",node.id,null,"goals"); } });
+    btns.push({ ico:"✎",  lbl:"Изменить", fn: () => { closeRadialMenu(); window._planEditGoal(node.id); } });
+    btns.push({ ico:"📁", lbl:"Проект",   fn: () => { closeRadialMenu(); window.openNewModal("project",node.id,null,"goals"); } });
+    btns.push({ ico:"✅", lbl:"Задача",   fn: () => { closeRadialMenu(); window.openNewModal("task",node.id,null,"goals"); } });
   } else if (node.type === "project") {
-    btns.push({ ico:"✅", lbl:"Задача",  fn: () => { closeRadialMenu(); window.openNewModal("task",null,node.id,"goals"); } });
+    btns.push({ ico:"✎",  lbl:"Изменить", fn: () => { closeRadialMenu(); window._planEditProj(node.id); } });
+    btns.push({ ico:"✅", lbl:"Задача",   fn: () => { closeRadialMenu(); window.openNewModal("task",null,node.id,"goals"); } });
   }
   if (node.type === "task") {
     btns.push({ ico:"✎",  lbl:"Изменить", fn: () => { closeRadialMenu(); window.editTask(node.id); } });
     btns.push({ ico: node.done?"↩":"✓", lbl: node.done?"Открыть":"Готово",
       fn: async () => { closeRadialMenu(); await toggleTask(node.id); window._refreshAll?.(); } });
   }
-  btns.push({ ico:"🔀", lbl:"Тип", fn: () => openTypeMenu(node, cx, cy) });
-  btns.push({ ico:"✕",  lbl:"Удалить", danger:true,
+  btns.push({ ico:"🔀", lbl:"Тип",      fn: () => openTypeMenu(node, cx, cy) });
+  btns.push({ ico:"✕",  lbl:"Удалить",  danger:true,
     fn: async () => {
       closeRadialMenu();
       if (!confirm("Удалить элемент и всё вложенное?")) return;
@@ -654,3 +656,59 @@ window._selectGoal=id=>{
   drawMM(); renderSidebar(node||null);
 };
 window.closeMMCtx=()=>{};
+
+// ── Редактирование цели ──
+window._planEditGoal = async id => {
+  const { getGoals, updateGoal } = await import("../db.js");
+  const { openModal, closeModal, toast: t2 } = await import("../modal.js");
+  const all = await getGoals();
+  const g = all.find(x => x.id === id); if (!g) return;
+  openModal("Редактировать цель", `
+    <div class="fg"><label class="fl">Название *</label>
+      <input class="inp" id="eg-title" value="${esc(g.title||"")}"/></div>
+    <div class="fg"><label class="fl">Описание</label>
+      <textarea class="txta" id="eg-desc">${esc(g.desc||"")}</textarea></div>
+    <div class="fg"><label class="fl">Дедлайн</label>
+      <input class="inp" id="eg-dl" type="date" value="${g.deadline||""}"/></div>`,
+    async () => {
+      const title = document.getElementById("eg-title")?.value.trim();
+      if (!title) { alert("Введите название"); return; }
+      await updateGoal(id, {
+        title,
+        desc:     document.getElementById("eg-desc")?.value.trim() || "",
+        deadline: document.getElementById("eg-dl")?.value || null,
+      });
+      t2("Цель обновлена ✓"); closeModal(); window._refreshAll?.();
+    });
+};
+
+// ── Редактирование проекта ──
+window._planEditProj = async id => {
+  const { getProjects, getGoals } = await import("../db.js");
+  const { openModal, closeModal, toast: t2 } = await import("../modal.js");
+  const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const { db } = await import("../firebase.js");
+  const uid = getUid();
+  const [projects, goals] = await Promise.all([getProjects(), getGoals()]);
+  const p = projects.find(x => x.id === id); if (!p) return;
+  openModal("Редактировать проект", `
+    <div class="fg"><label class="fl">Название *</label>
+      <input class="inp" id="ep-name" value="${esc(p.name||"")}"/></div>
+    <div class="fg"><label class="fl">Описание</label>
+      <textarea class="txta" id="ep-desc">${esc(p.desc||"")}</textarea></div>
+    <div class="fg"><label class="fl">Цель</label>
+      <select class="sel" id="ep-goal">
+        <option value="">— Без цели —</option>
+        ${goals.map(g=>`<option value="${g.id}" ${g.id===p.goalId?"selected":""}>${esc(g.title)}</option>`).join("")}
+      </select></div>`,
+    async () => {
+      const name = document.getElementById("ep-name")?.value.trim();
+      if (!name) { alert("Введите название"); return; }
+      await updateDoc(doc(db,"users",uid,"projects",id), {
+        name,
+        desc:   document.getElementById("ep-desc")?.value.trim() || "",
+        goalId: document.getElementById("ep-goal")?.value || null,
+      });
+      t2("Проект обновлён ✓"); closeModal(); window._refreshAll?.();
+    });
+};
