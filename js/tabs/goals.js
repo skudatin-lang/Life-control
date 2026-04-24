@@ -701,22 +701,23 @@ function moveDrag(clientX, clientY) {
     drag.tip.style.top  = (clientY - 28) + "px";
   }
 
-  // Drop-target — используем зумированные координаты
+  // Drop-target
   const wrap = document.getElementById("mm-wrap");
-  const r = wrap?.getBoundingClientRect();
-  if (!r) return;
+  if (!wrap) return;
 
-  // На touch zoom=1, но getBoundingClientRect учитывает CSS zoom страницы.
-  // Нужно привести координаты к одной системе.
-  const pageZoom = parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-  // cx/cy уже нормализованы (для touch = clientX, для mouse = clientX/zoom)
-  // r.left/r.top от getBoundingClientRect на touch возвращаются БЕЗ учёта zoom
-  // поэтому для touch нужно делить r на pageZoom тоже
-  const rl = drag.isTouch ? r.left / pageZoom : r.left;
-  const rt = drag.isTouch ? r.top  / pageZoom : r.top;
-
-  const mx = (cx - rl - mmPan.x) / mmScale;
-  const my = (cy - rt - mmPan.y) / mmScale;
+  let mx, my;
+  if (drag.isTouch) {
+    // На touch используем pageX/Y минус абсолютную позицию wrap на странице
+    let el = wrap, ox = 0, oy = 0;
+    while (el) { ox += el.offsetLeft; oy += el.offsetTop; el = el.offsetParent; }
+    mx = (clientX - ox - mmPan.x) / mmScale;
+    my = (clientY - oy - mmPan.y) / mmScale;
+  } else {
+    // На десктопе — стандартный getBoundingClientRect (уже нормализован через cx/cy)
+    const r = wrap.getBoundingClientRect();
+    mx = (cx - r.left - mmPan.x) / mmScale;
+    my = (cy - r.top  - mmPan.y) / mmScale;
+  }
   let hov = null;
   for (const n of mmFlat) {
     if (n.id === drag.node.id) continue;
