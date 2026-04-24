@@ -703,20 +703,19 @@ function moveDrag(clientX, clientY) {
 
   // Drop-target
   const wrap = document.getElementById("mm-wrap");
-  if (!wrap) return;
+  const r = wrap?.getBoundingClientRect();
+  if (!r) return;
 
   let mx, my;
   if (drag.isTouch) {
-    // На touch используем pageX/Y минус абсолютную позицию wrap на странице
-    let el = wrap, ox = 0, oy = 0;
-    while (el) { ox += el.offsetLeft; oy += el.offsetTop; el = el.offsetParent; }
-    mx = (clientX - ox - mmPan.x) / mmScale;
-    my = (clientY - oy - mmPan.y) / mmScale;
+    // Touch: используем clientX/Y и r.left/r.top напрямую — как работало раньше
+    mx = (clientX - r.left - mmPan.x) / mmScale;
+    my = (clientY - r.top  - mmPan.y) / mmScale;
   } else {
-    // На десктопе — стандартный getBoundingClientRect (уже нормализован через cx/cy)
-    const r = wrap.getBoundingClientRect();
-    mx = (cx - r.left - mmPan.x) / mmScale;
-    my = (cy - r.top  - mmPan.y) / mmScale;
+    // Desktop: cx/cy уже поделены на zoom, r.left/r.top тоже нужно поделить
+    const zoom = parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
+    mx = (cx - r.left/zoom - mmPan.x) / mmScale;
+    my = (cy - r.top /zoom - mmPan.y) / mmScale;
   }
   let hov = null;
   for (const n of mmFlat) {
