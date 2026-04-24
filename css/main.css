@@ -16,7 +16,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;background:var(--bg);}
 /* zoom:3 масштабирует ВЕСЬ интерфейс ×3 включая все px-значения */
-html{ zoom: 1.5; }
+html{ zoom: 1.25; }
 body{color:var(--tx);font-family:var(--fb);font-size:5px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 
 /* ═══════════════════════ SCREENS ═══════════════════════ */
