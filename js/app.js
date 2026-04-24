@@ -117,6 +117,9 @@ function initApp() {
   $("burger")?.addEventListener("click", openSidebar);
   $("sb-ov")?.addEventListener("click",  closeSidebar);
 
+  // ── Тёмная тема ──
+  initTheme();
+
   // New entry button — зависит от текущей вкладки
   async function newForTab() {
     const { curTab } = await import("./router.js");
@@ -179,3 +182,45 @@ onAuthStateChanged(auth, async user => {
     $("s-auth").classList.add("on");
   }
 });
+
+// ════════════════════════════════════════
+//  ТЁМНАЯ ТЕМА
+// ════════════════════════════════════════
+function initTheme() {
+  const root = document.documentElement;
+  const saved = localStorage.getItem("lc-theme") || "light";
+  applyTheme(saved);
+
+  // Кнопка в десктопном топбаре
+  const desktopBtn = $("theme-toggle");
+  if (desktopBtn) desktopBtn.onclick = toggleTheme;
+
+  // Кнопка в мобильном навбаре
+  const mobileBtn = $("nav-theme-btn");
+  if (mobileBtn) mobileBtn.onclick = toggleTheme;
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.setAttribute("data-theme", "dark");
+    const b1 = document.getElementById("theme-toggle");
+    const b2 = document.getElementById("nav-theme-btn");
+    if (b1) b1.textContent = "☀️";
+    if (b2) b2.textContent = "☀️";
+  } else {
+    root.removeAttribute("data-theme");
+    const b1 = document.getElementById("theme-toggle");
+    const b2 = document.getElementById("nav-theme-btn");
+    if (b1) b1.textContent = "🌙";
+    if (b2) b2.textContent = "🌙";
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.hasAttribute("data-theme");
+  const next = isDark ? "light" : "dark";
+  localStorage.setItem("lc-theme", next);
+  applyTheme(next);
+}
+window.toggleTheme = toggleTheme;
