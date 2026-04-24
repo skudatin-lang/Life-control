@@ -370,9 +370,8 @@ function drawMM() {
       const wasSel = n.id === mmSel;
       mmSel = wasSel ? null : n.id;
       closeRadial();
-      drawMM();
+      drawMM(); // drawMM сам покажет радиальное меню если mmSel задан
       renderSidebar(mmFlat.find(x => x.id === mmSel) || null);
-      if (!wasSel && n.type !== "root") showRadial(n, el);
     });
 
     // ── Двойной клик → inline rename ──
@@ -400,7 +399,14 @@ function drawMM() {
   }
   drawNodes(mmTree);
 
-  // Если есть inline-edit и нода не отрендерена — сбрасываем
+  // Показываем радиальное меню для выбранной ноды — ПОСЛЕ всех нод в DOM
+  if (mmSel && !window._mmInlineEdit) {
+    const selN = mmFlat.find(n => n.id === mmSel);
+    if (selN && selN.type !== "root") {
+      // Небольшая задержка чтобы DOM обновился
+      requestAnimationFrame(() => showRadial(selN));
+    }
+  }
 }
 
 // ════════════════════════════════════════
@@ -413,7 +419,7 @@ function closeRadial() {
   radialEl = null;
 }
 
-function showRadial(node, nodeEl) {
+function showRadial(node) {
   closeRadial();
   const wrap = document.getElementById("mm-wrap");
   if (!wrap) return;
@@ -494,10 +500,10 @@ function showRadial(node, nodeEl) {
   wrap.appendChild(menu);
   radialEl = menu;
 
-  // Пропускаем текущий event loop — иначе тот же клик закроет меню
-  let skipFirst = true;
+  // Закрываем при клике вне — игнорируем клики первые 200ms (время открытия)
+  const openedAt = Date.now();
   const outsideHandler = (e) => {
-    if (skipFirst) { skipFirst = false; return; }
+    if (Date.now() - openedAt < 200) return;
     if (radialEl && !radialEl.contains(e.target)) {
       closeRadial();
       document.removeEventListener("click", outsideHandler);
@@ -545,14 +551,14 @@ function showTypeMenu(node, cx, cy) {
   back.className = "mm-radial-btn";
   back.style.cssText = `left:${-23}px;top:${R - 23}px`;
   back.innerHTML = `<span class="mm-rb-icon">←</span><span class="mm-rb-lbl">Назад</span>`;
-  back.onclick = e => { e.stopPropagation(); closeRadial(); showRadial(node, null); };
+  back.onclick = e => { e.stopPropagation(); closeRadial(); showRadial(node); };
   menu.appendChild(back);
 
   wrap.appendChild(menu);
   radialEl = menu;
-  let skipFirst2 = true;
+  const openedAt2 = Date.now();
   const outsideHandler2 = (e) => {
-    if (skipFirst2) { skipFirst2 = false; return; }
+    if (Date.now() - openedAt2 < 200) return;
     if (radialEl && !radialEl.contains(e.target)) {
       closeRadial();
       document.removeEventListener("click", outsideHandler2);
