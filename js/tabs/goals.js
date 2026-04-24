@@ -186,9 +186,14 @@ function openRadialMenu(node) {
   wrap.appendChild(menu);
   radialMenu = menu;
   radialOpenTime = Date.now();
-}
-
-function openTypeMenu(node, cx, cy) {
+  setTimeout(() => {
+    function oc(e) {
+      if (!radialMenu) { document.removeEventListener("click",oc); return; }
+      if (!radialMenu.contains(e.target)) { closeRadialMenu(); document.removeEventListener("click",oc); }
+    }
+    document.addEventListener("click", oc);
+  }, 0);
+}(node, cx, cy) {
   closeRadialMenu();
   const wrap = document.getElementById("mm-wrap"); if (!wrap) return;
   const types = [
@@ -210,9 +215,14 @@ function openTypeMenu(node, cx, cy) {
   wrap.appendChild(menu);
   radialMenu = menu;
   radialOpenTime = Date.now();
-}
-
-function buildRadialDom(btns, cx, cy, wrap) {
+  setTimeout(() => {
+    function oc2(e) {
+      if (!radialMenu) { document.removeEventListener("click",oc2); return; }
+      if (!radialMenu.contains(e.target)) { closeRadialMenu(); document.removeEventListener("click",oc2); }
+    }
+    document.addEventListener("click", oc2);
+  }, 0);
+}(btns, cx, cy, wrap) {
   const R = 58; // радиус
   const N = btns.length;
   const startAngle = -Math.PI / 2; // начинаем сверху
@@ -526,19 +536,10 @@ function setupEvents(wrap) {
   // Клик на canvas
   wrap.addEventListener("click",e=>{
     if(e.target===wrap||e.target===document.getElementById("mm-svg")){
-      if(Date.now()-radialOpenTime>200){
-        window._mmCancelInline?.();
-        closeRadialMenu();
-        mmSel=null; drawMM(); renderSidebar(null);
-      }
+      window._mmCancelInline?.();
+      closeRadialMenu();
+      mmSel=null; drawMM(); renderSidebar(null);
     }
-  });
-
-  // Закрытие меню при клике вне — на document
-  document.addEventListener("click",e=>{
-    if(!radialMenu) return;
-    if(Date.now()-radialOpenTime<200) return;
-    if(!radialMenu.contains(e.target)) closeRadialMenu();
   });
 
   // Pan
