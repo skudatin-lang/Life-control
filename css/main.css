@@ -977,7 +977,63 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 .diary-search-wrap .inp{ flex:1; }
 
-/* ── Drag-призрак ноды ── */
+/* ── Радиальное меню (Miro-стиль) ── */
+.mm-radial-menu{
+  position:absolute;
+  width:0; height:0;
+  pointer-events:none;
+  z-index:30;
+}
+.mm-radial-btn{
+  position:absolute;
+  width:44px; height:44px;
+  background:var(--bg-p);
+  border:2px solid var(--bd-s);
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+  pointer-events:all;
+  transition:all .15s ease;
+  box-shadow:0 3px 12px rgba(80,40,10,.2);
+  /* центрируем относительно точки */
+  margin-left:-22px;
+  margin-top:-22px;
+  /* анимация появления */
+  animation:radial-pop .2s ease both;
+}
+@keyframes radial-pop{
+  from{ opacity:0; transform:scale(.4) translate(var(--tx,0),var(--ty,0)); }
+  to  { opacity:1; }
+}
+.mm-radial-btn:hover{
+  background:var(--go);
+  border-color:var(--go-d);
+  transform:translate(var(--tx,0),var(--ty,0)) scale(1.15);
+  box-shadow:0 6px 20px rgba(200,150,62,.4);
+}
+.mm-radial-btn:hover .mm-rb-icon,
+.mm-radial-btn:hover .mm-rb-lbl{ color:#fff; }
+.mm-radial-btn.danger:hover{ background:var(--red); border-color:var(--red); }
+.mm-rb-icon{
+  font-size:15px;
+  line-height:1;
+  color:var(--br-d);
+}
+.mm-rb-lbl{
+  font-family:var(--fd);
+  font-size:7px;
+  font-weight:700;
+  color:var(--tx-l);
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+/* ═══════════════════════ RESPONSIVE ═══════════════════════ */
 .mm-drag-ghost{
   position:fixed;
   pointer-events:none;
