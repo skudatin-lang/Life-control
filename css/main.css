@@ -60,14 +60,27 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 
 /* ═══════════════════════ DARK THEME ═══════════════════════ */
 [data-theme="dark"]{
-  --bg:#1C1814;--bg-s:#252018;--bg-p:#201C16;--bg-w:#2A2318;
-  --br:#C8963E;--br-d:#E4B96A;--br-l:#A07830;
-  --go:#C8963E;--go-l:#E4B96A;--go-d:#9A6F28;
-  --cr:#252018;--cr-d:#2E2820;
-  --red:#E05040;--grn:#5AAA5A;--blu:#5A8EC8;
-  --tx:#F0E8D8;--tx-m:#C8A878;--tx-l:#907858;
-  --bd:rgba(200,150,62,.2);--bd-s:rgba(200,150,62,.4);
-  --sh:rgba(0,0,0,.4);
+  --bg:#1A1A2E;
+  --bg-s:#16213E;
+  --bg-p:#16213E;
+  --bg-w:#0F3460;
+  --br:#E4B96A;
+  --br-d:#F5C842;
+  --br-l:#C8963E;
+  --go:#E94560;
+  --go-l:#FF6B6B;
+  --go-d:#C73652;
+  --cr:#16213E;
+  --cr-d:#1A2A4A;
+  --red:#FF4757;
+  --grn:#2ED573;
+  --blu:#70A1FF;
+  --tx:#EAEAEA;
+  --tx-m:#A8A8B3;
+  --tx-l:#6C6C80;
+  --bd:rgba(228,185,106,.18);
+  --bd-s:rgba(228,185,106,.35);
+  --sh:rgba(0,0,0,.5);
 }
 
 /* Переключатель темы в топбаре */
@@ -76,8 +89,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   width:32px;height:32px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:16px;transition:all var(--tt);
-  color:var(--go-l);
-  flex-shrink:0;
+  color:var(--go-l);flex-shrink:0;
 }
 .theme-toggle:hover{background:rgba(255,255,255,.1);}
 
@@ -85,9 +97,8 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 .nav-theme-btn{
   display:none;
   background:none;border:none;cursor:pointer;
-  padding:10px 8px;font-size:16px;
-  color:var(--go-l);
-  flex-shrink:0;
+  padding:10px 10px;font-size:18px;
+  color:var(--go-l);flex-shrink:0;
   align-items:center;justify-content:center;
 }
 
@@ -1295,24 +1306,28 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   .fmt-section{ margin-bottom:10px; padding-bottom:10px; }
   .fmt-color-grid{ grid-template-columns:repeat(8,1fr); }
 
-  /* ── Навбар — sticky сверху ── */
+  /* ── Навбар — внизу экрана ── */
   .main-area{
     width:100%;
     display:flex;
-    flex-direction:column;
+    flex-direction:column-reverse; /* контент сверху, навбар снизу */
   }
   .top-nav{
-    position:sticky;
-    top:0;
-    z-index:100;
-    flex-shrink:0;
-    /* Добавляем кнопку темы */
+    position:fixed;
+    bottom:0; left:0; right:0;
+    z-index:200;
+    border-top:2px solid var(--go-d);
+    border-bottom:none;
+    padding-bottom:env(safe-area-inset-bottom, 0px); /* iPhone notch */
   }
   /* Показываем кнопку темы в навбаре на мобиле */
   .nav-theme-btn{ display:flex; }
   .nt{ font-size:8px; padding:10px 4px; min-width:44px; }
 
-  /* ── Контент вкладок — статичный поток ── */
+  /* Отступ снизу для контента чтобы не перекрывался навбаром */
+  .mwrap{ padding-bottom:60px; }
+
+  /* ── Контент вкладок ── */
   .mwrap{ position:static; overflow:visible; height:auto; }
   .mod{ position:static; display:none; flex-direction:column; overflow:visible; }
   .mod.on{ display:flex; }
