@@ -497,10 +497,32 @@ export async function editIdeaModal(id) {
 //  ФОРМА ДНЕВНИКА
 // ════════════════════════════════════════
 export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
-  const dateVal = defaultDate || dstr(new Date());
-  const now     = new Date();
-  const timeVal = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+  const dateVal  = defaultDate || dstr(new Date());
+  const now      = new Date();
+  const timeVal  = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
   const tmplBody = tmpl?.body || "";
+  let   tags     = [];   // массив тегов текущей записи
+
+  function renderTagsBlock(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = tags.map((tag, i) => `
+      <span class="diary-tag">
+        #${esc(tag)}
+        <button class="diary-tag-rm" onclick="window._diaryRmTag(${i},'${containerId}')">×</button>
+      </span>`).join("") +
+      `<input class="diary-tag-inp" id="${containerId}-inp"
+        placeholder="+ тег (Enter)"
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value,'${containerId}');this.value='';}"/>`;
+  }
+
+  window._diaryAddTag = (val, cid) => {
+    const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
+    if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
+    const inp = document.getElementById(cid + "-inp");
+    if (inp) { inp.value = ""; inp.focus(); }
+  };
+  window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
 
   openModal(title || "Новая запись в дневник", `
     <div class="fg"><label class="fl">Заголовок *</label>
@@ -516,25 +538,37 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
     <div class="fg"><label class="fl">Настроение</label>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px" id="d-mood-row">
         ${["😊 Отлично","🙂 Хорошо","😐 Нейтрально","😔 Плохо","😢 Тяжело"].map(m=>`
-          <button class="pri-btn" data-mood="${m}" onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('d-mood-val').value='${m}'">${m}</button>`
+          <button class="pri-btn" data-mood="${m}"
+            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('d-mood-val').value='${m}'">${m}</button>`
         ).join("")}
       </div>
       <input type="hidden" id="d-mood-val" value=""/>
+    </div>
+    <div class="fg"><label class="fl">Теги</label>
+      <div class="diary-tags-wrap" id="d-tags-wrap"></div>
+      <div style="font-size:10px;color:var(--tx-l);margin-top:4px">Введите тег и нажмите Enter или запятую</div>
     </div>`,
     async () => {
       const t = $("d-title")?.value.trim();
       if (!t) { alert("Введите заголовок"); return; }
+      // Добавляем незафиксированный тег из поля если есть
+      const inp = $("d-tags-wrap-inp");
+      if (inp?.value.trim()) window._diaryAddTag(inp.value, "d-tags-wrap");
       await addDiaryEntry({
         title: t,
         text:  $("d-text")?.value.trim() || "",
         date:  $("d-date")?.value || today(),
         time:  $("d-time")?.value || "",
         mood:  $("d-mood-val")?.value || "",
+        tags,
       });
       toast("Запись добавлена ✓");
       closeModal();
       window._refreshAll?.();
     });
+
+  // Рендерим блок тегов после открытия модала
+  setTimeout(() => renderTagsBlock("d-tags-wrap"), 0);
 }
 
 // ════════════════════════════════════════
@@ -544,6 +578,29 @@ export async function editDiaryModal(id) {
   const all = await getDiary();
   const x = all.find(e => e.id === id);
   if (!x) return;
+  let tags = Array.isArray(x.tags) ? [...x.tags] : [];
+
+  function renderTagsBlock(cid) {
+    const container = document.getElementById(cid);
+    if (!container) return;
+    container.innerHTML = tags.map((tag, i) => `
+      <span class="diary-tag">
+        #${esc(tag)}
+        <button class="diary-tag-rm" onclick="window._diaryRmTag(${i},'${cid}')">×</button>
+      </span>`).join("") +
+      `<input class="diary-tag-inp" id="${cid}-inp"
+        placeholder="+ тег (Enter)"
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value,'${cid}');this.value='';}"/>`;
+  }
+
+  window._diaryAddTag = (val, cid) => {
+    const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
+    if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
+    const inp = document.getElementById(cid + "-inp");
+    if (inp) { inp.value = ""; inp.focus(); }
+  };
+  window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
+
   openModal("Редактировать запись", `
     <div class="fg"><label class="fl">Заголовок *</label>
       <input class="inp" id="ed-title" value="${esc(x.title||"")}"/></div>
@@ -558,10 +615,15 @@ export async function editDiaryModal(id) {
     <div class="fg"><label class="fl">Настроение</label>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
         ${["😊 Отлично","🙂 Хорошо","😐 Нейтрально","😔 Плохо","😢 Тяжело"].map(m=>`
-          <button class="pri-btn ${x.mood===m?"on-med":""}" data-mood="${m}" onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('ed-mood-val').value='${m}'">${m}</button>`
+          <button class="pri-btn ${x.mood===m?"on-med":""}" data-mood="${m}"
+            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('ed-mood-val').value='${m}'">${m}</button>`
         ).join("")}
       </div>
       <input type="hidden" id="ed-mood-val" value="${esc(x.mood||"")}"/>
+    </div>
+    <div class="fg"><label class="fl">Теги</label>
+      <div class="diary-tags-wrap" id="ed-tags-wrap"></div>
+      <div style="font-size:10px;color:var(--tx-l);margin-top:4px">Введите тег и нажмите Enter или запятую</div>
     </div>
     <div style="margin-top:8px">
       <button class="btn-cl" style="color:var(--red);width:100%" onclick="window.delItem('diary','${id}')">🗑 Удалить запись</button>
@@ -569,17 +631,22 @@ export async function editDiaryModal(id) {
     async () => {
       const t = $("ed-title")?.value.trim();
       if (!t) { alert("Введите заголовок"); return; }
+      const inp = $("ed-tags-wrap-inp");
+      if (inp?.value.trim()) window._diaryAddTag(inp.value, "ed-tags-wrap");
       await updateDiaryEntry(id, {
         title: t,
         text:  $("ed-text")?.value.trim() || "",
         date:  $("ed-date")?.value || today(),
         time:  $("ed-time")?.value || "",
         mood:  $("ed-mood-val")?.value || "",
+        tags,
       });
       toast("Сохранено ✓");
       closeModal();
       window._refreshAll?.();
     });
+
+  setTimeout(() => renderTagsBlock("ed-tags-wrap"), 0);
 }
 
 // ════════════════════════════════════════
