@@ -4,10 +4,30 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>Life-control</title>
+
+<!-- ── PWA ── -->
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#5A3510"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Life-control"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+
+<!-- ── Fonts ── -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+<!-- ── Styles ── -->
 <link rel="stylesheet" href="css/main.css"/>
+
+<!--
+  ВАЖНО: theme.js подключается через <script> ДО app.js,
+  чтобы тема применялась мгновенно и не было мигания при загрузке.
+  Используем type="module" чтобы сработал IIFE внутри файла.
+-->
+<script type="module" src="js/theme.js"></script>
 </head>
 <body>
+
 
 <!-- AUTH -->
 <div id="s-auth" class="scr on">
@@ -32,43 +52,44 @@
   <header class="topbar">
     <button class="tb-burg" id="burger"><span></span><span></span><span></span></button>
     <span class="tb-ttl" id="tb-ttl">Дашборд</span>
+    <!-- Кнопка темы в мобильном topbar -->
+    <button class="theme-toggle" title="Сменить тему">🌙</button>
     <button class="tb-new" id="tb-new">+ Новая</button>
   </header>
   <div class="sb-ov" id="sb-ov"></div>
 
-  <!-- SIDEBAR — только скрытые служебные элементы, видимого контента нет -->
+  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <!-- Скрытые элементы для JS (аватар, имя, email) -->
-    <div style="display:none">
+    <div class="sb-prof">
       <div class="sb-mo" id="sb-mo"></div>
       <div class="sb-av" id="sb-av">?</div>
       <span class="sb-un" id="sb-un">—</span>
       <span class="sb-ue" id="sb-ue"></span>
+      <button class="sb-new" id="sb-new">✦ Новая запись</button>
+      <div class="sb-btns">
+        <button class="sb-btn" id="btn-logout">Выйти</button>
+        <button class="sb-btn" onclick="openCal()">Календарь</button>
+        <!-- Кнопка темы в сайдбаре (десктоп) -->
+        <button class="sb-btn theme-toggle" title="Сменить тему" style="flex:0 0 auto;padding:7px 10px;">🌙</button>
+      </div>
     </div>
-    <!-- Видимое содержимое сайдбара для других вкладок (цели, шаблоны и т.д.) -->
     <div class="sb-body" id="sb-body"></div>
-    <!-- Выход и календарь внизу -->
-    <div class="sb-footer">
-      <button class="sb-foot-btn" id="btn-logout">Выйти</button>
-      <button class="sb-foot-btn" onclick="openCal()">Календарь</button>
-    </div>
   </aside>
 
   <!-- MAIN -->
   <div class="main-area">
     <nav class="top-nav">
-      <button class="nt on" data-tab="dashboard">Дашборд</button>
+      <button class="nt on"  data-tab="dashboard">Дашборд</button>
       <button class="nt" data-tab="plan">План дня</button>
       <button class="nt" data-tab="goals">Цели</button>
       <button class="nt" data-tab="ideas">Идеи</button>
       <button class="nt" data-tab="diary">Дневник</button>
-      <!-- Переключатель темы в навигации -->
-      <button class="nt nt-theme" id="theme-toggle" onclick="window._toggleTheme()">🌙</button>
     </nav>
     <div class="mwrap">
 
       <!-- DASHBOARD -->
       <div id="tab-dashboard" class="mod on">
+        <div class="mod-hd"><span class="mod-ttl">Дашборд</span></div>
         <div class="mod-body" id="dash-body"></div>
       </div>
 
@@ -156,6 +177,7 @@
 
 <div class="toast hidden" id="toast"></div>
 
+<!-- ════════════════════════════ SCRIPTS ════════════════════════════ -->
 <script type="module" src="js/app.js"></script>
 </body>
 </html>
