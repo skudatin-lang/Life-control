@@ -982,11 +982,12 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   position:absolute;
   width:0; height:0;
   pointer-events:none;
-  z-index:30;
+  z-index:100;
 }
 .mm-radial-btn{
   position:absolute;
   width:46px; height:46px;
+  z-index:100;
   /* left/top устанавливаются через JS с учётом -23px смещения */
   background:var(--bg-p);
   border:2px solid var(--bd-s);
