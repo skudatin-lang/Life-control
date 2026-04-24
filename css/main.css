@@ -986,7 +986,8 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 .mm-radial-btn{
   position:absolute;
-  width:44px; height:44px;
+  width:46px; height:46px;
+  /* left/top устанавливаются через JS с учётом -23px смещения */
   background:var(--bg-p);
   border:2px solid var(--bd-s);
   border-radius:50%;
@@ -997,40 +998,38 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
   justify-content:center;
   gap:1px;
   pointer-events:all;
-  transition:all .15s ease;
-  box-shadow:0 3px 12px rgba(80,40,10,.2);
-  /* центрируем относительно точки */
-  margin-left:-22px;
-  margin-top:-22px;
-  /* анимация появления */
-  animation:radial-pop .2s ease both;
+  box-shadow:0 3px 14px rgba(80,40,10,.22);
+  animation:radial-pop .18s ease both;
+  transition:background .12s, border-color .12s, box-shadow .12s, transform .12s;
 }
 @keyframes radial-pop{
-  from{ opacity:0; transform:scale(.4) translate(var(--tx,0),var(--ty,0)); }
-  to  { opacity:1; }
+  from{ opacity:0; transform:scale(.3); }
+  to  { opacity:1; transform:scale(1); }
 }
 .mm-radial-btn:hover{
   background:var(--go);
   border-color:var(--go-d);
-  transform:translate(var(--tx,0),var(--ty,0)) scale(1.15);
-  box-shadow:0 6px 20px rgba(200,150,62,.4);
+  transform:scale(1.18);
+  box-shadow:0 6px 22px rgba(200,150,62,.45);
 }
-.mm-radial-btn:hover .mm-rb-icon,
+.mm-radial-btn:hover .mm-rb-icon{ color:#fff; }
 .mm-radial-btn:hover .mm-rb-lbl{ color:#fff; }
 .mm-radial-btn.danger:hover{ background:var(--red); border-color:var(--red); }
 .mm-rb-icon{
-  font-size:15px;
+  font-size:16px;
   line-height:1;
   color:var(--br-d);
+  pointer-events:none;
 }
 .mm-rb-lbl{
   font-family:var(--fd);
   font-size:7px;
   font-weight:700;
   color:var(--tx-l);
-  letter-spacing:.03em;
+  letter-spacing:.02em;
   text-transform:uppercase;
   white-space:nowrap;
+  pointer-events:none;
 }
 
 /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
