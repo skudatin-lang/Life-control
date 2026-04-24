@@ -11,7 +11,7 @@
   --r:8px;--rl:14px;--rxl:20px;--rf:999px;
   --fd:'Cinzel',serif;--fb:'Raleway',sans-serif;
   --tt:170ms ease;
-  --sb:560px;--tb:54px;
+  --sb:420px;--tb:54px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;background:var(--bg);}
@@ -601,6 +601,247 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 /* FILE VIEWER */
 .file-viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .file-viewer-overlay>div{max-width:90vw;max-height:90vh;background:#fff;border-radius:12px;overflow:auto;padding:10px;}
+
+/* ═══════════════════════ FORMAT PANEL (Goals sidebar) ═══════════════════════ */
+.fmt-section{
+  margin-bottom:14px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--bd);
+}
+.fmt-section:last-child{ border-bottom:none; margin-bottom:0; }
+
+.fmt-sec-title{
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  color:var(--tx-l);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:9px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.fmt-sec-icon{ font-size:11px; color:var(--go-d); }
+
+/* Выбранный элемент */
+.fmt-sel-badge{
+  background:var(--bg-w);
+  border:1px dashed var(--bd);
+  border-radius:var(--r);
+  padding:8px 10px;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.fmt-sel-badge.active{ border-color:var(--go); background:var(--cr); }
+.fmt-sel-type{
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  color:var(--go-d);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  background:rgba(200,150,62,.15);
+  padding:2px 7px;
+  border-radius:var(--rf);
+  flex-shrink:0;
+}
+.fmt-sel-name{
+  font-size:11px;
+  font-weight:600;
+  color:var(--br-d);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  max-width:100%;
+}
+.fmt-sel-none{
+  font-size:11px;
+  color:var(--tx-l);
+  font-style:italic;
+}
+
+/* Кнопки действий над элементом */
+.fmt-btn-row{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+.fmt-action-btn{
+  padding:5px 10px;
+  background:var(--cr-d);
+  border:1px solid var(--bd);
+  border-radius:var(--r);
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  color:var(--br-d);
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:all var(--tt);
+  white-space:nowrap;
+}
+.fmt-action-btn:hover{ background:var(--go); color:#fff; border-color:var(--go); }
+.fmt-action-btn.danger:hover{ background:var(--red); border-color:var(--red); color:#fff; }
+
+/* Цветовая сетка */
+.fmt-color-grid{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:5px;
+}
+.fmt-color-cell{
+  width:100%;
+  aspect-ratio:1;
+  border-radius:5px;
+  cursor:pointer;
+  transition:all var(--tt);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid transparent;
+}
+.fmt-color-cell:hover{ transform:scale(1.12); }
+.fmt-color-cell.sel{ border-color:var(--br-d) !important; box-shadow:0 0 0 2px var(--go); }
+.fmt-color-cell.auto{
+  background:var(--cr-d);
+  border:1.5px dashed var(--bd-s) !important;
+}
+.fmt-color-cell.auto span{
+  font-size:8px;
+  font-weight:700;
+  color:var(--tx-l);
+  font-family:var(--fd);
+  letter-spacing:.03em;
+}
+
+/* Кнопки формы */
+.fmt-shape-btn,
+.fmt-line-btn,
+.fmt-width-btn{
+  flex:1;
+  padding:6px 4px;
+  background:var(--bg-w);
+  border:1.5px solid var(--bd);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:all var(--tt);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--tx-m);
+}
+.fmt-shape-btn:hover,
+.fmt-line-btn:hover,
+.fmt-width-btn:hover{ border-color:var(--go); background:var(--cr); }
+.fmt-shape-btn.on,
+.fmt-line-btn.on,
+.fmt-width-btn.on{
+  background:rgba(200,150,62,.15);
+  border-color:var(--go);
+  color:var(--go-d);
+}
+
+/* Лейбл внутри секций */
+.fmt-label{
+  font-family:var(--fd);
+  font-size:8px;
+  font-weight:700;
+  color:var(--tx-l);
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  margin-bottom:5px;
+}
+
+/* Кнопки layout */
+.fmt-layout-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  padding:8px 4px;
+  background:var(--bg-w);
+  border:1.5px solid var(--bd);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:all var(--tt);
+  color:var(--tx-m);
+  font-family:var(--fd);
+  font-size:8px;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.fmt-layout-btn:hover{ border-color:var(--go); background:var(--cr); }
+.fmt-layout-btn.on{
+  background:rgba(200,150,62,.15);
+  border-color:var(--go);
+  color:var(--go-d);
+}
+
+/* Тоггл */
+.fmt-toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  gap:10px;
+}
+.fmt-toggle-lbl{
+  font-size:11px;
+  font-weight:500;
+  color:var(--tx);
+}
+.fmt-toggle{
+  width:36px;
+  height:20px;
+  background:var(--cr-d);
+  border:1.5px solid var(--bd);
+  border-radius:var(--rf);
+  position:relative;
+  cursor:pointer;
+  transition:all var(--tt);
+  flex-shrink:0;
+}
+.fmt-toggle.on{ background:var(--go); border-color:var(--go-d); }
+.fmt-toggle-knob{
+  position:absolute;
+  top:2px; left:2px;
+  width:14px; height:14px;
+  background:#fff;
+  border-radius:50%;
+  transition:all var(--tt);
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.fmt-toggle.on .fmt-toggle-knob{ left:18px; }
+
+/* Кнопки добавить */
+.fmt-add-btns{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+.fmt-add-btn{
+  flex:1;
+  padding:8px 6px;
+  background:var(--go);
+  color:#fff;
+  border:none;
+  border-radius:var(--r);
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.05em;
+  cursor:pointer;
+  transition:all var(--tt);
+  text-align:center;
+  white-space:nowrap;
+}
+.fmt-add-btn:hover{ background:var(--go-d); transform:translateY(-1px); }
 
 /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
 @media(max-width:900px){
