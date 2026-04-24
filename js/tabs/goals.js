@@ -486,13 +486,18 @@ function drawMM() {
     wrap.appendChild(el);
 
     // Drag
-    const ds=(cx,cy)=>{
-      const zoom = parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-      drag={node:n,sx:cx/zoom,sy:cy/zoom,moved:false};
+    el.addEventListener("mousedown",e=>{
+      e.stopPropagation();
+      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
+      drag={node:n,sx:e.clientX/zoom,sy:e.clientY/zoom,moved:false,isTouch:false};
       reparent.nodeId=n.id;
-    };
-    el.addEventListener("mousedown",e=>{e.stopPropagation();ds(e.clientX,e.clientY);});
-    el.addEventListener("touchstart",e=>{e.stopPropagation();ds(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+    });
+    el.addEventListener("touchstart",e=>{
+      e.stopPropagation();
+      // Touch координаты НЕ делим на zoom — они уже в правильном пространстве
+      drag={node:n,sx:e.touches[0].clientX,sy:e.touches[0].clientY,moved:false,isTouch:true};
+      reparent.nodeId=n.id;
+    },{passive:true});
 
     // Клик — открываем/закрываем радиальное меню
     el.addEventListener("click",e=>{
@@ -649,11 +654,9 @@ function setupEvents(wrap) {
 function moveDrag(clientX, clientY) {
   if (!drag) return;
 
-  // Компенсируем CSS zoom — clientX/Y браузер НЕ масштабирует,
-  // а getBoundingClientRect() возвращает зумированные координаты.
-  // Поэтому делим на zoom чтобы всё было в одной системе координат.
-  const zoom = parseFloat(document.documentElement.style.zoom ||
-    getComputedStyle(document.documentElement).zoom || "1") || 1;
+  // Zoom компенсация только для мыши (не touch)
+  const zoom = drag.isTouch ? 1 :
+    (parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1);
   const cx = clientX / zoom;
   const cy = clientY / zoom;
 
