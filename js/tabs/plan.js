@@ -109,15 +109,18 @@ async function renderPlanMain(tasks, goals, projects) {
     body.innerHTML = `
       <div class="sec-lbl" style="margin-bottom:10px">Мои цели (${goals.length})</div>
       ${goals.length ? goals.map((g, i) => `
-        <div class="icard" style="border-left:4px solid ${GCOLS[i%GCOLS.length]}">
+        <div class="icard" style="border-left:4px solid ${GCOLS[i%GCOLS.length]};cursor:pointer"
+          onclick="window.openNewModal('goal',null,null,'goals')">
           <div class="ic-body">
             <div class="ic-ttl">${esc(g.title)}</div>
             ${g.desc ? `<div style="font-size:12px;color:var(--tx-m);margin-top:3px">${esc(g.desc)}</div>` : ""}
             <div class="ic-meta">
               <span class="ic-tag tag-goal">${tasks.filter(t=>t.goalId===g.id).length} задач</span>
+              ${g.deadline ? `<span class="ic-tag tag-dl">до ${g.deadline}</span>` : ""}
             </div>
           </div>
           <div class="ic-acts">
+            <button class="ib" onclick="event.stopPropagation();window._planEditGoal('${g.id}')" title="Редактировать">✎</button>
             <button class="ib del" onclick="event.stopPropagation();window._planDelGoal('${g.id}')">🗑</button>
           </div>
         </div>`).join("")
@@ -132,7 +135,8 @@ async function renderPlanMain(tasks, goals, projects) {
         const goal = goals.find(g => g.id === p.goalId);
         const col  = goal ? GCOLS[goals.indexOf(goal) % GCOLS.length] : "var(--go)";
         return `
-          <div class="icard" style="border-left:4px solid ${col}">
+          <div class="icard" style="border-left:4px solid ${col};cursor:pointer"
+            onclick="window._planEditProj('${p.id}')">
             <div class="ic-body">
               <div class="ic-ttl">${esc(p.name)}</div>
               ${p.desc ? `<div style="font-size:12px;color:var(--tx-m);margin-top:3px">${esc(p.desc)}</div>` : ""}
@@ -142,6 +146,7 @@ async function renderPlanMain(tasks, goals, projects) {
               </div>
             </div>
             <div class="ic-acts">
+              <button class="ib" onclick="event.stopPropagation();window._planEditProj('${p.id}')" title="Редактировать">✎</button>
               <button class="ib del" onclick="event.stopPropagation();window._planDelProj('${p.id}')">🗑</button>
             </div>
           </div>`;
@@ -181,4 +186,67 @@ window._planDelProj = async id => {
   const { deleteProject } = await import("../db.js");
   await deleteProject(id);
   window._refreshAll?.();
+};
+
+// Редактирование цели — открываем форму редактирования
+window._planEditGoal = async id => {
+  const { getGoals, updateGoal, esc: e2, today: td2 } = await import("../db.js");
+  const { openModal, closeModal, toast: t2 } = await import("../modal.js");
+  const all = await getGoals();
+  const g   = all.find(x => x.id === id);
+  if (!g) return;
+  openModal("Редактировать цель", `
+    <div class="fg"><label class="fl">Название *</label>
+      <input class="inp" id="eg-title" value="${e2(g.title||"")}"/></div>
+    <div class="fg"><label class="fl">Описание</label>
+      <textarea class="txta" id="eg-desc">${e2(g.desc||"")}</textarea></div>
+    <div class="fg"><label class="fl">Дедлайн</label>
+      <input class="inp" id="eg-dl" type="date" value="${g.deadline||""}"/></div>`,
+    async () => {
+      const title = document.getElementById("eg-title")?.value.trim();
+      if (!title) { alert("Введите название"); return; }
+      await updateGoal(id, {
+        title,
+        desc:     document.getElementById("eg-desc")?.value.trim() || "",
+        deadline: document.getElementById("eg-dl")?.value || null,
+      });
+      t2("Цель обновлена ✓");
+      closeModal();
+      window._refreshAll?.();
+    });
+};
+
+// Редактирование проекта
+window._planEditProj = async id => {
+  const db_mod = await import("../db.js");
+  const modal  = await import("../modal.js");
+  const [projects, goals] = await Promise.all([db_mod.getProjects(), db_mod.getGoals()]);
+  const p = projects.find(x => x.id === id);
+  if (!p) return;
+  modal.openModal("Редактировать проект", `
+    <div class="fg"><label class="fl">Название *</label>
+      <input class="inp" id="ep-name" value="${db_mod.esc(p.name||"")}"/></div>
+    <div class="fg"><label class="fl">Описание</label>
+      <textarea class="txta" id="ep-desc">${db_mod.esc(p.desc||"")}</textarea></div>
+    <div class="fg"><label class="fl">Цель</label>
+      <select class="sel" id="ep-goal">
+        <option value="">— Без цели —</option>
+        ${goals.map(g=>`<option value="${g.id}" ${g.id===p.goalId?"selected":""}>${db_mod.esc(g.title)}</option>`).join("")}
+      </select></div>`,
+    async () => {
+      const name = document.getElementById("ep-name")?.value.trim();
+      if (!name) { alert("Введите название"); return; }
+      // updateDoc через ud из db
+      const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      const { db } = await import("../firebase.js");
+      const uid = db_mod.getUid();
+      await updateDoc(doc(db, "users", uid, "projects", id), {
+        name,
+        desc:   document.getElementById("ep-desc")?.value.trim() || "",
+        goalId: document.getElementById("ep-goal")?.value || null,
+      });
+      modal.toast("Проект обновлён ✓");
+      modal.closeModal();
+      window._refreshAll?.();
+    });
 };

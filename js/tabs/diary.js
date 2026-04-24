@@ -98,7 +98,8 @@ function renderDiaryMain(entries, templates) {
       ? entries.filter(x =>
           (x.title  || "").toLowerCase().includes(searchTag.toLowerCase()) ||
           (x.text   || "").toLowerCase().includes(searchTag.toLowerCase()) ||
-          (x.mood   || "").toLowerCase().includes(searchTag.toLowerCase()))
+          (x.mood   || "").toLowerCase().includes(searchTag.toLowerCase()) ||
+          (Array.isArray(x.tags) && x.tags.some(t => t.toLowerCase().includes(searchTag.toLowerCase()))))
         .sort((a,b) => (b.date||"") > (a.date||"") ? 1 : -1)
       : [];
 
@@ -141,6 +142,9 @@ function renderDiaryMain(entries, templates) {
 // ── Карточка записи дневника ──
 function diaryCard(x) {
   const moodIcon = x.mood ? `<span class="ic-tag" style="background:rgba(200,150,62,.1)">${x.mood.split(" ")[0]}</span>` : "";
+  const tagsHtml = Array.isArray(x.tags) && x.tags.length
+    ? x.tags.map(t => `<span class="ic-tag ic-tag-diary-tag">#${esc(t)}</span>`).join("")
+    : "";
   return `
     <div class="icard" onclick="window.editDiary('${x.id}')">
       <div class="ic-body">
@@ -149,6 +153,7 @@ function diaryCard(x) {
         <div class="ic-meta">
           <span class="ic-tag tag-dl">${x.date || ""} ${x.time || ""}</span>
           ${moodIcon}
+          ${tagsHtml}
         </div>
       </div>
       <div class="ic-acts">
