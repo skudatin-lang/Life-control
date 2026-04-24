@@ -908,6 +908,66 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 .sb-tile.on .sb-tile-cnt{ color:var(--go-d); }
 
+/* ── Теги дневника ── */
+.diary-tags-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+  min-height:34px;
+  background:var(--bg-w);
+  border:1px solid var(--bd);
+  border-radius:var(--r);
+  padding:6px 8px;
+  cursor:text;
+}
+.diary-tags-wrap:focus-within{ border-color:var(--go); }
+.diary-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  background:rgba(200,150,62,.15);
+  border:1px solid rgba(200,150,62,.4);
+  color:var(--go-d);
+  border-radius:var(--rf);
+  padding:2px 8px 2px 9px;
+  font-family:var(--fd);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.03em;
+}
+.diary-tag-rm{
+  background:none;
+  border:none;
+  color:var(--go-d);
+  cursor:pointer;
+  font-size:13px;
+  padding:0;
+  line-height:1;
+  opacity:.6;
+  transition:opacity var(--tt);
+}
+.diary-tag-rm:hover{ opacity:1; color:var(--red); }
+.diary-tag-inp{
+  flex:1;
+  min-width:100px;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-family:var(--fb);
+  font-size:12px;
+  color:var(--tx);
+  padding:2px 0;
+}
+.diary-tag-inp::placeholder{ color:var(--tx-l); }
+
+/* ── Теги в карточке дневника ── */
+.ic-tag-diary-tag{
+  background:rgba(200,150,62,.12);
+  color:var(--go-d);
+  border:1px solid rgba(200,150,62,.3);
+}
+
 /* ── Поиск в дневнике ── */
 .diary-search-wrap{
   display:flex;
