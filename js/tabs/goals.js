@@ -17,7 +17,7 @@ let mmSel     = null, mmCtxMenu = null;
 let eventsSet = false;
 
 // ── Настройки форматирования ──
-let fmtNodeColor = "";        // пусто = авто (из палитры)
+const nodeColors = new Map(); // id ноды → цвет (индивидуально)
 let fmtLineStyle = "curve";   // curve | straight | elbow
 let fmtLineWidth = "medium";  // thin | medium | thick
 let fmtNodeShape = "rect";    // rect | rounded | pill
@@ -74,14 +74,16 @@ function renderFormatPanel(selNode) {
 
     <!-- Заливка -->
     <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">◉</span> Заливка</div>
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◉</span> Заливка
+        ${!selNode || selNode.type === "root" ? '<span style="font-size:9px;color:var(--tx-l);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0">(выберите элемент)</span>' : ""}
+      </div>
       <div class="fmt-color-grid">
-        <div class="fmt-color-cell auto ${!fmtNodeColor ? "sel" : ""}"
+        <div class="fmt-color-cell auto ${selNode && !nodeColors.get(selNode.id) ? "sel" : ""}"
           onclick="window._fmtSetColor('')" title="Авто">
           <span>авто</span>
         </div>
         ${COLORS.map(c => `
-          <div class="fmt-color-cell ${fmtNodeColor === c ? "sel" : ""}"
+          <div class="fmt-color-cell ${selNode && nodeColors.get(selNode.id) === c ? "sel" : ""}"
             style="background:${c}" onclick="window._fmtSetColor('${c}')"></div>`).join("")}
       </div>
     </div>
@@ -211,18 +213,24 @@ export async function renderGoals() {
   const root = makeNode("root", "root", "МОИ ЦЕЛИ", null, false);
 
   goals.forEach((g, gi) => {
-    const col = fmtNodeColor || GCOLS[gi % GCOLS.length];
-    const goalNode = makeNode(g.id, "goal", g.title, col, false);
+    const defaultCol = GCOLS[gi % GCOLS.length];
+    const goalCol    = nodeColors.get(g.id) || defaultCol;
+    const goalNode   = makeNode(g.id, "goal", g.title, goalCol, false);
 
     projects.filter(p => p.goalId === g.id).forEach(proj => {
-      const projNode = makeNode(proj.id, "project", proj.name, col, false);
-      tasks.filter(t => t.projId === proj.id).forEach(t =>
-        projNode.children.push(makeNode(t.id, "task", t.title, col, t.done)));
+      const projCol  = nodeColors.get(proj.id) || defaultCol;
+      const projNode = makeNode(proj.id, "project", proj.name, projCol, false);
+      tasks.filter(t => t.projId === proj.id).forEach(t => {
+        const tCol = nodeColors.get(t.id) || defaultCol;
+        projNode.children.push(makeNode(t.id, "task", t.title, tCol, t.done));
+      });
       goalNode.children.push(projNode);
     });
 
-    tasks.filter(t => t.goalId === g.id && !t.projId).forEach(t =>
-      goalNode.children.push(makeNode(t.id, "task", t.title, col, t.done)));
+    tasks.filter(t => t.goalId === g.id && !t.projId).forEach(t => {
+      const tCol = nodeColors.get(t.id) || defaultCol;
+      goalNode.children.push(makeNode(t.id, "task", t.title, tCol, t.done));
+    });
 
     root.children.push(goalNode);
   });
@@ -468,7 +476,16 @@ document.getElementById("mm-zoom-in")?.addEventListener("click",  () => { mmScal
 document.getElementById("mm-zoom-out")?.addEventListener("click", () => { mmScale = Math.max(0.25, mmScale - 0.2); drawMM(); });
 
 // ── Форматирование ──
-window._fmtSetColor  = c  => { fmtNodeColor = c; window._refreshAll?.(); };
+window._fmtSetColor = c => {
+  if (!mmSel) return; // нет выбранной ноды — ничего не делаем
+  if (c) nodeColors.set(mmSel, c);
+  else   nodeColors.delete(mmSel);
+  // Обновляем цвет в mmFlat без полного рендера дерева
+  const node = mmFlat.find(n => n.id === mmSel);
+  if (node) node.color = c || null;
+  renderFormatPanel(node || null);
+  drawMM();
+};
 window._fmtShape     = s  => { fmtNodeShape = s; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
 window._fmtLine      = s  => { fmtLineStyle = s; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
 window._fmtWidth     = w  => { fmtLineWidth = w; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
