@@ -12,7 +12,6 @@ let mmPan = { x:0, y:0 }, mmScale = 1;
 let mmSel = null;
 let eventsSet = false;
 let radialMenu = null;   // текущее радиальное меню в DOM
-let radialOpenTime = 0;  // когда открыли меню
 
 // ══ DRAG ══
 let drag = null; // { node, sx, sy, moved }
@@ -185,7 +184,6 @@ function openRadialMenu(node) {
   const menu = buildRadialDom(btns, cx, cy, wrap);
   wrap.appendChild(menu);
   radialMenu = menu;
-  radialOpenTime = Date.now();
   setTimeout(() => {
     function oc(e) {
       if (!radialMenu) { document.removeEventListener("click",oc); return; }
@@ -216,7 +214,6 @@ function openTypeMenu(node, cx, cy) {
   const menu = buildRadialDom(btns, cx, cy, wrap);
   wrap.appendChild(menu);
   radialMenu = menu;
-  radialOpenTime = Date.now();
   setTimeout(() => {
     function oc2(e) {
       if (!radialMenu) { document.removeEventListener("click",oc2); return; }
@@ -497,23 +494,13 @@ function drawMM() {
       if(drag?.moved) return;
       window._mmCancelInline?.();
       if(mmSel===n.id){
-        // повторный клик — закрываем меню и снимаем выбор
-        mmSel=null; closeRadialMenu(); drawMM();
-        renderSidebar(null); return;
+        mmSel=null; closeRadialMenu(); drawMM(); renderSidebar(null); return;
       }
       mmSel=n.id;
       closeRadialMenu();
-      drawMM(); // перерисовываем (sel подсветка)
+      drawMM();
       renderSidebar(mmFlat.find(x=>x.id===mmSel)||null);
-      // Открываем радиальное меню ПОСЛЕ drawMM через rAF
-      if(n.type!=="root"){
-        const captured=n; // захватываем в замыкание
-        requestAnimationFrame(()=>{
-          requestAnimationFrame(()=>{ // двойной rAF — гарантирует что DOM обновился
-            openRadialMenu(captured);
-          });
-        });
-      }
+      if(n.type!=="root") setTimeout(()=>openRadialMenu(n), 50);
     });
 
     // Двойной клик — inline rename
