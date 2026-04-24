@@ -569,16 +569,18 @@ function setupEvents(wrap) {
   });
 
   window.addEventListener("mouseup",async()=>{
+    const moved = drag?.moved;
     if(drag?.moved&&reparent.dropId) await doReparent(drag.node,reparent.dropId);
     else if(drag?.moved) await saveMmPos(drag.node.id,drag.node.x,drag.node.y);
-    cleanDrag();
+    cleanDrag(moved);
     if(panning){panning=false;wrap.style.cursor="";}
   });
 
   window.addEventListener("touchend",async()=>{
+    const moved = drag?.moved;
     if(drag?.moved&&reparent.dropId) await doReparent(drag.node,reparent.dropId);
     else if(drag?.moved) await saveMmPos(drag.node.id,drag.node.x,drag.node.y);
-    cleanDrag(); panning=false;
+    cleanDrag(moved); panning=false;
   });
 
   wrap.addEventListener("wheel",e=>{
@@ -599,15 +601,15 @@ function setupEvents(wrap) {
       mmScale=Math.max(0.25,Math.min(3,mmScale*(d/lp)));lp=d;drawMM();}
   },{passive:false});
 
-  window.addEventListener("keydown",e=>{if(e.key==="Escape"){cleanDrag();closeRadialMenu();window._mmCancelInline?.();}});
+  window.addEventListener("keydown",e=>{if(e.key==="Escape"){cleanDrag(true);closeRadialMenu();window._mmCancelInline?.();}});
 }
 
-function cleanDrag(){
+function cleanDrag(wasMoved){
   reparent.ghost?.remove();
   reparent={active:false,nodeId:null,ghost:null,dropId:null};
   drag=null;
   document.getElementById("mm-wrap")?.style.removeProperty("cursor");
-  drawMM();
+  if(wasMoved) drawMM(); // перерисовываем только если нода реально двигалась
 }
 
 // ══════════════════════════════════════════
