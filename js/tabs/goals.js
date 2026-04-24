@@ -595,13 +595,53 @@ function setupEvents(wrap) {
     mmScale=ns; drawMM();
   },{passive:false});
 
-  let lp=0;
-  wrap.addEventListener("touchstart",e=>{if(e.touches.length===2)lp=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);},{passive:true});
+  let lp=0, lpMid={x:0,y:0};
+
+  // Touch на элементах канваса (пустое место) — pan одним пальцем
+  let touchPan=false, touchPanStart={x:0,y:0};
+  wrap.addEventListener("touchstart",e=>{
+    if(e.touches.length===1){
+      const t=e.touches[0];
+      const tgt=e.target;
+      // Pan только если тронули пустое место (не ноду)
+      if(tgt===wrap||tgt===document.getElementById("mm-svg")){
+        touchPan=true;
+        touchPanStart={x:t.clientX-mmPan.x,y:t.clientY-mmPan.y};
+      }
+    }
+    if(e.touches.length===2){
+      lp=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      lpMid={
+        x:(e.touches[0].clientX+e.touches[1].clientX)/2,
+        y:(e.touches[0].clientY+e.touches[1].clientY)/2
+      };
+    }
+  },{passive:true});
+
   wrap.addEventListener("touchmove",e=>{
-    if(e.touches.length===2&&lp>0){e.preventDefault();
+    if(e.touches.length===1&&touchPan){
+      e.preventDefault();
+      const t=e.touches[0];
+      mmPan={x:t.clientX-touchPanStart.x,y:t.clientY-touchPanStart.y};
+      drawMM();
+    }
+    if(e.touches.length===2&&lp>0){
+      e.preventDefault();
       const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      mmScale=Math.max(0.25,Math.min(3,mmScale*(d/lp)));lp=d;drawMM();}
+      const newScale=Math.max(0.25,Math.min(3,mmScale*(d/lp)));
+      // Зум относительно центра пинча
+      const r=wrap.getBoundingClientRect();
+      const mx=lpMid.x-r.left, my=lpMid.y-r.top;
+      mmPan.x=mx-(mx-mmPan.x)*(newScale/mmScale);
+      mmPan.y=my-(my-mmPan.y)*(newScale/mmScale);
+      mmScale=newScale; lp=d; drawMM();
+    }
   },{passive:false});
+
+  wrap.addEventListener("touchend",e=>{
+    if(e.touches.length===0) touchPan=false;
+    if(e.touches.length<2) lp=0;
+  },{passive:true});
 
   window.addEventListener("keydown",e=>{if(e.key==="Escape"){cleanDrag(true);closeRadialMenu();window._mmCancelInline?.();}});
 }
