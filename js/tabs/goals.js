@@ -1,5 +1,5 @@
 // ════════════════════════════════════════
-//  TAB: ЦЕЛИ — MIND MAP (стиль XMind)
+//  TAB: ЦЕЛИ — MIND MAP (XMind style)
 //  js/tabs/goals.js
 // ════════════════════════════════════════
 
@@ -9,134 +9,273 @@ import { getGoals, getProjects, getTasks, getMmPos, saveMmPos,
 import { GCOLS } from "../utils.js";
 
 // ── Состояние ──
-let mmTree    = null;   // корневой узел дерева
-let mmFlat    = [];     // плоский список всех узлов для drag
-let mmDrag    = null, mmDragOff = { x:0, y:0 };
+let mmTree    = null;
+let mmFlat    = [];
 let mmPan     = { x:0, y:0 }, mmScale = 1;
 let mmPanning = false, mmPanStart = { x:0, y:0 };
 let mmSel     = null, mmCtxMenu = null;
 let eventsSet = false;
 
-// ── Размеры нод (логические, до scale) ──
-const NODE_W   = { root:140, goal:160, project:140, task:130 };
-const NODE_H   = { root:44,  goal:36,  project:30,  task:26  };
-const V_GAP    = 10;   // вертикальный зазор между сиблингами
-const H_GAP    = 60;   // горизонтальный отступ между уровнями
+// ── Настройки форматирования ──
+let fmtNodeColor = "";        // пусто = авто (из палитры)
+let fmtLineStyle = "curve";   // curve | straight | elbow
+let fmtLineWidth = "medium";  // thin | medium | thick
+let fmtNodeShape = "rect";    // rect | rounded | pill
+let fmtShowDone  = true;
+let fmtLayout    = "right";   // right | down
 
-export function initGoals() {
-  registerTab("goals", renderGoals);
+// ── Размеры нод ──
+const NODE_W = { root:140, goal:160, project:140, task:130 };
+const NODE_H = { root:44,  goal:36,  project:30,  task:26  };
+const V_GAP  = 12;
+const H_GAP  = 56;
+
+export function initGoals() { registerTab("goals", renderGoals); }
+
+// ════════════════════════════════════════
+//  SIDEBAR — панель форматирования
+// ════════════════════════════════════════
+function renderFormatPanel(selNode) {
+  const sb = document.getElementById("sb-body");
+
+  const COLORS = [
+    "#C06070","#A07840","#9060A0","#507860",
+    "#6060A0","#704040","#407060","#C8963E",
+    "#4A8A4A","#3A6EA8","#C04030","#7B4F1E",
+    "#5A3510","#A06A2E","#9A6F28","#EDE3CC",
+  ];
+
+  const typeLabel = { root:"Корень", goal:"Цель", project:"Проект", task:"Задача" };
+
+  sb.innerHTML = `
+    <!-- Выбранный элемент -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◈</span> Элемент</div>
+      <div class="fmt-sel-badge ${selNode ? "active" : ""}">
+        ${selNode
+          ? `<span class="fmt-sel-type">${typeLabel[selNode.type] || ""}</span>
+             <span class="fmt-sel-name">${esc(selNode.label)}</span>`
+          : `<span class="fmt-sel-none">Нажмите на элемент карты</span>`}
+      </div>
+      ${selNode && selNode.type !== "root" ? `
+        <div class="fmt-btn-row" style="margin-top:8px">
+          ${selNode.type === "goal" ? `
+            <button class="fmt-action-btn" onclick="window.openNewModal('task','${selNode.id}',null,'goals')">+ Задача</button>
+            <button class="fmt-action-btn" onclick="window.openNewModal('project','${selNode.id}',null,'goals')">+ Проект</button>
+          ` : selNode.type === "project" ? `
+            <button class="fmt-action-btn" onclick="window.openNewModal('task',null,'${selNode.id}','goals')">+ Задача</button>
+          ` : selNode.type === "task" ? `
+            <button class="fmt-action-btn" onclick="window.editTask('${selNode.id}')">✎ Изменить</button>
+            <button class="fmt-action-btn" onclick="window._mmToggle('${selNode.id}')">${selNode.done ? "↩ Открыть" : "✓ Готово"}</button>
+          ` : ""}
+          <button class="fmt-action-btn danger" onclick="window._mmDelete('${selNode.id}','${selNode.type}')">✕</button>
+        </div>` : ""}
+    </div>
+
+    <!-- Заливка -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◉</span> Заливка</div>
+      <div class="fmt-color-grid">
+        <div class="fmt-color-cell auto ${!fmtNodeColor ? "sel" : ""}"
+          onclick="window._fmtSetColor('')" title="Авто">
+          <span>авто</span>
+        </div>
+        ${COLORS.map(c => `
+          <div class="fmt-color-cell ${fmtNodeColor === c ? "sel" : ""}"
+            style="background:${c}" onclick="window._fmtSetColor('${c}')"></div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Форма ноды -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">▣</span> Форма</div>
+      <div class="fmt-btn-row">
+        <button class="fmt-shape-btn ${fmtNodeShape === "rect" ? "on" : ""}" onclick="window._fmtShape('rect')" title="Прямоугольник">
+          <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button class="fmt-shape-btn ${fmtNodeShape === "rounded" ? "on" : ""}" onclick="window._fmtShape('rounded')" title="Скруглённый">
+          <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+        <button class="fmt-shape-btn ${fmtNodeShape === "pill" ? "on" : ""}" onclick="window._fmtShape('pill')" title="Таблетка">
+          <svg width="36" height="20"><rect x="2" y="4" width="32" height="12" rx="9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Ветки -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">⌇</span> Ветки</div>
+      <div class="fmt-label">Стиль линий</div>
+      <div class="fmt-btn-row">
+        <button class="fmt-line-btn ${fmtLineStyle === "curve" ? "on" : ""}" onclick="window._fmtLine('curve')" title="Кривая">
+          <svg width="46" height="22"><path d="M4,14 C16,14 30,6 42,6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <button class="fmt-line-btn ${fmtLineStyle === "straight" ? "on" : ""}" onclick="window._fmtLine('straight')" title="Прямая">
+          <svg width="46" height="22"><line x1="4" y1="11" x2="42" y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <button class="fmt-line-btn ${fmtLineStyle === "elbow" ? "on" : ""}" onclick="window._fmtLine('elbow')" title="Угловая">
+          <svg width="46" height="22"><polyline points="4,18 20,18 20,4 42,4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="fmt-label" style="margin-top:8px">Толщина</div>
+      <div class="fmt-btn-row">
+        <button class="fmt-width-btn ${fmtLineWidth === "thin" ? "on" : ""}" onclick="window._fmtWidth('thin')">
+          <svg width="46" height="22"><line x1="4" y1="11" x2="42" y2="11" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        </button>
+        <button class="fmt-width-btn ${fmtLineWidth === "medium" ? "on" : ""}" onclick="window._fmtWidth('medium')">
+          <svg width="46" height="22"><line x1="4" y1="11" x2="42" y2="11" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </button>
+        <button class="fmt-width-btn ${fmtLineWidth === "thick" ? "on" : ""}" onclick="window._fmtWidth('thick')">
+          <svg width="46" height="22"><line x1="4" y1="11" x2="42" y2="11" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Структура -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">⊞</span> Структура</div>
+      <div class="fmt-btn-row">
+        <button class="fmt-layout-btn ${fmtLayout === "right" ? "on" : ""}" onclick="window._fmtLayout('right')">
+          <svg width="52" height="34" viewBox="0 0 52 34">
+            <rect x="2" y="13" width="14" height="8" rx="2" fill="currentColor" opacity=".8"/>
+            <line x1="16" y1="17" x2="22" y2="9" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="16" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="16" y1="17" x2="22" y2="25" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="22" y="5" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="22" y="13" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="22" y="21" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+          </svg>
+          <span>Вправо</span>
+        </button>
+        <button class="fmt-layout-btn ${fmtLayout === "down" ? "on" : ""}" onclick="window._fmtLayout('down')">
+          <svg width="52" height="34" viewBox="0 0 52 34">
+            <rect x="19" y="2" width="14" height="8" rx="2" fill="currentColor" opacity=".8"/>
+            <line x1="26" y1="10" x2="10" y2="20" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="26" y1="10" x2="26" y2="20" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="26" y1="10" x2="42" y2="20" stroke="currentColor" stroke-width="1.2"/>
+            <rect x="3" y="20" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="19" y="20" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+            <rect x="35" y="20" width="14" height="8" rx="2" fill="currentColor" opacity=".5"/>
+          </svg>
+          <span>Вниз</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Вид -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">◎</span> Вид</div>
+      <label class="fmt-toggle-row">
+        <span class="fmt-toggle-lbl">Показать выполненные</span>
+        <button class="fmt-toggle ${fmtShowDone ? "on" : ""}" onclick="window._fmtShowDone()">
+          <span class="fmt-toggle-knob"></span>
+        </button>
+      </label>
+    </div>
+
+    <!-- Добавить -->
+    <div class="fmt-section">
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">✦</span> Добавить</div>
+      <div class="fmt-add-btns">
+        <button class="fmt-add-btn" onclick="window.openNewModal('goal',null,null,'goals')">+ Цель</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('task',null,null,'goals')">+ Задача</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('project',null,null,'goals')">+ Проект</button>
+      </div>
+    </div>`;
 }
 
+// ════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════
 export async function renderGoals() {
   document.getElementById("tb-ttl").textContent = "Цели";
 
-  const [goals, projects, tasks, posArr] = await Promise.all([
-    getGoals(), getProjects(), getTasks(), getMmPos()
+  const [goals, projects, allTasks] = await Promise.all([
+    getGoals(), getProjects(), getTasks()
   ]);
 
-  // ── Sidebar: список целей ──
-  const sb = document.getElementById("sb-body");
-  sb.innerHTML = `
-    <div class="sb-sec">Мои цели</div>
-    ${goals.length ? goals.map((g, i) => `
-      <div class="goal-pill" style="background:${GCOLS[i % GCOLS.length]}"
-        onclick="window._selectGoal('${g.id}')">
-        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(g.title)}</span>
-        <span class="gp-cnt">${tasks.filter(t => t.goalId === g.id).length}</span>
-      </div>`).join("")
-    : '<p style="font-size:11px;color:var(--tx-l);padding:4px 0">Нет целей</p>'}
-    <button class="sb-new" style="margin-top:10px"
-      onclick="window.openNewModal('goal',null,null,'goals')">+ Новая цель</button>`;
+  const tasks = fmtShowDone ? allTasks : allTasks.filter(t => !t.done);
+  const selNode = mmFlat.find(n => n.id === mmSel) || null;
+  renderFormatPanel(selNode);
 
-  // ════════════════════════════════════════
-  //  СТРОИМ ДЕРЕВО
-  // ════════════════════════════════════════
   const wrap = document.getElementById("mm-wrap");
   const cw   = wrap.offsetWidth  || 800;
   const ch   = wrap.offsetHeight || 500;
 
-  // Каждый узел: { id, type, label, color?, done?, children[], w, h, x, y, subtreeH }
   function makeNode(id, type, label, color, done) {
     return { id, type, label, color, done: !!done,
       w: NODE_W[type] || 130, h: NODE_H[type] || 28,
-      children: [], x: 0, y: 0, subtreeH: 0 };
+      children: [], x:0, y:0, subtreeH:0, subtreeW:0 };
   }
 
   const root = makeNode("root", "root", "МОИ ЦЕЛИ", null, false);
 
   goals.forEach((g, gi) => {
-    const goalNode = makeNode(g.id, "goal", g.title, GCOLS[gi % GCOLS.length], false);
+    const col = fmtNodeColor || GCOLS[gi % GCOLS.length];
+    const goalNode = makeNode(g.id, "goal", g.title, col, false);
 
-    // Проекты под целью
     projects.filter(p => p.goalId === g.id).forEach(proj => {
-      const projNode = makeNode(proj.id, "project", proj.name, GCOLS[gi % GCOLS.length], false);
-
-      // Задачи под проектом
-      tasks.filter(t => t.projId === proj.id).forEach(t => {
-        projNode.children.push(makeNode(t.id, "task", t.title, GCOLS[gi % GCOLS.length], t.done));
-      });
+      const projNode = makeNode(proj.id, "project", proj.name, col, false);
+      tasks.filter(t => t.projId === proj.id).forEach(t =>
+        projNode.children.push(makeNode(t.id, "task", t.title, col, t.done)));
       goalNode.children.push(projNode);
     });
 
-    // Задачи напрямую под целью (без проекта)
-    tasks.filter(t => t.goalId === g.id && !t.projId).forEach(t => {
-      goalNode.children.push(makeNode(t.id, "task", t.title, GCOLS[gi % GCOLS.length], t.done));
-    });
+    tasks.filter(t => t.goalId === g.id && !t.projId).forEach(t =>
+      goalNode.children.push(makeNode(t.id, "task", t.title, col, t.done)));
 
     root.children.push(goalNode);
   });
 
-  // Задачи без цели
-  tasks.filter(t => !t.goalId && !t.projId).forEach(t => {
-    root.children.push(makeNode(t.id, "task", t.title, "var(--tx-l)", t.done));
-  });
+  tasks.filter(t => !t.goalId && !t.projId).forEach(t =>
+    root.children.push(makeNode(t.id, "task", t.title, GCOLS[0], t.done)));
 
-  // ════════════════════════════════════════
-  //  ВЫЧИСЛЯЕМ РАЗМЕРЫ ПОДДЕРЕВЬЕВ
-  // ════════════════════════════════════════
-  function calcSubtreeH(node) {
-    if (!node.children.length) {
-      node.subtreeH = node.h;
-      return node.subtreeH;
-    }
-    let total = 0;
+  // Layout
+  function calcSize(node) {
+    if (!node.children.length) { node.subtreeH = node.h; node.subtreeW = node.w; return; }
+    let totalH = 0, totalW = 0;
     node.children.forEach((c, i) => {
-      total += calcSubtreeH(c);
-      if (i < node.children.length - 1) total += V_GAP;
+      calcSize(c);
+      const gap = i < node.children.length - 1 ? V_GAP : 0;
+      if (fmtLayout === "right") {
+        totalH += c.subtreeH + gap;
+        totalW  = Math.max(totalW, c.subtreeW);
+      } else {
+        totalW += c.subtreeW + gap;
+        totalH  = Math.max(totalH, c.subtreeH);
+      }
     });
-    node.subtreeH = Math.max(node.h, total);
-    return node.subtreeH;
+    node.subtreeH = fmtLayout === "right" ? Math.max(node.h, totalH) : node.h + H_GAP + totalH;
+    node.subtreeW = fmtLayout === "right" ? node.w + H_GAP + totalW  : Math.max(node.w, totalW);
   }
-  calcSubtreeH(root);
+  calcSize(root);
 
-  // ════════════════════════════════════════
-  //  РАССТАВЛЯЕМ ПОЗИЦИИ
-  //  Корень — слева по центру, ветви — вправо
-  // ════════════════════════════════════════
-  function layoutTree(node, x, centerY) {
-    node.x = x;
-    node.y = centerY - node.h / 2;
-
-    if (!node.children.length) return;
-
-    const childX = x + node.w + H_GAP;
-    let curY = centerY - node.subtreeH / 2;
-
-    node.children.forEach(child => {
-      const childCY = curY + child.subtreeH / 2;
-      layoutTree(child, childX, childCY);
-      curY += child.subtreeH + V_GAP;
-    });
+  function layout(node, x, cy) {
+    if (fmtLayout === "right") {
+      node.x = x; node.y = cy - node.h / 2;
+      if (!node.children.length) return;
+      const cx2 = x + node.w + H_GAP;
+      let curY = cy - node.subtreeH / 2;
+      node.children.forEach(child => {
+        layout(child, cx2, curY + child.subtreeH / 2);
+        curY += child.subtreeH + V_GAP;
+      });
+    } else {
+      node.x = cy - node.w / 2; node.y = x;
+      if (!node.children.length) return;
+      const cy2 = x + node.h + H_GAP;
+      let curX = cy - node.subtreeW / 2;
+      node.children.forEach(child => {
+        layout(child, cy2, curX + child.subtreeW / 2);
+        curX += child.subtreeW + V_GAP;
+      });
+    }
   }
 
-  // Стартовая позиция корня — левый центр с отступом
-  const startX = 40;
-  const startY = ch / 2;
-  layoutTree(root, startX, startY);
+  layout(root, 40, fmtLayout === "right" ? ch / 2 : cw / 2);
 
-  // ── Плоский список для drag ──
   mmFlat = [];
-  function flatten(node) { mmFlat.push(node); node.children.forEach(flatten); }
+  function flatten(n) { mmFlat.push(n); n.children.forEach(flatten); }
   flatten(root);
   mmTree = root;
 
@@ -145,7 +284,7 @@ export async function renderGoals() {
 }
 
 // ════════════════════════════════════════
-//  РИСУЕМ
+//  DRAW
 // ════════════════════════════════════════
 function drawMM() {
   const wrap = document.getElementById("mm-wrap"); if (!wrap) return;
@@ -153,64 +292,64 @@ function drawMM() {
   const svg = document.getElementById("mm-svg");
   if (!mmTree) { svg.innerHTML = ""; return; }
 
-  // ── SVG соединения ──
+  const lw = { thin:1.2, medium:2, thick:3.5 }[fmtLineWidth] || 2;
   let lines = "";
 
   function drawEdges(node) {
     node.children.forEach(child => {
-      // Точки выхода/входа: правый центр родителя → левый центр ребёнка
-      const x1 = (node.x + node.w) * mmScale + mmPan.x;
-      const y1 = (node.y + node.h / 2) * mmScale + mmPan.y;
-      const x2 = child.x * mmScale + mmPan.x;
-      const y2 = (child.y + child.h / 2) * mmScale + mmPan.y;
-      const mx  = (x1 + x2) / 2;
+      let x1, y1, x2, y2;
+      if (fmtLayout === "right") {
+        x1 = (node.x + node.w) * mmScale + mmPan.x;
+        y1 = (node.y + node.h / 2) * mmScale + mmPan.y;
+        x2 = child.x * mmScale + mmPan.x;
+        y2 = (child.y + child.h / 2) * mmScale + mmPan.y;
+      } else {
+        x1 = (node.x + node.w / 2) * mmScale + mmPan.x;
+        y1 = (node.y + node.h) * mmScale + mmPan.y;
+        x2 = (child.x + child.w / 2) * mmScale + mmPan.x;
+        y2 = child.y * mmScale + mmPan.y;
+      }
 
-      // Цвет и стиль ветки зависит от типа ребёнка
-      const col  = child.type === "task"
-        ? "rgba(123,79,30,.25)"
-        : (child.color || "rgba(123,79,30,.6)");
-      const sw   = child.type === "root" ? 3
-                 : child.type === "goal" ? 2.5
-                 : child.type === "project" ? 2
-                 : 1.5;
-      const dash = child.type === "task" ? 'stroke-dasharray="5,3"' : "";
+      const rawCol = child.color && child.color !== "var(--tx-l)" ? child.color : "#7B4F1E";
+      const col    = child.type === "task" ? rawCol + "55" : rawCol + "bb";
+      const sw     = child.type === "goal" ? lw * 1.5 : child.type === "project" ? lw : lw * 0.75;
+      const dash   = child.type === "task" ? 'stroke-dasharray="5,3"' : "";
+      const mx     = (x1 + x2) / 2, my = (y1 + y2) / 2;
 
-      // Плавная S-кривая (кубический безье)
-      lines += `<path d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}"
-        stroke="${col}" stroke-width="${sw}" fill="none" ${dash}
-        stroke-linecap="round"/>`;
+      let d;
+      if (fmtLineStyle === "curve")
+        d = fmtLayout === "right"
+          ? `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`
+          : `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`;
+      else if (fmtLineStyle === "straight")
+        d = `M${x1},${y1} L${x2},${y2}`;
+      else
+        d = fmtLayout === "right"
+          ? `M${x1},${y1} L${mx},${y1} L${mx},${y2} L${x2},${y2}`
+          : `M${x1},${y1} L${x1},${my} L${x2},${my} L${x2},${y2}`;
 
+      lines += `<path d="${d}" stroke="${col}" stroke-width="${sw}"
+        fill="none" ${dash} stroke-linecap="round" stroke-linejoin="round"/>`;
       drawEdges(child);
     });
   }
   drawEdges(mmTree);
   svg.innerHTML = lines;
 
-  // ── DOM-ноды ──
+  const br = { rect:"4px", rounded:"10px", pill:"999px" }[fmtNodeShape] || "4px";
+
   function drawNodes(node) {
     const el = document.createElement("div");
-    const isSel = node.id === mmSel;
-
-    el.className = `mm-node type-${node.type}${isSel ? " sel" : ""}${node.done ? " done" : ""}`;
+    el.className = `mm-node type-${node.type}${node.id === mmSel ? " sel" : ""}${node.done ? " done" : ""}`;
     el.dataset.id = node.id;
-
-    // XMind-стиль: цветная левая полоса для goal/project/task
-    if (node.type !== "root" && node.color) {
-      el.style.setProperty("--nc", node.color);
-    }
-
-    // Текст внутри ноды
+    if (node.type !== "root" && node.color) el.style.setProperty("--nc", node.color);
+    if (node.type !== "root") el.style.borderRadius = br;
     el.innerHTML = `<span class="mm-node-txt">${esc(node.label)}</span>`;
-
-    el.style.left     = (node.x * mmScale + mmPan.x) + "px";
-    el.style.top      = (node.y * mmScale + mmPan.y) + "px";
-    el.style.width    = (node.w * mmScale) + "px";
-    el.style.height   = (node.h * mmScale) + "px";
-
+    el.style.cssText += `left:${node.x*mmScale+mmPan.x}px;top:${node.y*mmScale+mmPan.y}px;width:${node.w*mmScale}px;height:${node.h*mmScale}px;`;
     wrap.appendChild(el);
 
-    el.addEventListener("mousedown",  e => { e.stopPropagation(); startDrag(e, node); });
-    el.addEventListener("touchstart", e => { e.stopPropagation(); startDrag(e.touches[0], node); }, { passive: true });
+    el.addEventListener("mousedown",  e => { e.stopPropagation(); startPan(e); });
+    el.addEventListener("touchstart", e => { e.stopPropagation(); startPan(e.touches[0]); }, { passive:true });
     el.addEventListener("click",      e => { e.stopPropagation(); selectNode(node, e); });
     el.addEventListener("dblclick",   e => { e.stopPropagation(); addChildOf(node); });
 
@@ -219,11 +358,8 @@ function drawMM() {
   drawNodes(mmTree);
 }
 
-function startDrag(e, node) {
-  // Drag перемещает всё поддерево — смещаем только сам узел,
-  // но из-за layout дерево перестраивается. Для простоты — pan всей карты.
-  mmDrag    = null;
-  mmPanning = true;
+function startPan(e) {
+  mmPanning  = true;
   mmPanStart = { x: e.clientX - mmPan.x, y: e.clientY - mmPan.y };
 }
 
@@ -231,31 +367,24 @@ function selectNode(node, e) {
   closeCtx();
   mmSel = node.id === mmSel ? null : node.id;
   drawMM();
-  if (mmSel) showCtx(e.clientX, e.clientY, node);
+  renderFormatPanel(mmFlat.find(n => n.id === mmSel) || null);
 }
 
 function addChildOf(parent) {
-  if      (parent.type === "root")    window.openNewModal("goal",    null,      null,       "goals");
-  else if (parent.type === "goal")    window.openNewModal("task",    parent.id, null,       "goals");
-  else if (parent.type === "project") window.openNewModal("task",    null,      parent.id,  "goals");
+  if      (parent.type === "root")    window.openNewModal("goal",    null,       null,       "goals");
+  else if (parent.type === "goal")    window.openNewModal("task",    parent.id,  null,       "goals");
+  else if (parent.type === "project") window.openNewModal("task",    null,       parent.id,  "goals");
   else                                window.editTask(parent.id);
 }
 
-// ════════════════════════════════════════
-//  КОНТЕКСТНОЕ МЕНЮ
-// ════════════════════════════════════════
 function showCtx(cx, cy, node) {
   closeCtx();
   const wrap = document.getElementById("mm-wrap"); if (!wrap) return;
-  const rect  = wrap.getBoundingClientRect();
-  const menu  = document.createElement("div");
+  const rect = wrap.getBoundingClientRect();
+  const menu = document.createElement("div");
   menu.className = "mm-ctx-menu"; menu.id = "mm-ctx";
-
-  // Позиционируем чтобы не вылезало за экран
-  let left = cx - rect.left;
-  let top  = cy - rect.top;
-  menu.style.left = left + "px";
-  menu.style.top  = top  + "px";
+  menu.style.left = (cx - rect.left) + "px";
+  menu.style.top  = (cy - rect.top)  + "px";
 
   const items = !node ? [
     ["+ Задача",  () => window.openNewModal("task",    null, null, "goals")],
@@ -264,24 +393,22 @@ function showCtx(cx, cy, node) {
   ] : node.type === "root" ? [
     ["+ Добавить цель", () => window.openNewModal("goal", null, null, "goals")],
   ] : node.type === "goal" ? [
-    ["+ Задача",         () => window.openNewModal("task",    node.id, null, "goals")],
-    ["+ Проект",         () => window.openNewModal("project", node.id, null, "goals")],
-    ["✕ Удалить цель",   async () => { if (confirm("Удалить цель?")) { await deleteGoal(node.id); window._refreshAll?.(); } }, true],
+    ["+ Задача",       () => window.openNewModal("task",    node.id, null, "goals")],
+    ["+ Проект",       () => window.openNewModal("project", node.id, null, "goals")],
+    ["✕ Удалить цель", async () => { if (confirm("Удалить цель?")) { await deleteGoal(node.id); window._refreshAll?.(); } }, true],
   ] : node.type === "project" ? [
-    ["+ Задача",          () => window.openNewModal("task", null, node.id, "goals")],
-    ["✕ Удалить проект",  async () => { if (confirm("Удалить проект?")) { await deleteProject(node.id); window._refreshAll?.(); } }, true],
-  ] : /* task */ [
-    ["✎ Редактировать",   () => window.editTask(node.id)],
+    ["+ Задача",           () => window.openNewModal("task", null, node.id, "goals")],
+    ["✕ Удалить проект",   async () => { if (confirm("Удалить проект?")) { await deleteProject(node.id); window._refreshAll?.(); } }, true],
+  ] : [
+    ["✎ Редактировать",  () => window.editTask(node.id)],
     [`✓ ${node.done ? "Открыть" : "Выполнить"}`, async () => { await toggleTask(node.id); window._refreshAll?.(); }],
-    ["✕ Удалить задачу",  async () => { if (confirm("Удалить?")) { await deleteTask(node.id); window._refreshAll?.(); } }, true],
+    ["✕ Удалить задачу", async () => { if (confirm("Удалить?")) { await deleteTask(node.id); window._refreshAll?.(); } }, true],
   ];
 
-  menu.innerHTML = items.map(([label,, danger]) =>
-    `<button class="mm-ctx-item${danger ? " danger" : ""}">${label}</button>`
-  ).join("");
-  menu.querySelectorAll(".mm-ctx-item").forEach((btn, i) =>
-    btn.onclick = () => { closeCtx(); items[i][1](); }
-  );
+  menu.innerHTML = items.map(([l,, d]) =>
+    `<button class="mm-ctx-item${d ? " danger" : ""}">${l}</button>`).join("");
+  menu.querySelectorAll(".mm-ctx-item").forEach((b, i) =>
+    b.onclick = () => { closeCtx(); items[i][1](); });
   wrap.appendChild(menu);
   mmCtxMenu = menu;
   setTimeout(() => document.addEventListener("click", outsideClose), 50);
@@ -294,88 +421,77 @@ function outsideClose(e) {
 }
 function closeCtx() { mmCtxMenu?.remove(); mmCtxMenu = null; }
 
-// ════════════════════════════════════════
-//  СОБЫТИЯ КАНВАСА
-// ════════════════════════════════════════
 function setupEvents(wrap) {
   wrap.addEventListener("click", e => {
     if (e.target === wrap || e.target === document.getElementById("mm-svg")) {
-      closeCtx(); mmSel = null; drawMM();
+      closeCtx(); mmSel = null; drawMM(); renderFormatPanel(null);
       showCtx(e.clientX, e.clientY, null);
     }
   });
-
   wrap.addEventListener("mousedown", e => {
-    if (e.target === wrap || e.target === document.getElementById("mm-svg")) {
-      mmPanning  = true;
-      mmPanStart = { x: e.clientX - mmPan.x, y: e.clientY - mmPan.y };
-      wrap.style.cursor = "grabbing";
-    }
+    if (e.target === wrap || e.target === document.getElementById("mm-svg")) startPan(e);
   });
-
   wrap.addEventListener("wheel", e => {
     e.preventDefault();
-    const delta    = e.deltaY < 0 ? 0.1 : -0.1;
-    const newScale = Math.max(0.25, Math.min(3, mmScale + delta));
-    const rect     = wrap.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    mmPan.x  = mx - (mx - mmPan.x) * (newScale / mmScale);
-    mmPan.y  = my - (my - mmPan.y) * (newScale / mmScale);
-    mmScale  = newScale; drawMM();
-  }, { passive: false });
+    const ns = Math.max(0.25, Math.min(3, mmScale + (e.deltaY < 0 ? 0.1 : -0.1)));
+    const r  = wrap.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    mmPan.x  = mx - (mx - mmPan.x) * (ns / mmScale);
+    mmPan.y  = my - (my - mmPan.y) * (ns / mmScale);
+    mmScale  = ns; drawMM();
+  }, { passive:false });
 
-  let lastPinch = 0;
+  let lp = 0;
   wrap.addEventListener("touchstart", e => {
     if (e.touches.length === 2)
-      lastPinch = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY);
-  }, { passive: true });
+      lp = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+  }, { passive:true });
   wrap.addEventListener("touchmove", e => {
-    if (e.touches.length === 2 && lastPinch > 0) {
+    if (e.touches.length === 2 && lp > 0) {
       e.preventDefault();
-      const d = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY);
-      mmScale = Math.max(0.25, Math.min(3, mmScale * (d / lastPinch)));
-      lastPinch = d; drawMM();
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      mmScale = Math.max(0.25, Math.min(3, mmScale * (d / lp))); lp = d; drawMM();
     }
-  }, { passive: false });
+  }, { passive:false });
 }
 
-// ── Глобальные обработчики мыши ──
 window.addEventListener("mousemove", e => {
-  if (mmPanning) {
-    mmPan = { x: e.clientX - mmPanStart.x, y: e.clientY - mmPanStart.y };
-    drawMM();
-  }
+  if (mmPanning) { mmPan = { x: e.clientX - mmPanStart.x, y: e.clientY - mmPanStart.y }; drawMM(); }
 });
-window.addEventListener("mouseup", () => {
-  if (mmPanning) {
-    mmPanning = false;
-    const w = document.getElementById("mm-wrap"); if (w) w.style.cursor = "";
-  }
-  mmDrag = null;
+window.addEventListener("mouseup",  () => {
+  if (mmPanning) { mmPanning = false; const w = document.getElementById("mm-wrap"); if (w) w.style.cursor = ""; }
 });
-window.addEventListener("touchend", () => { mmDrag = null; });
+window.addEventListener("touchend", () => { mmPanning = false; });
 
-// ── Кнопки тулбара ──
-document.getElementById("mm-reset")?.addEventListener("click",    () => { mmPan = { x: 0, y: 0 }; mmScale = 1; drawMM(); });
+document.getElementById("mm-reset")?.addEventListener("click",    () => { mmPan = {x:0,y:0}; mmScale = 1; drawMM(); });
 document.getElementById("mm-zoom-in")?.addEventListener("click",  () => { mmScale = Math.min(3, mmScale + 0.2); drawMM(); });
 document.getElementById("mm-zoom-out")?.addEventListener("click", () => { mmScale = Math.max(0.25, mmScale - 0.2); drawMM(); });
 
-// ── Клик по цели в sidebar ──
+// ── Форматирование ──
+window._fmtSetColor  = c  => { fmtNodeColor = c; window._refreshAll?.(); };
+window._fmtShape     = s  => { fmtNodeShape = s; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
+window._fmtLine      = s  => { fmtLineStyle = s; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
+window._fmtWidth     = w  => { fmtLineWidth = w; renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null); drawMM(); };
+window._fmtLayout    = l  => { fmtLayout = l; window._refreshAll?.(); };
+window._fmtShowDone  = () => { fmtShowDone = !fmtShowDone; window._refreshAll?.(); };
+
+window._mmToggle = async id => { await toggleTask(id); window._refreshAll?.(); };
+window._mmDelete = async (id, type) => {
+  if (!confirm("Удалить?")) return;
+  if (type === "goal")    await deleteGoal(id);
+  else if (type === "project") await deleteProject(id);
+  else await deleteTask(id);
+  mmSel = null; window._refreshAll?.();
+};
 window._selectGoal = id => {
   mmSel = id;
   const node = mmFlat.find(n => n.id === id);
   if (node) {
-    // Центрируем вид на выбранной цели
     const wrap = document.getElementById("mm-wrap");
-    const cw = wrap?.offsetWidth || 800;
-    const ch = wrap?.offsetHeight || 500;
+    const cw = wrap?.offsetWidth || 800, ch = wrap?.offsetHeight || 500;
     mmPan.x = cw / 2 - (node.x + node.w / 2) * mmScale;
     mmPan.y = ch / 2 - (node.y + node.h / 2) * mmScale;
   }
-  drawMM();
+  drawMM(); renderFormatPanel(node || null);
 };
 window.closeMMCtx = closeCtx;
