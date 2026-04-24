@@ -486,7 +486,11 @@ function drawMM() {
     wrap.appendChild(el);
 
     // Drag
-    const ds=(cx,cy)=>{drag={node:n,sx:cx,sy:cy,moved:false};reparent.nodeId=n.id;};
+    const ds=(cx,cy)=>{
+      const zoom = parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
+      drag={node:n,sx:cx/zoom,sy:cy/zoom,moved:false};
+      reparent.nodeId=n.id;
+    };
     el.addEventListener("mousedown",e=>{e.stopPropagation();ds(e.clientX,e.clientY);});
     el.addEventListener("touchstart",e=>{e.stopPropagation();ds(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
 
@@ -539,13 +543,17 @@ function setupEvents(wrap) {
   let panning=false,panStart={x:0,y:0};
   wrap.addEventListener("mousedown",e=>{
     if(e.target===wrap||e.target===document.getElementById("mm-svg")){
-      panning=true;panStart={x:e.clientX-mmPan.x,y:e.clientY-mmPan.y};
+      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
+      panning=true;panStart={x:e.clientX/zoom-mmPan.x,y:e.clientY/zoom-mmPan.y};
     }
   });
 
   window.addEventListener("mousemove",e=>{
-    if(drag) { moveDrag(e.clientX, e.clientY); return; }
-    if(panning){mmPan={x:e.clientX-panStart.x,y:e.clientY-panStart.y};drawMM();}
+    if(drag){ moveDrag(e.clientX, e.clientY); return; }
+    if(panning){
+      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
+      mmPan={x:e.clientX/zoom-panStart.x,y:e.clientY/zoom-panStart.y};drawMM();
+    }
   });
 
   window.addEventListener("mouseup",async()=>{
@@ -575,9 +583,10 @@ function setupEvents(wrap) {
 
   wrap.addEventListener("wheel",e=>{
     e.preventDefault();
+    const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
     const ns=Math.max(0.25,Math.min(3,mmScale+(e.deltaY<0?0.1:-0.1)));
     const r=wrap.getBoundingClientRect();
-    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    const mx=e.clientX/zoom-r.left, my=e.clientY/zoom-r.top;
     mmPan.x=mx-(mx-mmPan.x)*(ns/mmScale);
     mmPan.y=my-(my-mmPan.y)*(ns/mmScale);
     mmScale=ns; drawMM();
@@ -639,21 +648,28 @@ function setupEvents(wrap) {
 // ══════════════════════════════════════════
 function moveDrag(clientX, clientY) {
   if (!drag) return;
-  const dx = clientX - drag.sx;
-  const dy = clientY - drag.sy;
+
+  // Компенсируем CSS zoom — clientX/Y браузер НЕ масштабирует,
+  // а getBoundingClientRect() возвращает зумированные координаты.
+  // Поэтому делим на zoom чтобы всё было в одной системе координат.
+  const zoom = parseFloat(document.documentElement.style.zoom ||
+    getComputedStyle(document.documentElement).zoom || "1") || 1;
+  const cx = clientX / zoom;
+  const cy = clientY / zoom;
+
+  const dx = cx - drag.sx;
+  const dy = cy - drag.sy;
 
   if (!drag.moved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
     drag.moved = true;
     reparent.active = true;
-    // Находим DOM-элемент ноды и помечаем его как dragging
     drag.el = document.querySelector(`.mm-node[data-id="${drag.node.id}"]`);
     if (drag.el) {
-      drag.el.style.opacity = "0.75";
-      drag.el.style.zIndex  = "200";
-      drag.el.style.cursor  = "grabbing";
-      drag.el.style.transition = "none"; // отключаем transition чтобы двигалось мгновенно
+      drag.el.style.opacity   = "0.75";
+      drag.el.style.zIndex    = "200";
+      drag.el.style.cursor    = "grabbing";
+      drag.el.style.transition= "none";
     }
-    // Подсказка вместо призрака — tooltip рядом с нодой
     const tip = document.createElement("div");
     tip.id = "drag-tip";
     tip.style.cssText = "position:fixed;background:var(--br-d);color:var(--go-l);font-family:var(--fd);font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;pointer-events:none;z-index:9999;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);";
@@ -664,30 +680,30 @@ function moveDrag(clientX, clientY) {
 
   if (!drag.moved) return;
 
-  // Обновляем логические координаты
+  // Обновляем логические координаты (в зумированном пространстве)
   drag.node.x += dx / mmScale;
   drag.node.y += dy / mmScale;
-  drag.sx = clientX;
-  drag.sy = clientY;
+  drag.sx = cx;
+  drag.sy = cy;
 
-  // Двигаем DOM-элемент напрямую — без drawMM!
+  // Двигаем DOM-элемент напрямую
   if (drag.el) {
     drag.el.style.left = (drag.node.x * mmScale + mmPan.x) + "px";
     drag.el.style.top  = (drag.node.y * mmScale + mmPan.y) + "px";
   }
 
-  // Обновляем tooltip
+  // Tooltip — позиционируем в screen-координатах (с учётом zoom)
   if (drag.tip) {
     drag.tip.style.left = (clientX + 12) + "px";
     drag.tip.style.top  = (clientY - 28) + "px";
   }
 
-  // Ищем drop-target под курсором
+  // Drop-target — используем зумированные координаты
   const wrap = document.getElementById("mm-wrap");
   const r = wrap?.getBoundingClientRect();
   if (!r) return;
-  const mx = (clientX - r.left - mmPan.x) / mmScale;
-  const my = (clientY - r.top  - mmPan.y) / mmScale;
+  const mx = (cx - r.left - mmPan.x) / mmScale;
+  const my = (cy - r.top  - mmPan.y) / mmScale;
   let hov = null;
   for (const n of mmFlat) {
     if (n.id === drag.node.id) continue;
