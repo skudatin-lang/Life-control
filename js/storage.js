@@ -3,23 +3,21 @@
 //  js/storage.js
 // ════════════════════════════════════════
 
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { getApp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getUid } from "./db.js";
 
 let storage = null;
 
-// ИСПРАВЛЕНО: функция должна быть async, так как раньше внутри
-// обычной функции использовался await — это вызывало SyntaxError.
-export async function initStorage() {
+// Исправлено: убран await внутри обычной функции — getApp() синхронный
+export function initStorage() {
   storage = getStorage(getApp());
 }
 
 export async function uploadAttachment(file, taskId) {
   const uid = getUid();
   if (!uid || !file) return null;
+  if (!storage) { console.warn("Storage not initialized"); return null; }
   const path = `users/${uid}/tasks/${taskId}/${Date.now()}_${file.name}`;
   const fileRef = ref(storage, path);
   await uploadBytes(fileRef, file);
@@ -29,6 +27,7 @@ export async function uploadAttachment(file, taskId) {
 
 export async function deleteAttachment(url) {
   try {
+    if (!storage) return;
     const fileRef = ref(storage, url);
     await deleteObject(fileRef);
   } catch(e) { console.warn(e); }
