@@ -93,7 +93,11 @@ function renderDiaryMain(entries, templates) {
         : '<div class="empty"><div class="ei">📚</div><p>Записей нет</p></div>'}`;
 
   } else if (diaryMode === "search") {
-    // ── Поиск по тексту/тегу ──
+    // ── Собираем все уникальные теги из записей ──
+    const allTags = [...new Set(
+      entries.flatMap(x => Array.isArray(x.tags) ? x.tags : [])
+    )].sort();
+
     const matches = searchTag.trim()
       ? entries.filter(x =>
           (x.title  || "").toLowerCase().includes(searchTag.toLowerCase()) ||
@@ -106,26 +110,33 @@ function renderDiaryMain(entries, templates) {
     body.innerHTML = `
       <div class="diary-search-wrap">
         <input class="inp" id="diary-search-inp"
-          placeholder="Введите слово, фразу или настроение..."
+          placeholder="Введите слово, фразу или тег..."
           value="${esc(searchTag)}"/>
         <button class="dn-cal-btn" id="diary-search-btn">🔍</button>
       </div>
+      ${allTags.length ? `
+        <div class="diary-tags-cloud">
+          <div class="diary-tags-cloud-lbl">Теги</div>
+          <div class="diary-tags-cloud-wrap">
+            ${allTags.map(t => `
+              <button class="diary-cloud-tag ${searchTag===t?"active":""}"
+                onclick="window._diarySearchTag('${esc(t)}')">#${esc(t)}</button>`).join("")}
+          </div>
+        </div>` : ""}
       <div id="diary-search-results">
         ${searchTag.trim()
           ? (matches.length
               ? `<div class="sec-lbl" style="margin:10px 0 8px">Найдено: ${matches.length}</div>
                  ${matches.map(x => diaryCard(x)).join("")}`
               : '<div class="empty"><div class="ei">🔍</div><p>Ничего не найдено</p></div>')
-          : '<div class="empty"><div class="ei">🔍</div><p>Введите запрос выше</p></div>'}
+          : '<div class="empty"><div class="ei">🔍</div><p>Введите запрос или выберите тег</p></div>'}
       </div>`;
 
-    // Обработчики поиска
     const inp = document.getElementById("diary-search-inp");
     const btn = document.getElementById("diary-search-btn");
     const doSearch = () => { searchTag = inp.value; renderDiaryMain(entries, templates); };
     btn.onclick = doSearch;
     inp.addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
-    // Фокус на поле после рендера
     setTimeout(() => inp?.focus(), 50);
   }
 
@@ -178,6 +189,13 @@ window._diaryMode = async mode => {
   if (mode !== "search") searchTag = "";
   const [entries, templates] = await Promise.all([getDiary(), getTemplates()]);
   renderDiarySidebar(entries, templates);
+  renderDiaryMain(entries, templates);
+};
+
+// Клик по тегу в облаке — сразу ищем
+window._diarySearchTag = async tag => {
+  searchTag = tag;
+  const [entries, templates] = await Promise.all([getDiary(), getTemplates()]);
   renderDiaryMain(entries, templates);
 };
 

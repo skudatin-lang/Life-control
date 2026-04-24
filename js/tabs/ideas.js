@@ -84,6 +84,7 @@ function ideaCard(x) {
         </div>
       </div>
       <div class="ic-acts">
+        <button class="ib" onclick="event.stopPropagation();window.editIdea('${x.id}')" title="Редактировать">✎</button>
         <button class="ib del" onclick="event.stopPropagation();window.delItem('ideas','${x.id}')">🗑</button>
       </div>
     </div>`;

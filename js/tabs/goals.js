@@ -16,6 +16,16 @@ let mmPanning = false, mmPanStart = { x:0, y:0 };
 let mmSel     = null, mmCtxMenu = null;
 let eventsSet = false;
 
+// ── Drag ноды ──
+let mmDragNode  = null;   // нода которую тащим
+let mmDragStart = { x:0, y:0 }; // стартовая позиция мыши
+let mmDragMoved = false;  // отличаем клик от drag
+let mmDragGhost = null;   // DOM-элемент призрака
+
+// ── Режим «Переместить» (прикрепить к другой ноде) ──
+let mmMoveMode  = false;  // ожидаем клик на целевую ноду
+let mmMoveId    = null;   // id перемещаемой ноды
+
 // ── Настройки форматирования ──
 const nodeColors = new Map(); // id ноды → цвет (индивидуально)
 let fmtLineStyle = "curve";   // curve | straight | elbow
@@ -348,7 +358,12 @@ function drawMM() {
 
   function drawNodes(node) {
     const el = document.createElement("div");
-    el.className = `mm-node type-${node.type}${node.id === mmSel ? " sel" : ""}${node.done ? " done" : ""}`;
+    const isMoveTarget = mmMoveMode && node.id !== mmMoveId
+      && node.type !== "task"; // можно прикрепить к root/goal/project
+    el.className = `mm-node type-${node.type}`
+      + (node.id === mmSel ? " sel" : "")
+      + (node.done ? " done" : "")
+      + (isMoveTarget ? " move-target" : "");
     el.dataset.id = node.id;
     if (node.type !== "root" && node.color) el.style.setProperty("--nc", node.color);
     if (node.type !== "root") el.style.borderRadius = br;
@@ -356,10 +371,45 @@ function drawMM() {
     el.style.cssText += `left:${node.x*mmScale+mmPan.x}px;top:${node.y*mmScale+mmPan.y}px;width:${node.w*mmScale}px;height:${node.h*mmScale}px;`;
     wrap.appendChild(el);
 
-    el.addEventListener("mousedown",  e => { e.stopPropagation(); startPan(e); });
-    el.addEventListener("touchstart", e => { e.stopPropagation(); startPan(e.touches[0]); }, { passive:true });
-    el.addEventListener("click",      e => { e.stopPropagation(); selectNode(node, e); });
-    el.addEventListener("dblclick",   e => { e.stopPropagation(); addChildOf(node); });
+    // ── Drag ноды (mousedown/touchstart) ──
+    el.addEventListener("mousedown", e => {
+      e.stopPropagation();
+      if (mmMoveMode) return; // в режиме перемещения — только клик
+      mmDragNode  = node;
+      mmDragStart = { x: e.clientX, y: e.clientY };
+      mmDragMoved = false;
+    });
+    el.addEventListener("touchstart", e => {
+      e.stopPropagation();
+      if (mmMoveMode) return;
+      mmDragNode  = node;
+      mmDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      mmDragMoved = false;
+    }, { passive:true });
+
+    // ── Клик ──
+    el.addEventListener("click", e => {
+      e.stopPropagation();
+      if (mmDragMoved) { mmDragMoved = false; return; } // это был drag, не клик
+
+      // Режим «Переместить» — выбираем новый родитель
+      if (mmMoveMode) {
+        if (node.id !== mmMoveId) attachNodeTo(mmMoveId, node.id);
+        mmMoveMode = false; mmMoveId = null;
+        wrap.classList.remove("move-mode");
+        drawMM(); renderFormatPanel(mmFlat.find(n=>n.id===mmSel)||null);
+        return;
+      }
+
+      closeCtx();
+      const wasSel = node.id === mmSel;
+      mmSel = wasSel ? null : node.id;
+      drawMM();
+      renderFormatPanel(mmFlat.find(n => n.id === mmSel) || null);
+      if (!wasSel) showNodeMenu(e.clientX, e.clientY, node);
+    });
+
+    el.addEventListener("dblclick", e => { e.stopPropagation(); addChildOf(node); });
 
     node.children.forEach(drawNodes);
   }
@@ -376,6 +426,140 @@ function selectNode(node, e) {
   mmSel = node.id === mmSel ? null : node.id;
   drawMM();
   renderFormatPanel(mmFlat.find(n => n.id === mmSel) || null);
+}
+
+// ── Inline-меню при клике на ноду ──
+function showNodeMenu(cx, cy, node) {
+  closeCtx();
+  const wrap = document.getElementById("mm-wrap"); if (!wrap) return;
+  const rect  = wrap.getBoundingClientRect();
+  const menu  = document.createElement("div");
+  menu.className = "mm-ctx-menu mm-node-menu"; menu.id = "mm-ctx";
+
+  // Позиционируем рядом с нодой
+  let left = cx - rect.left + 8;
+  let top  = cy - rect.top  + 8;
+  // Не вылезаем за правый край
+  if (left + 200 > rect.width)  left = cx - rect.left - 208;
+  if (top  + 160 > rect.height) top  = cy - rect.top  - 168;
+  menu.style.left = left + "px";
+  menu.style.top  = top  + "px";
+
+  // Секция «Добавить»
+  const addItems = node.type === "root" ? [
+    ["🎯 Новая цель",    () => window.openNewModal("goal",    null,       null,       "goals")],
+  ] : node.type === "goal" ? [
+    ["✅ Добавить задачу",   () => window.openNewModal("task",    node.id,    null,       "goals")],
+    ["📁 Добавить проект",   () => window.openNewModal("project", node.id,    null,       "goals")],
+  ] : node.type === "project" ? [
+    ["✅ Добавить задачу",   () => window.openNewModal("task",    null,       node.id,    "goals")],
+  ] : [ // task
+    ["✎ Редактировать",     () => window.editTask(node.id)],
+    [`✓ ${node.done?"Открыть":"Выполнить"}`, async () => { await toggleTask(node.id); window._refreshAll?.(); }],
+  ];
+
+  // Секция «Действия» (только не для root)
+  const actionItems = node.type !== "root" ? [
+    ["↗ Переместить",   () => startMoveMode(node.id)],
+    ["✕ Удалить ветку", async () => {
+      const label = node.type === "goal" ? "цель и все её задачи/проекты?"
+                  : node.type === "project" ? "проект и все его задачи?"
+                  : "задачу?";
+      if (!confirm("Удалить " + label)) return;
+      await deleteSubtree(node);
+      mmSel = null; window._refreshAll?.();
+    }, true],
+  ] : [];
+
+  menu.innerHTML = `
+    <div class="mm-menu-section">
+      ${addItems.map(([l,, d]) => `<button class="mm-ctx-item${d?" danger":""}">${l}</button>`).join("")}
+    </div>
+    ${actionItems.length ? `
+    <div class="mm-menu-sep"></div>
+    <div class="mm-menu-section">
+      ${actionItems.map(([l,, d]) => `<button class="mm-ctx-item${d?" danger":""}">${l}</button>`).join("")}
+    </div>` : ""}`;
+
+  const allItems = [...addItems, ...(actionItems.length ? [null] : []), ...actionItems].filter(Boolean);
+  menu.querySelectorAll(".mm-ctx-item").forEach((btn, i) => {
+    btn.onclick = () => { closeCtx(); allItems[i][1](); };
+  });
+
+  wrap.appendChild(menu);
+  mmCtxMenu = menu;
+  setTimeout(() => document.addEventListener("click", outsideClose), 50);
+}
+
+// ── Режим перемещения ноды ──
+function startMoveMode(id) {
+  mmMoveMode = true;
+  mmMoveId   = id;
+  const wrap = document.getElementById("mm-wrap");
+  wrap?.classList.add("move-mode");
+  // Показываем подсказку
+  const hint = document.getElementById("mm-hint");
+  if (hint) hint.textContent = "Нажмите на ноду, к которой хотите прикрепить · Esc — отмена";
+  drawMM();
+}
+
+// ── Прикрепляем ноду к новому родителю (только визуально — через Firebase) ──
+async function attachNodeTo(nodeId, newParentId) {
+  const node = mmFlat.find(n => n.id === nodeId);
+  if (!node || node.type === "root") return;
+
+  const newParent = mmFlat.find(n => n.id === newParentId);
+  if (!newParent) return;
+
+  // Обновляем связи в Firebase в зависимости от типа
+  const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  const { db } = await import("../firebase.js");
+  const { getUid } = await import("../db.js");
+  const uid = getUid();
+
+  try {
+    if (node.type === "goal") {
+      // Цель не имеет родителя в БД — просто перерисовываем
+    } else if (node.type === "project") {
+      // Проект → новый goalId
+      const newGoalId = newParent.type === "goal" ? newParent.id
+                      : newParent.type === "root" ? null : null;
+      await updateDoc(doc(db, "users", uid, "projects", nodeId), { goalId: newGoalId });
+    } else if (node.type === "task") {
+      // Задача → новый goalId и/или projId
+      const newGoalId = newParent.type === "goal"    ? newParent.id : null;
+      const newProjId = newParent.type === "project" ? newParent.id : null;
+      await updateDoc(doc(db, "users", uid, "tasks", nodeId), {
+        goalId: newGoalId,
+        projId: newProjId,
+      });
+    }
+    const { toast } = await import("../modal.js");
+    toast("Перемещено ✓");
+  } catch(err) {
+    console.error("attach error:", err);
+  }
+
+  const hint = document.getElementById("mm-hint");
+  if (hint) hint.textContent = "Клик — выбрать · Двойной клик — добавить · Перетаскивание — перемещать · Прокрутка — масштаб";
+
+  window._refreshAll?.();
+}
+
+// ── Удаляем ноду и всё поддерево ──
+async function deleteSubtree(node) {
+  // Рекурсивно собираем все id
+  const ids = { goals:[], projects:[], tasks:[] };
+  function collect(n) {
+    if (n.type === "goal")    ids.goals.push(n.id);
+    if (n.type === "project") ids.projects.push(n.id);
+    if (n.type === "task")    ids.tasks.push(n.id);
+    n.children.forEach(collect);
+  }
+  collect(node);
+  for (const id of ids.tasks)    await deleteTask(id);
+  for (const id of ids.projects) await deleteProject(id);
+  for (const id of ids.goals)    await deleteGoal(id);
 }
 
 function addChildOf(parent) {
@@ -432,6 +616,14 @@ function closeCtx() { mmCtxMenu?.remove(); mmCtxMenu = null; }
 function setupEvents(wrap) {
   wrap.addEventListener("click", e => {
     if (e.target === wrap || e.target === document.getElementById("mm-svg")) {
+      // В режиме перемещения — отмена по клику на пустое место
+      if (mmMoveMode) {
+        mmMoveMode = false; mmMoveId = null;
+        wrap.classList.remove("move-mode");
+        const hint = document.getElementById("mm-hint");
+        if (hint) hint.textContent = "Клик — выбрать · Двойной клик — добавить · Перетаскивание — перемещать · Прокрутка — масштаб";
+        drawMM(); return;
+      }
       closeCtx(); mmSel = null; drawMM(); renderFormatPanel(null);
       showCtx(e.clientX, e.clientY, null);
     }
@@ -464,12 +656,72 @@ function setupEvents(wrap) {
 }
 
 window.addEventListener("mousemove", e => {
-  if (mmPanning) { mmPan = { x: e.clientX - mmPanStart.x, y: e.clientY - mmPanStart.y }; drawMM(); }
+  // ── Drag ноды ──
+  if (mmDragNode) {
+    const dx = e.clientX - mmDragStart.x;
+    const dy = e.clientY - mmDragStart.y;
+    if (!mmDragMoved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+      mmDragMoved = true;
+      closeCtx();
+    }
+    if (mmDragMoved) {
+      mmDragNode.x += dx / mmScale;
+      mmDragNode.y += dy / mmScale;
+      mmDragStart = { x: e.clientX, y: e.clientY };
+      drawMM();
+    }
+    return;
+  }
+  // ── Pan канваса ──
+  if (mmPanning) {
+    mmPan = { x: e.clientX - mmPanStart.x, y: e.clientY - mmPanStart.y };
+    drawMM();
+  }
 });
-window.addEventListener("mouseup",  () => {
-  if (mmPanning) { mmPanning = false; const w = document.getElementById("mm-wrap"); if (w) w.style.cursor = ""; }
+
+window.addEventListener("mouseup", async () => {
+  if (mmDragNode && mmDragMoved) {
+    // Сохраняем позицию в Firebase
+    await saveMmPos(mmDragNode.id, mmDragNode.x, mmDragNode.y);
+  }
+  mmDragNode  = null;
+  mmDragMoved = false;
+  if (mmPanning) {
+    mmPanning = false;
+    const w = document.getElementById("mm-wrap"); if (w) w.style.cursor = "";
+  }
 });
-window.addEventListener("touchend", () => { mmPanning = false; });
+
+window.addEventListener("touchmove", e => {
+  if (mmDragNode && e.touches.length === 1) {
+    const dx = e.touches[0].clientX - mmDragStart.x;
+    const dy = e.touches[0].clientY - mmDragStart.y;
+    if (!mmDragMoved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) mmDragMoved = true;
+    if (mmDragMoved) {
+      mmDragNode.x += dx / mmScale;
+      mmDragNode.y += dy / mmScale;
+      mmDragStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      drawMM(); e.preventDefault();
+    }
+  }
+}, { passive:false });
+
+window.addEventListener("touchend", async () => {
+  if (mmDragNode && mmDragMoved) await saveMmPos(mmDragNode.id, mmDragNode.x, mmDragNode.y);
+  mmDragNode = null; mmDragMoved = false; mmPanning = false;
+});
+
+// Отмена режима «Переместить» по Escape
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape" && mmMoveMode) {
+    mmMoveMode = false; mmMoveId = null;
+    const wrap = document.getElementById("mm-wrap");
+    wrap?.classList.remove("move-mode");
+    const hint = document.getElementById("mm-hint");
+    if (hint) hint.textContent = "Клик — выбрать · Двойной клик — добавить · Перетаскивание — перемещать · Прокрутка — масштаб";
+    drawMM();
+  }
+});
 
 document.getElementById("mm-reset")?.addEventListener("click",    () => { mmPan = {x:0,y:0}; mmScale = 1; drawMM(); });
 document.getElementById("mm-zoom-in")?.addEventListener("click",  () => { mmScale = Math.min(3, mmScale + 0.2); drawMM(); });
