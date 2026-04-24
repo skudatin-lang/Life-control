@@ -5,26 +5,17 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
 <title>Life-control</title>
 
-<!-- ── PWA ── -->
-<link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#5A3510"/>
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json"/>
+<meta name="theme-color" content="#7B4F1E"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Life-control"/>
-<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
 
-<!-- ── Fonts ── -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-
-<!-- ── Styles ── -->
 <link rel="stylesheet" href="css/main.css"/>
-
-<!--
-  ВАЖНО: theme.js подключается через <script> ДО app.js,
-  чтобы тема применялась мгновенно и не было мигания при загрузке.
-  Используем type="module" чтобы сработал IIFE внутри файла.
--->
-<script type="module" src="js/theme.js"></script>
 </head>
 <body>
 
@@ -52,8 +43,6 @@
   <header class="topbar">
     <button class="tb-burg" id="burger"><span></span><span></span><span></span></button>
     <span class="tb-ttl" id="tb-ttl">Дашборд</span>
-    <!-- Кнопка темы в мобильном topbar -->
-    <button class="theme-toggle" title="Сменить тему">🌙</button>
     <button class="tb-new" id="tb-new">+ Новая</button>
   </header>
   <div class="sb-ov" id="sb-ov"></div>
@@ -69,8 +58,6 @@
       <div class="sb-btns">
         <button class="sb-btn" id="btn-logout">Выйти</button>
         <button class="sb-btn" onclick="openCal()">Календарь</button>
-        <!-- Кнопка темы в сайдбаре (десктоп) -->
-        <button class="sb-btn theme-toggle" title="Сменить тему" style="flex:0 0 auto;padding:7px 10px;">🌙</button>
       </div>
     </div>
     <div class="sb-body" id="sb-body"></div>
@@ -177,7 +164,18 @@
 
 <div class="toast hidden" id="toast"></div>
 
-<!-- ════════════════════════════ SCRIPTS ════════════════════════════ -->
+<!-- СКРИПТ ПРИЛОЖЕНИЯ -->
 <script type="module" src="js/app.js"></script>
+
+<!-- РЕГИСТРАЦИЯ SERVICE WORKER -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then(reg => console.log("[SW] Registered:", reg.scope))
+        .catch(err => console.warn("[SW] Registration failed:", err));
+    });
+  }
+</script>
 </body>
 </html>

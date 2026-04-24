@@ -1,13 +1,12 @@
 {
   "name": "Life-control",
-  "short_name": "Life-ctrl",
+  "short_name": "LC",
   "description": "Твоя система. Твои правила.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "any",
   "background_color": "#EDE3CC",
-  "theme_color": "#5A3510",
-  "lang": "ru",
+  "theme_color": "#7B4F1E",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -23,5 +22,5 @@
     }
   ],
   "categories": ["productivity", "lifestyle"],
-  "screenshots": []
+  "lang": "ru"
 }
