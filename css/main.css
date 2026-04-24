@@ -1192,14 +1192,145 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 
 /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
+/* ═══════════════════════ RESPONSIVE — ПЛАНШЕТ ═══════════════════════ */
 @media(max-width:900px){
-  /* На планшете/мобиле sidebar выезжает поверх контента */
-  .sidebar{position:fixed;top:0;left:0;bottom:0;width:min(var(--sb), 92vw);min-width:0;transform:translateX(-100%);transition:transform var(--tt);box-shadow:4px 0 24px var(--sh);}
-  .sidebar.open{transform:translateX(0);}
-  .topbar{display:flex;}
-  #s-app{padding-top:var(--tb);}
-  .main-area{width:100%;}
-  .dash-grid{grid-template-columns:1fr 1fr;}
-  .dt-lbl{font-size:12px;}.dt-val{font-size:14px;}
-  .entry-picker-box{border-radius:var(--rxl) var(--rxl) 0 0;}
+  :root{ --sb:420px; }
+
+  /* Разрешаем скролл */
+  html, body{ overflow:auto; height:auto; }
+
+  /* Приложение — вертикальная колонка */
+  #s-app{ flex-direction:column; overflow:auto; position:relative; height:auto; min-height:100vh; }
+
+  /* Скрываем топбар — он не нужен в вертикальном layout */
+  .topbar{ display:none; }
+
+  /* Sidebar — полная ширина, статичный, виден всегда */
+  .sidebar{
+    position:static;
+    width:100%; min-width:0;
+    border-right:none;
+    border-bottom:2px dashed var(--bd);
+    transform:none !important;
+    box-shadow:none;
+    max-height:none;
+    overflow:visible;
+    flex-shrink:0;
+  }
+  /* sb-ov не нужен */
+  .sb-ov{ display:none !important; }
+
+  /* Профиль в sidebar — горизонтальный на планшете */
+  .sb-prof{
+    display:flex; flex-direction:row; flex-wrap:wrap;
+    align-items:center; gap:10px; padding:12px 16px;
+    text-align:left;
+  }
+  .sb-mo{ margin-bottom:0; order:-1; width:100%; }
+  .sb-av{ width:48px; height:48px; margin:0; flex-shrink:0; }
+  .sb-un, .sb-ue{ display:inline; }
+  .sb-new{ margin:0; flex:1; min-width:120px; }
+  .sb-btns{ margin-top:0; }
+
+  /* Main area — полная ширина */
+  .main-area{ width:100%; flex:1; min-height:0; }
+
+  /* Mod body скролл */
+  .mod-body{ padding-bottom:80px; }
+
+  .dash-grid{ grid-template-columns:1fr 1fr; }
+  .dt-lbl{ font-size:12px; } .dt-val{ font-size:14px; }
+  .entry-picker-box{ border-radius:var(--rxl) var(--rxl) 0 0; }
 }
+
+/* ═══════════════════════ RESPONSIVE — МОБИЛЬНЫЙ ═══════════════════════ */
+@media(max-width:600px){
+  :root{ --sb:100%; }
+
+  /* Разрешаем скролл на мобиле */
+  html, body{ overflow:auto; height:auto; }
+  #s-app{ overflow:auto; position:relative; height:auto; min-height:100vh; }
+  .topbar{ display:none; }
+
+  /* Sidebar */
+  .sidebar{
+    position:static; width:100%; min-width:0;
+    border-right:none; border-bottom:2px dashed var(--bd);
+    transform:none !important; box-shadow:none;
+    flex-shrink:0;
+  }
+  .sb-ov{ display:none !important; }
+
+  /* Профиль — компактный вертикальный */
+  .sb-prof{ padding:14px 14px 10px; text-align:center; }
+  .sb-av{ width:52px; height:52px; }
+  .sb-new{ font-size:10px; padding:8px 10px; }
+  .sb-btns{ flex-wrap:wrap; }
+
+  /* sb-body — горизонтальный скролл плашек */
+  .sb-body{ padding:10px 12px; }
+  .sb-tiles-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:7px;
+  }
+  .sb-tile{ padding:12px 6px; }
+  .sb-tile-ico{ font-size:20px; }
+  .sb-tile-lbl{ font-size:8px; }
+  .sb-tile-cnt{ font-size:13px; }
+
+  /* Панель форматирования целей — компактнее */
+  .fmt-section{ margin-bottom:10px; padding-bottom:10px; }
+  .fmt-color-grid{ grid-template-columns:repeat(8,1fr); }
+
+  /* Main area */
+  .main-area{ width:100%; flex:1; min-height:0; }
+
+  /* mwrap и mod — статичные в потоке документа */
+  .mwrap{ position:static; overflow:visible; height:auto; }
+  .mod{ position:static; display:none; flex-direction:column; overflow:visible; }
+  .mod.on{ display:flex; }
+  .mod-body{ padding:12px 12px 80px; overflow:visible; flex:none; }
+
+  /* Nav tabs — мельче */
+  .nt{ font-size:8px; padding:10px 4px; min-width:50px; }
+
+  /* Dash */
+  .dash-grid{ grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .dash-tile{ padding:14px 10px; gap:6px; }
+  .dt-ico{ font-size:22px; }
+  .dt-lbl{ font-size:11px; }
+  .dt-val{ font-size:13px; }
+
+  /* Dashboard sidebar блоки */
+  .dsb-profile{ padding:14px 12px; }
+  .dsb-name{ font-size:15px; }
+  .dsb-eff-wrap{ padding:12px 10px; }
+
+  /* Mind map — уменьшаем высоту чтобы влезало */
+  .mm-wrap{ min-height:50vh; }
+  .mm-hint{ font-size:8px; padding:4px 12px; }
+
+  /* Модальное окно */
+  .m-box{ max-height:92vh; }
+  .m-body{ padding:12px 14px; }
+
+  /* Календарь */
+  .cal-box{ max-height:96vh; }
+  .cal-cell{ min-height:44px; }
+  .cc-day{ font-size:10px; }
+  .cc-ev{ font-size:8px; }
+
+  /* Карточки */
+  .icard{ padding:10px 10px; gap:8px; }
+  .ic-ttl{ font-size:11px; }
+
+  /* Entry picker */
+  .entry-picker-box{ padding:16px 14px 24px; }
+  .ep-btn{ padding:12px 12px; gap:10px; }
+  .ep-ico{ font-size:24px; width:34px; }
+  .ep-lbl{ font-size:11px; }
+
+  /* FAB чуть выше из-за нижней панели браузера */
+  .fab{ bottom:28px; right:16px; width:46px; height:46px; font-size:24px; }
+}
+
