@@ -545,25 +545,44 @@ function setupEvents(wrap) {
 
   window.addEventListener("mousemove",e=>{
     if(drag){
-      const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;
+      const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
       if(!drag.moved&&(Math.abs(dx)>5||Math.abs(dy)>5)){
         drag.moved=true; reparent.active=true;
+        // Призрак
         const gh=document.createElement("div");
         gh.className="mm-drag-ghost"; gh.textContent=drag.node.label;
         document.body.appendChild(gh); reparent.ghost=gh;
         wrap.style.cursor="grabbing";
       }
-      if(drag.moved&&reparent.ghost){
-        reparent.ghost.style.left=e.clientX+10+"px";
-        reparent.ghost.style.top=e.clientY-14+"px";
+      if(drag.moved){
+        // Двигаем ноду за курсором плавно
+        drag.node.x+=dx/mmScale;
+        drag.node.y+=dy/mmScale;
+        drag.sx=e.clientX; drag.sy=e.clientY; // обновляем стартовую точку!
+
+        // Обновляем призрак
+        if(reparent.ghost){
+          reparent.ghost.style.left=e.clientX+12+"px";
+          reparent.ghost.style.top=e.clientY-16+"px";
+        }
+
+        // Ищем drop-target
         const r=wrap.getBoundingClientRect();
-        const mx=(e.clientX-r.left-mmPan.x)/mmScale,my=(e.clientY-r.top-mmPan.y)/mmScale;
+        const mx=(e.clientX-r.left-mmPan.x)/mmScale;
+        const my=(e.clientY-r.top-mmPan.y)/mmScale;
         let hov=null;
-        for(const n of mmFlat){if(n.id===drag.node.id)continue;if(mx>=n.x&&mx<=n.x+n.w&&my>=n.y&&my<=n.y+n.h){hov=n;break;}}
+        for(const n of mmFlat){
+          if(n.id===drag.node.id) continue;
+          if(mx>=n.x&&mx<=n.x+n.w&&my>=n.y&&my<=n.y+n.h){hov=n;break;}
+        }
         const nd=hov?.id||null;
-        if(nd!==reparent.dropId){reparent.dropId=nd;drawMM();}
-        if(hov){const t=DROP_TYPE[hov.type]||"task";reparent.ghost.dataset.hint=`→ ${{goal:"Цель",project:"Проект",task:"Задача"}[t]}`;}
-        else reparent.ghost.dataset.hint="";
+        if(nd!==reparent.dropId) reparent.dropId=nd;
+        if(hov&&reparent.ghost){
+          const t=DROP_TYPE[hov.type]||"task";
+          reparent.ghost.dataset.hint=`→ ${{goal:"Цель",project:"Проект",task:"Задача"}[t]}`;
+        } else if(reparent.ghost) reparent.ghost.dataset.hint="";
+
+        drawMM(); // рисуем каждый frame
       }
       return;
     }
@@ -585,7 +604,7 @@ function setupEvents(wrap) {
     cleanDrag(moved); touchPan=false; panning=false;
   });
 
-  // Touch drag нод — обрабатываем на window чтобы не терять touch при быстром движении
+  // Touch drag нод
   window.addEventListener("touchmove",e=>{
     if(!drag) return;
     if(e.touches.length!==1) return;
@@ -593,23 +612,19 @@ function setupEvents(wrap) {
     const dx=t.clientX-drag.sx, dy=t.clientY-drag.sy;
     if(!drag.moved&&(Math.abs(dx)>8||Math.abs(dy)>8)){
       drag.moved=true; reparent.active=true;
-      // Создаём призрак
       const gh=document.createElement("div");
       gh.className="mm-drag-ghost"; gh.textContent=drag.node.label;
       document.body.appendChild(gh); reparent.ghost=gh;
     }
     if(drag.moved){
       e.preventDefault();
-      // Двигаем ноду
-      drag.node.x+=(t.clientX-drag.sx)/mmScale;
-      drag.node.y+=(t.clientY-drag.sy)/mmScale;
+      drag.node.x+=dx/mmScale;
+      drag.node.y+=dy/mmScale;
       drag.sx=t.clientX; drag.sy=t.clientY;
-      // Обновляем призрак
       if(reparent.ghost){
-        reparent.ghost.style.left=t.clientX+10+"px";
-        reparent.ghost.style.top=t.clientY-14+"px";
+        reparent.ghost.style.left=t.clientX+12+"px";
+        reparent.ghost.style.top=t.clientY-16+"px";
       }
-      // Ищем drop-target
       const r=wrap.getBoundingClientRect();
       const mx=(t.clientX-r.left-mmPan.x)/mmScale;
       const my=(t.clientY-r.top-mmPan.y)/mmScale;
@@ -618,13 +633,12 @@ function setupEvents(wrap) {
         if(n.id===drag.node.id) continue;
         if(mx>=n.x&&mx<=n.x+n.w&&my>=n.y&&my<=n.y+n.h){hov=n;break;}
       }
-      const nd=hov?.id||null;
-      if(nd!==reparent.dropId){reparent.dropId=nd; drawMM();}
-      else drawMM();
+      reparent.dropId=hov?.id||null;
       if(hov&&reparent.ghost){
         const t2=DROP_TYPE[hov.type]||"task";
         reparent.ghost.dataset.hint=`→ ${{goal:"Цель",project:"Проект",task:"Задача"}[t2]}`;
       } else if(reparent.ghost) reparent.ghost.dataset.hint="";
+      drawMM();
     }
   },{passive:false});
 
@@ -690,11 +704,13 @@ function setupEvents(wrap) {
 }
 
 function cleanDrag(wasMoved){
+  // Удаляем призрак надёжно — и через ссылку, и через querySelectorAll
   reparent.ghost?.remove();
+  document.querySelectorAll(".mm-drag-ghost").forEach(g=>g.remove());
   reparent={active:false,nodeId:null,ghost:null,dropId:null};
   drag=null;
   document.getElementById("mm-wrap")?.style.removeProperty("cursor");
-  if(wasMoved) drawMM(); // перерисовываем только если нода реально двигалась
+  if(wasMoved) drawMM();
 }
 
 // ══════════════════════════════════════════
