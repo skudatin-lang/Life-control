@@ -1,33 +1,32 @@
 // ════════════════════════════════════════
 //  APP.JS — главный файл запуска
-//  js/app.js
+//  Собирает все модули вместе
 // ════════════════════════════════════════
 
-import { auth }                           from "./firebase.js";
+import { auth }                        from "./firebase.js";
 import { setUid, getTasks, getIdeas,
          getDiary, deleteTask, deleteIdea,
          deleteDiaryEntry, deleteProject,
          deleteGoal, deleteTemplate,
-         toggleTask, esc, isOv, fdt,
-         addInbox, deleteInboxItem,
-         updateTask }                     from "./db.js";
+         toggleTask, esc, isOv, fdt }  from "./db.js";
 import { initModal, toast, addSubRow,
-         setPriority }                    from "./modal.js";
+         setPriority }                 from "./modal.js";
 import { switchTab, registerTab,
-         openSidebar, closeSidebar }      from "./router.js";
+         openSidebar, closeSidebar }   from "./router.js";
 import { openCal, closeCal,
-         initCalendar }                   from "./calendar.js";
+         initCalendar }                from "./calendar.js";
 import { openNewModal, editTaskModal,
-         editIdeaModal, editDiaryModal }  from "./forms.js";
-import { initStorage }                    from "./storage.js";
-import { initDashboard }                  from "./tabs/dashboard.js";
-import { initPlan, renderPlan }           from "./tabs/plan.js";
-import { initGoals, renderGoals }         from "./tabs/goals.js";
-import { initIdeas, renderIdeas }         from "./tabs/ideas.js";
-import { initDiary, renderDiary }         from "./tabs/diary.js";
-import { saveWeekGoal }                   from "./db.js";
-import { MONTHS }                         from "./utils.js";
-import { openModal, closeModal }          from "./modal.js";
+         editIdeaModal, editDiaryModal,
+         buildTaskModal }              from "./forms.js";
+import { initStorage }                 from "./storage.js";
+import { initDashboard }               from "./tabs/dashboard.js";
+import { initPlan, renderPlan }        from "./tabs/plan.js";
+import { initGoals, renderGoals }      from "./tabs/goals.js";
+import { initIdeas, renderIdeas }      from "./tabs/ideas.js";
+import { initDiary, renderDiary }      from "./tabs/diary.js";
+import { saveWeekGoal }                from "./db.js";
+import { MONTHS }                      from "./utils.js";
+import { initTheme }                   from "./theme.js";
 
 import {
   GoogleAuthProvider, OAuthProvider,
@@ -38,6 +37,7 @@ const $ = id => document.getElementById(id);
 
 // ════════════════════════════════════════
 //  WINDOW GLOBALS
+//  (нужны для inline onclick в HTML)
 // ════════════════════════════════════════
 window.openNewModal = openNewModal;
 window.openCal      = openCal;
@@ -77,70 +77,23 @@ window._delTask = async id => {
   if (!confirm("Удалить задачу?")) return;
   await deleteTask(id);
   toast("Задача удалена");
+  const { closeModal } = await import("./modal.js");
   closeModal();
   refreshAll();
 };
 
 window._refreshAll = refreshAll;
 
-// ── Pin/Unpin задачи ──
-window._pinTask = async (id, currentPinned) => {
-  await updateTask(id, { isPinned: !currentPinned });
-  refreshAll();
-};
-
-// ── Фильтр по тегу в плане ──
-window._setTagFilter = tag => {
-  window._activeTag = window._activeTag === tag ? null : tag;
-  refreshAll();
-};
-
-// ── Inbox: обработать запись (передать текст в форму задачи) ──
-window._processInbox = async (id, text) => {
-  await deleteInboxItem(id);
-  openNewModal("task", null, null, "dashboard");
-  setTimeout(() => {
-    const el = document.getElementById("t-title");
-    if (el) { el.value = text; el.focus(); }
-  }, 100);
-};
-
-// ── Inbox: удалить запись ──
-window._dismissInbox = async id => {
-  await deleteInboxItem(id);
-  toast("Удалено из Хаоса");
-  refreshAll();
-};
-
-// ── Quick Capture (Место Хаоса) ──
-window.quickCapture = () => {
-  openModal("⚡ Место Хаоса", `
-    <div class="fg">
-      <label class="fl">Быстрая мысль, задача или идея</label>
-      <textarea class="txta" id="cap-txt"
-        placeholder="Напишите что угодно — разберёте потом..."
-        style="min-height:100px;resize:none"></textarea>
-    </div>`,
-    async () => {
-      const txt = document.getElementById("cap-txt")?.value.trim();
-      if (!txt) return;
-      await addInbox({ text: txt });
-      toast("Захвачено ⚡");
-    }
-  );
-  setTimeout(() => document.getElementById("cap-txt")?.focus(), 80);
-};
-
 // ════════════════════════════════════════
-//  REFRESH
+//  REFRESH — обновляет текущую вкладку
 // ════════════════════════════════════════
 async function refreshAll() {
   const tab = (await import("./router.js")).curTab;
-  if      (tab === "dashboard") { const { renderDashboard } = (await import("./tabs/dashboard.js")); await renderDashboard?.(); }
-  else if (tab === "plan")      await renderPlan();
-  else if (tab === "goals")     await renderGoals();
-  else if (tab === "ideas")     await renderIdeas();
-  else if (tab === "diary")     await renderDiary();
+  if      (tab==="dashboard") { const {renderDashboard}=(await import("./tabs/dashboard.js")); await renderDashboard?.(); }
+  else if (tab==="plan")      await renderPlan();
+  else if (tab==="goals")     await renderGoals();
+  else if (tab==="ideas")     await renderIdeas();
+  else if (tab==="diary")     await renderDiary();
 }
 
 // ════════════════════════════════════════
@@ -156,23 +109,37 @@ function initApp() {
   initIdeas();
   initDiary();
 
+  // Инициализируем тему и вешаем обработчики на кнопки-переключатели
+  initTheme();
+
+  // Nav tabs
   document.querySelectorAll(".nt").forEach(t =>
     t.addEventListener("click", () => switchTab(t.dataset.tab))
   );
 
+  // Sidebar toggle
   $("burger")?.addEventListener("click", openSidebar);
   $("sb-ov")?.addEventListener("click",  closeSidebar);
 
-  // Кнопка ⚡ Место Хаоса
-  $("btn-quick-cap")?.addEventListener("click", window.quickCapture);
-
+  // New entry button — зависит от текущей вкладки
   async function newForTab() {
     const { curTab } = await import("./router.js");
-    const map = { dashboard: "task", plan: "task", goals: "goal", ideas: "idea", diary: "diary" };
+    const map = { dashboard:"task", plan:"task", goals:"goal", ideas:"idea", diary:"diary" };
     openNewModal(map[curTab] || "task", null, null, curTab);
   }
   $("sb-new")?.addEventListener("click", () => { closeSidebar(); newForTab(); });
   $("tb-new")?.addEventListener("click", newForTab);
+}
+
+// ════════════════════════════════════════
+//  PWA — Service Worker Registration
+// ════════════════════════════════════════
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js")
+      .then(reg => console.log("SW зарегистрирован:", reg.scope))
+      .catch(err => console.warn("SW ошибка:", err));
+  });
 }
 
 // ════════════════════════════════════════
@@ -197,7 +164,7 @@ $("btn-y").onclick = async () => {
   try {
     await signInWithPopup(auth, new OAuthProvider("yandex.com"));
   } catch(e) {
-    alert(e.code === "auth/unauthorized-domain"
+    alert(e.code==="auth/unauthorized-domain"
       ? "Добавьте skudatin-lang.github.io в Firebase Authorized domains."
       : "Яндекс: " + e.code);
   }
@@ -227,27 +194,3 @@ onAuthStateChanged(auth, async user => {
     $("s-auth").classList.add("on");
   }
 });
-
-// ════════════════════════════════════════
-//  THEME TOGGLE
-//  Переключение: светлая (оригинал) ↔ тёмная
-// ════════════════════════════════════════
-(function initTheme() {
-  // Читаем сохранённую тему (или берём системную)
-  const saved = localStorage.getItem("lc-theme");
-  const sysDark = window.matchMedia("(prefers-color-scheme:dark)").matches;
-  const isDark  = saved ? saved === "dark" : sysDark;
-  if (isDark) document.documentElement.classList.add("theme-dark");
-  updateThemeBtn(isDark);
-})();
-
-window._toggleTheme = () => {
-  const isDark = document.documentElement.classList.toggle("theme-dark");
-  localStorage.setItem("lc-theme", isDark ? "dark" : "light");
-  updateThemeBtn(isDark);
-};
-
-function updateThemeBtn(isDark) {
-  const btn = document.getElementById("theme-toggle");
-  if (btn) btn.textContent = isDark ? "☀️ Светлая" : "🌙 Тёмная";
-}

@@ -3,14 +3,17 @@
 //  js/storage.js
 // ════════════════════════════════════════
 
-import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getApp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getUid } from "./db.js";
 
 let storage = null;
 
-// ВАЖНО: функция должна быть async, иначе await внутри — синтаксическая ошибка
+// ИСПРАВЛЕНО: функция должна быть async, так как раньше внутри
+// обычной функции использовался await — это вызывало SyntaxError.
 export async function initStorage() {
-  const { getApp } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
   storage = getStorage(getApp());
 }
 
