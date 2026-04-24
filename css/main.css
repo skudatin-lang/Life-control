@@ -843,6 +843,80 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 .fmt-add-btn:hover{ background:var(--go-d); transform:translateY(-1px); }
 
+/* ═══════════════════════ SIDEBAR TILES ═══════════════════════ */
+.sb-tiles-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:4px;
+}
+.sb-tile{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  padding:14px 8px;
+  background:var(--bg-w);
+  border:1.5px solid var(--bd);
+  border-radius:var(--rl);
+  cursor:pointer;
+  transition:all var(--tt);
+  text-align:center;
+}
+.sb-tile:hover{
+  border-color:var(--go);
+  background:var(--cr);
+  transform:translateY(-1px);
+  box-shadow:0 3px 12px var(--sh);
+}
+.sb-tile.on{
+  background:rgba(200,150,62,.14);
+  border-color:var(--go);
+  box-shadow:inset 0 0 0 1px var(--go);
+}
+.sb-tile.sb-tile-accent{
+  background:var(--go);
+  border-color:var(--go-d);
+}
+.sb-tile.sb-tile-accent:hover{
+  background:var(--go-l);
+  transform:translateY(-1px);
+}
+.sb-tile.sb-tile-accent .sb-tile-lbl,
+.sb-tile.sb-tile-accent .sb-tile-ico{ color:#fff; }
+.sb-tile-ico{
+  font-size:22px;
+  line-height:1;
+}
+.sb-tile-lbl{
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  color:var(--br-d);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  line-height:1.3;
+}
+.sb-tile.on .sb-tile-lbl{ color:var(--go-d); }
+.sb-tile-cnt{
+  font-family:var(--fd);
+  font-size:14px;
+  font-weight:800;
+  color:var(--go);
+  min-height:18px;
+}
+.sb-tile.on .sb-tile-cnt{ color:var(--go-d); }
+
+/* ── Поиск в дневнике ── */
+.diary-search-wrap{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+  align-items:center;
+}
+.diary-search-wrap .inp{ flex:1; }
+
 /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
 @media(max-width:900px){
   /* На планшете/мобиле sidebar выезжает поверх контента */
