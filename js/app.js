@@ -16,7 +16,8 @@ import { switchTab, registerTab,
 import { openCal, closeCal,
          initCalendar }                from "./calendar.js";
 import { openNewModal, editTaskModal,
-         editIdeaModal, editDiaryModal } from "./forms.js";
+         editIdeaModal, editDiaryModal,
+         buildTaskModal }              from "./forms.js";
 import { initStorage }                 from "./storage.js";
 import { initDashboard }               from "./tabs/dashboard.js";
 import { initPlan, renderPlan }        from "./tabs/plan.js";
@@ -25,7 +26,6 @@ import { initIdeas, renderIdeas }      from "./tabs/ideas.js";
 import { initDiary, renderDiary }      from "./tabs/diary.js";
 import { saveWeekGoal }                from "./db.js";
 import { MONTHS }                      from "./utils.js";
-import { initTheme }                   from "./theme.js";
 
 import {
   GoogleAuthProvider, OAuthProvider,
@@ -101,15 +101,12 @@ async function refreshAll() {
 function initApp() {
   initModal();
   initCalendar();
-  initStorage();
+  initStorage(); // инициализация Firebase Storage
   initDashboard();
   initPlan();
   initGoals();
   initIdeas();
   initDiary();
-
-  // Инициализируем тему и вешаем обработчики на кнопки-переключатели
-  initTheme();
 
   // Nav tabs
   document.querySelectorAll(".nt").forEach(t =>
@@ -128,17 +125,6 @@ function initApp() {
   }
   $("sb-new")?.addEventListener("click", () => { closeSidebar(); newForTab(); });
   $("tb-new")?.addEventListener("click", newForTab);
-}
-
-// ════════════════════════════════════════
-//  PWA — Service Worker Registration
-// ════════════════════════════════════════
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js")
-      .then(reg => console.log("SW зарегистрирован:", reg.scope))
-      .catch(err => console.warn("SW ошибка:", err));
-  });
 }
 
 // ════════════════════════════════════════
