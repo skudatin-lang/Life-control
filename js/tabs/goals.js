@@ -494,14 +494,16 @@ function showRadial(node, nodeEl) {
   wrap.appendChild(menu);
   radialEl = menu;
 
-  // Закрываем при клике вне
-  setTimeout(() => {
-    document.addEventListener("click", _radialOutside, { once: true });
-  }, 50);
-}
-
-function _radialOutside(e) {
-  if (radialEl && !radialEl.contains(e.target)) closeRadial();
+  // Пропускаем текущий event loop — иначе тот же клик закроет меню
+  let skipFirst = true;
+  const outsideHandler = (e) => {
+    if (skipFirst) { skipFirst = false; return; }
+    if (radialEl && !radialEl.contains(e.target)) {
+      closeRadial();
+      document.removeEventListener("click", outsideHandler);
+    }
+  };
+  document.addEventListener("click", outsideHandler);
 }
 
 // Подменю смены типа
@@ -548,7 +550,15 @@ function showTypeMenu(node, cx, cy) {
 
   wrap.appendChild(menu);
   radialEl = menu;
-  setTimeout(() => document.addEventListener("click", _radialOutside, { once:true }), 50);
+  let skipFirst2 = true;
+  const outsideHandler2 = (e) => {
+    if (skipFirst2) { skipFirst2 = false; return; }
+    if (radialEl && !radialEl.contains(e.target)) {
+      closeRadial();
+      document.removeEventListener("click", outsideHandler2);
+    }
+  };
+  document.addEventListener("click", outsideHandler2);
 }
 
 // Смена типа через перемещение в дереве
