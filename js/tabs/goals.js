@@ -70,14 +70,13 @@ function renderSidebar(selNode) {
   ];
 
   sb.innerHTML = `
-    <!-- Выбранный элемент -->
+    <!-- Добавить — наверху -->
     <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">◈</span> Элемент</div>
-      <div class="fmt-sel-badge ${selNode ? "active" : ""}">
-        ${ selNode
-          ? `<span class="fmt-sel-type">${{root:"Корень",goal:"Цель",project:"Проект",task:"Задача"}[selNode.type]||""}</span>
-             <span class="fmt-sel-name">${esc(selNode.label)}</span>`
-          : `<span class="fmt-sel-none">Нажмите на элемент карты</span>` }
+      <div class="fmt-sec-title"><span class="fmt-sec-icon">✦</span> Добавить</div>
+      <div class="fmt-add-btns">
+        <button class="fmt-add-btn" onclick="window.openNewModal('goal',null,null,'goals')">+ Цель</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('task',null,null,'goals')">+ Задача</button>
+        <button class="fmt-add-btn" onclick="window.openNewModal('project',null,null,'goals')">+ Проект</button>
       </div>
     </div>
 
@@ -178,16 +177,6 @@ function renderSidebar(selNode) {
           <span class="fmt-toggle-knob"></span>
         </button>
       </label>
-    </div>
-
-    <!-- Добавить -->
-    <div class="fmt-section">
-      <div class="fmt-sec-title"><span class="fmt-sec-icon">✦</span> Добавить</div>
-      <div class="fmt-add-btns">
-        <button class="fmt-add-btn" onclick="window.openNewModal('goal',null,null,'goals')">+ Цель</button>
-        <button class="fmt-add-btn" onclick="window.openNewModal('task',null,null,'goals')">+ Задача</button>
-        <button class="fmt-add-btn" onclick="window.openNewModal('project',null,null,'goals')">+ Проект</button>
-      </div>
     </div>`;
 }
 
@@ -494,7 +483,8 @@ function showRadial(node, nodeEl) {
 
     const b = document.createElement("button");
     b.className = `mm-radial-btn${btn.danger ? " danger" : ""}`;
-    b.style.cssText = `transform:translate(${bx}px,${by}px);animation-delay:${i * 30}ms`;
+    // Позиция: смещение от центра минус половина размера кнопки (23px)
+    b.style.cssText = `left:${bx - 23}px;top:${by - 23}px;animation-delay:${i * 25}ms`;
     b.innerHTML = `<span class="mm-rb-icon">${btn.icon}</span><span class="mm-rb-lbl">${btn.label}</span>`;
     b.title = btn.label;
     b.onclick = e => { e.stopPropagation(); btn.action(); };
@@ -538,7 +528,7 @@ function showTypeMenu(node, cx, cy) {
     const by = Math.round(R * Math.sin(angle));
     const b = document.createElement("button");
     b.className = "mm-radial-btn";
-    b.style.cssText = `transform:translate(${bx}px,${by}px);animation-delay:${i*30}ms`;
+    b.style.cssText = `left:${bx - 23}px;top:${by - 23}px;animation-delay:${i*25}ms`;
     b.innerHTML = `<span class="mm-rb-icon">${t.icon}</span><span class="mm-rb-lbl">${t.label}</span>`;
     b.onclick = async e => {
       e.stopPropagation();
@@ -548,10 +538,10 @@ function showTypeMenu(node, cx, cy) {
     menu.appendChild(b);
   });
 
-  // Кнопка «назад»
+  // Кнопка «назад» — снизу
   const back = document.createElement("button");
   back.className = "mm-radial-btn";
-  back.style.cssText = `transform:translate(0px,${52}px)`;
+  back.style.cssText = `left:${-23}px;top:${R - 23}px`;
   back.innerHTML = `<span class="mm-rb-icon">←</span><span class="mm-rb-lbl">Назад</span>`;
   back.onclick = e => { e.stopPropagation(); closeRadial(); showRadial(node, null); };
   menu.appendChild(back);
