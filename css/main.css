@@ -977,6 +977,67 @@ body{color:var(--tx);font-family:var(--fb);font-size:14px;line-height:1.5;-webki
 }
 .diary-search-wrap .inp{ flex:1; }
 
+/* ── Inline-меню ноды (XMind-стиль) ── */
+.mm-node-menu .mm-menu-section{ display:flex; flex-direction:column; gap:2px; }
+.mm-menu-sep{
+  height:1px; background:var(--bd); margin:5px 0;
+}
+
+/* ── Режим перемещения ── */
+.mm-wrap.move-mode{ cursor:crosshair !important; }
+.mm-wrap.move-mode .mm-node{ opacity:.5; transition:opacity .15s; }
+.mm-wrap.move-mode .mm-node.move-target{
+  opacity:1;
+  box-shadow:0 0 0 3px var(--go), 0 4px 18px rgba(80,40,10,.25) !important;
+  animation:mm-pulse .8s ease-in-out infinite alternate;
+}
+@keyframes mm-pulse{
+  from{ box-shadow:0 0 0 2px var(--go); }
+  to  { box-shadow:0 0 0 5px var(--go-l); }
+}
+
+/* ── Облако тегов в поиске дневника ── */
+.diary-tags-cloud{
+  margin-bottom:14px;
+}
+.diary-tags-cloud-lbl{
+  font-family:var(--fd);
+  font-size:9px;
+  font-weight:700;
+  color:var(--tx-l);
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  margin-bottom:8px;
+}
+.diary-tags-cloud-wrap{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.diary-cloud-tag{
+  background:rgba(200,150,62,.1);
+  border:1px solid rgba(200,150,62,.35);
+  color:var(--go-d);
+  border-radius:var(--rf);
+  padding:4px 10px;
+  font-family:var(--fd);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.03em;
+  cursor:pointer;
+  transition:all var(--tt);
+}
+.diary-cloud-tag:hover{
+  background:var(--go);
+  color:#fff;
+  border-color:var(--go);
+}
+.diary-cloud-tag.active{
+  background:var(--go);
+  color:#fff;
+  border-color:var(--go-d);
+}
+
 /* ═══════════════════════ RESPONSIVE ═══════════════════════ */
 @media(max-width:900px){
   /* На планшете/мобиле sidebar выезжает поверх контента */
