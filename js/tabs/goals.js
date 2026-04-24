@@ -193,7 +193,9 @@ function openRadialMenu(node) {
     }
     document.addEventListener("click", oc);
   }, 0);
-}(node, cx, cy) {
+}
+
+function openTypeMenu(node, cx, cy) {
   closeRadialMenu();
   const wrap = document.getElementById("mm-wrap"); if (!wrap) return;
   const types = [
@@ -222,7 +224,9 @@ function openRadialMenu(node) {
     }
     document.addEventListener("click", oc2);
   }, 0);
-}(btns, cx, cy, wrap) {
+}
+
+function buildRadialDom(btns, cx, cy, wrap) {
   const R = 58; // радиус
   const N = btns.length;
   const startAngle = -Math.PI / 2; // начинаем сверху
