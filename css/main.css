@@ -125,9 +125,9 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 .dn-cal-btn:hover{background:var(--go-d);}
 .day-strip{display:flex;align-items:center;gap:4px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;}
 .day-strip::-webkit-scrollbar{display:none;}
-.ds-arr{background:var(--go);color:#fff;width:26px;height:26px;min-width:26px;border-radius:50%;border:none;cursor:pointer;font-size:36px;display:flex;align-items:center;justify-content:center;transition:background var(--tt);}
+.ds-arr{background:var(--go);color:#fff;width:44px;height:44px;min-width:44px;border-radius:50%;border:none;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;transition:background var(--tt);}
 .ds-arr:hover{background:var(--go-d);}
-.ds-day{width:30px;height:30px;min-width:30px;border-radius:50%;background:var(--go);color:#fff;font-family:var(--fd);font-size:28px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tt);position:relative;}
+.ds-day{width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--go);color:#fff;font-family:var(--fd);font-size:22px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tt);position:relative;}
 .ds-day:hover{background:var(--go-d);}
 .ds-day.on{background:var(--br-d);}
 .ds-day.has-dot::after{content:'';position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--red);border-radius:50%;}
@@ -1376,5 +1376,24 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 
   /* ── FAB ── */
   .fab{ bottom:28px; right:16px; width:46px; height:46px; font-size:24px; }
-}
 
+  /* Кружочки дней */
+  .ds-day{ width:44px; height:44px; min-width:44px; font-size:22px; }
+  .ds-arr{ width:44px; height:44px; min-width:44px; font-size:22px; }
+  .dn-date{ font-size:26px; }
+  .ds-all{ font-size:22px; }
+
+  /* Заголовок вкладки */
+  .mod-ttl{ font-size:22px; }
+
+  /* Карточки */
+  .ic-tag{ font-size:19px; }
+
+  /* Панель форматирования */
+  .fmt-sec-title{ font-size:16px; }
+  .fmt-label{ font-size:15px; }
+  .fmt-add-btn{ font-size:22px; padding:12px 8px; }
+  .fmt-shape-btn, .fmt-line-btn, .fmt-width-btn{ padding:10px 6px; }
+  .fmt-layout-btn{ padding:12px 6px; font-size:12px; }
+
+}
