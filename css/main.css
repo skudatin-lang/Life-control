@@ -1266,7 +1266,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   .main-area{ width:100%; flex:1; min-height:0; }
   .mod-body{ padding-bottom:80px; }
   .dash-grid{ grid-template-columns:1fr 1fr; }
-  .dt-lbl{ font-size:12px; } .dt-val{ font-size:14px; }
+  .dt-lbl{ font-size:30px; } .dt-val{ font-size:35px; }
   .entry-picker-box{ border-radius:var(--rxl) var(--rxl) 0 0; }
 }
 
@@ -1323,7 +1323,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   }
   /* Показываем кнопку темы в навбаре на мобиле */
   .nav-theme-btn{ display:flex; }
-  .nt{ font-size:8px; padding:10px 4px; min-width:44px; }
+  .nt{ font-size:20px; padding:10px 4px; min-width:44px; }
 
   /* Отступ снизу для контента чтобы не перекрывался навбаром */
   .mwrap{ padding-bottom:60px; }
@@ -1349,9 +1349,9 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   /* ── Dash ── */
   .dash-grid{ grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
   .dash-tile{ padding:14px 10px; gap:6px; }
-  .dt-ico{ font-size:22px; }
-  .dt-lbl{ font-size:11px; }
-  .dt-val{ font-size:13px; }
+  .dt-ico{ font-size:55px; }
+  .dt-lbl{ font-size:28px; }
+  .dt-val{ font-size:33px; }
   .dsb-profile{ padding:14px 12px; }
   .dsb-name{ font-size:15px; }
   .dsb-eff-wrap{ padding:12px 10px; }
