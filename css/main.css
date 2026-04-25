@@ -45,15 +45,15 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .sb-ov.on{display:block;}
 .sb-prof{padding:18px 16px 14px;border-bottom:2px dashed var(--bd);text-align:center;}
-.sb-mo{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--go-d);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+.sb-mo{font-family:var(--fd);font-size:20px;font-weight:600;color:var(--go-d);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
 .sb-av{width:64px;height:64px;border-radius:50%;background:var(--br);border:3px solid var(--go);margin:0 auto 8px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:25px;font-weight:700;color:#fff;flex-shrink:0;}
 .sb-av img{width:100%;height:100%;object-fit:cover;}
-.sb-un{display:block;font-family:var(--fd);font-size:14px;font-weight:700;color:var(--br-d);}
-.sb-ue{display:block;font-size:13px;color:var(--tx-l);margin-top:1px;}
+.sb-un{display:block;font-family:var(--fd);font-size:21px;font-weight:700;color:var(--br-d);}
+.sb-ue{display:block;font-size:20px;color:var(--tx-l);margin-top:1px;}
 .sb-new{display:block;width:100%;margin:10px 0 0;padding:10px 14px;background:var(--go);color:#fff;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:all var(--tt);}
 .sb-new:hover{background:var(--go-l);transform:translateY(-1px);}
 .sb-btns{display:flex;gap:6px;margin-top:7px;}
-.sb-btn{flex:1;padding:7px 4px;background:var(--br);color:var(--cr);font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:background var(--tt);}
+.sb-btn{flex:1;padding:7px 4px;background:var(--br);color:var(--cr);font-family:var(--fd);font-size:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:none;border-radius:var(--r);cursor:pointer;transition:background var(--tt);}
 .sb-btn:hover{background:var(--br-d);}
 .sb-body{flex:1;overflow-y:auto;padding:12px 14px;}
 .sb-sec{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--tx-l);text-transform:uppercase;letter-spacing:.1em;margin:0 0 7px;padding-bottom:4px;border-bottom:1px solid var(--bd);}
@@ -106,7 +106,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .top-nav{display:flex;background:var(--go);border-bottom:2px solid var(--go-d);flex-shrink:0;overflow-x:auto;}
 .top-nav::-webkit-scrollbar{display:none;}
-.nt{flex:1;min-width:70px;padding:13px 6px;font-family:var(--fd);font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.65);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;white-space:nowrap;}
+.nt{flex:1;min-width:70px;padding:13px 6px;font-family:var(--fd);font-size:32px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.65);border:none;background:none;cursor:pointer;transition:all var(--tt);border-bottom:3px solid transparent;white-space:nowrap;}
 .nt:hover{color:#fff;}
 .nt.on{color:#fff;border-bottom-color:rgba(255,255,255,.8);}
 .mwrap{flex:1;overflow:hidden;position:relative;}
@@ -195,9 +195,9 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
 .dash-tile{background:var(--cr);border:1px solid var(--bd);border-radius:var(--rl);padding:18px 16px;cursor:pointer;transition:all var(--tt);display:flex;flex-direction:column;gap:8px;}
 .dash-tile:hover{border-color:var(--go);transform:translateY(-2px);box-shadow:0 4px 16px var(--sh);}
-.dt-ico{font-size:25px;}
-.dt-lbl{font-family:var(--fd);font-size:18px;font-weight:700;color:var(--br-d);}
-.dt-val{font-size:20px;color:var(--go);font-weight:700;}
+.dt-ico{font-size:62px;}
+.dt-lbl{font-family:var(--fd);font-size:45px;font-weight:700;color:var(--br-d);}
+.dt-val{font-size:50px;color:var(--go);font-weight:700;}
 
 /* ── DASHBOARD SIDEBAR ── */
 .dsb-profile{
@@ -210,7 +210,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 }
 .dsb-greeting{
   font-family:var(--fb);
-  font-size:14px;
+  font-size:28px;
   color:var(--tx-l);
   text-transform:uppercase;
   letter-spacing:.08em;
@@ -218,13 +218,13 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 }
 .dsb-name{
   font-family:var(--fd);
-  font-size:21px;
+  font-size:42px;
   font-weight:700;
   color:var(--br-d);
   margin-bottom:4px;
 }
 .dsb-date{
-  font-size:14px;
+  font-size:28px;
   color:var(--tx-m);
   margin-bottom:10px;
 }
@@ -235,7 +235,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   background:rgba(123,79,30,.08);
   border-radius:var(--rf);
   padding:4px 12px;
-  font-size:18px;
+  font-size:36px;
 }
 .dash-flames.none{
   font-size:14px;
@@ -267,7 +267,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
 }
 .dsb-eff-lbl{
   font-family:var(--fd);
-  font-size:11px;
+  font-size:22px;
   font-weight:700;
   color:var(--tx-l);
   text-transform:uppercase;
@@ -275,7 +275,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   margin-bottom:10px;
 }
 .dsb-eff-sub{
-  font-size:13px;
+  font-size:26px;
   color:var(--tx-m);
   margin-top:6px;
 }
@@ -283,7 +283,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   display:inline-block;
   margin-top:8px;
   font-family:var(--fd);
-  font-size:11px;
+  font-size:22px;
   font-weight:700;
   color:var(--go-d);
   text-transform:uppercase;
@@ -307,7 +307,7 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   background:var(--go);
   color:#fff;
   font-family:var(--fd);
-  font-size:14px;
+  font-size:28px;
   font-weight:700;
   letter-spacing:.09em;
   text-transform:uppercase;
