@@ -1378,10 +1378,11 @@ body{color:var(--tx);font-family:var(--fb);font-size:6px;line-height:1.5;-webkit
   .fab{ bottom:28px; right:16px; width:46px; height:46px; font-size:24px; }
 
   /* Кружочки дней */
-  .ds-day{ width:44px; height:44px; min-width:44px; font-size:22px; }
-  .ds-arr{ width:44px; height:44px; min-width:44px; font-size:22px; }
-  .dn-date{ font-size:26px; }
-  .ds-all{ font-size:22px; }
+  .ds-day{ width:34px; height:34px; min-width:34px; font-size:16px; }
+  .ds-arr{ width:30px; height:30px; min-width:30px; font-size:16px; }
+  .dn-date{ font-size:20px; padding:6px 10px; }
+  .ds-all{ font-size:16px; padding:4px 8px; }
+  .day-strip{ gap:3px; }
 
   /* Заголовок вкладки */
   .mod-ttl{ font-size:22px; }
