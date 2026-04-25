@@ -740,9 +740,9 @@ function moveDrag(clientX, clientY) {
 
   // Обновляем tooltip текст
   if (drag.tip) {
-    drag.tip.textContent = hov
-      ? `→ ${hov.type}: ${hov.label}`
-      : `mx:${Math.round(mx)} my:${Math.round(my)} nodes:${mmFlat.length}`;
+    const nodeInfo = mmFlat.filter(n=>n.id!==drag.node.id)
+      .map(n=>`${n.label.slice(0,6)}(${Math.round(n.x)},${Math.round(n.y)},${n.w}x${n.h})`).join(' | ');
+    drag.tip.textContent = `mx:${Math.round(mx)} my:${Math.round(my)} | ${hov?'HIT:'+hov.label:'miss'} | r.left:${Math.round(r.left)} r.top:${Math.round(r.top)}`;
   }
 }
 
