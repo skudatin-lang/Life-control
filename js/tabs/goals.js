@@ -488,13 +488,11 @@ function drawMM() {
     // Drag
     el.addEventListener("mousedown",e=>{
       e.stopPropagation();
-      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-      drag={node:n,sx:e.clientX/zoom,sy:e.clientY/zoom,moved:false,isTouch:false};
+      drag={node:n,sx:e.clientX,sy:e.clientY,moved:false,isTouch:false};
       reparent.nodeId=n.id;
     });
     el.addEventListener("touchstart",e=>{
       e.stopPropagation();
-      // Touch координаты НЕ делим на zoom — они уже в правильном пространстве
       drag={node:n,sx:e.touches[0].clientX,sy:e.touches[0].clientY,moved:false,isTouch:true};
       reparent.nodeId=n.id;
     },{passive:true});
@@ -548,17 +546,13 @@ function setupEvents(wrap) {
   let panning=false,panStart={x:0,y:0};
   wrap.addEventListener("mousedown",e=>{
     if(e.target===wrap||e.target===document.getElementById("mm-svg")){
-      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-      panning=true;panStart={x:e.clientX/zoom-mmPan.x,y:e.clientY/zoom-mmPan.y};
+      panning=true;panStart={x:e.clientX-mmPan.x,y:e.clientY-mmPan.y};
     }
   });
 
   window.addEventListener("mousemove",e=>{
     if(drag){ moveDrag(e.clientX, e.clientY); return; }
-    if(panning){
-      const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-      mmPan={x:e.clientX/zoom-panStart.x,y:e.clientY/zoom-panStart.y};drawMM();
-    }
+    if(panning){mmPan={x:e.clientX-panStart.x,y:e.clientY-panStart.y};drawMM();}
   });
 
   window.addEventListener("mouseup",async()=>{
@@ -588,10 +582,9 @@ function setupEvents(wrap) {
 
   wrap.addEventListener("wheel",e=>{
     e.preventDefault();
-    const zoom=parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
     const ns=Math.max(0.25,Math.min(3,mmScale+(e.deltaY<0?0.1:-0.1)));
     const r=wrap.getBoundingClientRect();
-    const mx=e.clientX/zoom-r.left, my=e.clientY/zoom-r.top;
+    const mx=e.clientX-r.left, my=e.clientY-r.top;
     mmPan.x=mx-(mx-mmPan.x)*(ns/mmScale);
     mmPan.y=my-(my-mmPan.y)*(ns/mmScale);
     mmScale=ns; drawMM();
@@ -653,13 +646,8 @@ function setupEvents(wrap) {
 // ══════════════════════════════════════════
 function moveDrag(clientX, clientY) {
   if (!drag) return;
-
-  // Zoom компенсация только для мыши (не touch)
-  const zoom = drag.isTouch ? 1 :
-    (parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1);
-  const cx = clientX / zoom;
-  const cy = clientY / zoom;
-
+  const cx = clientX;
+  const cy = clientY;
   const dx = cx - drag.sx;
   const dy = cy - drag.sy;
 
@@ -705,18 +693,8 @@ function moveDrag(clientX, clientY) {
   const wrap = document.getElementById("mm-wrap");
   const r = wrap?.getBoundingClientRect();
   if (!r) return;
-
-  let mx, my;
-  if (drag.isTouch) {
-    // Touch: используем clientX/Y и r.left/r.top напрямую — как работало раньше
-    mx = (clientX - r.left - mmPan.x) / mmScale;
-    my = (clientY - r.top  - mmPan.y) / mmScale;
-  } else {
-    // Desktop: cx/cy уже поделены на zoom, r.left/r.top тоже нужно поделить
-    const zoom = parseFloat(getComputedStyle(document.documentElement).zoom||"1")||1;
-    mx = (cx - r.left/zoom - mmPan.x) / mmScale;
-    my = (cy - r.top /zoom - mmPan.y) / mmScale;
-  }
+  const mx = (clientX - r.left - mmPan.x) / mmScale;
+  const my = (clientY - r.top  - mmPan.y) / mmScale;
   let hov = null;
   for (const n of mmFlat) {
     if (n.id === drag.node.id) continue;
@@ -740,9 +718,9 @@ function moveDrag(clientX, clientY) {
 
   // Обновляем tooltip текст
   if (drag.tip) {
-    const nodeInfo = mmFlat.filter(n=>n.id!==drag.node.id)
-      .map(n=>`${n.label.slice(0,6)}(${Math.round(n.x)},${Math.round(n.y)},${n.w}x${n.h})`).join(' | ');
-    drag.tip.textContent = `mx:${Math.round(mx)} my:${Math.round(my)} | ${hov?'HIT:'+hov.label:'miss'} | r.left:${Math.round(r.left)} r.top:${Math.round(r.top)}`;
+    drag.tip.textContent = hov
+      ? `→ ${{ goal:"Цель", project:"Проект", task:"Задача", root:"Корень" }[hov.type]}: ${hov.label}`
+      : drag.node.label;
   }
 }
 
