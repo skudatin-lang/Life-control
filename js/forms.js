@@ -173,8 +173,8 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         goals.push({ id: newId, title: newTitle });
         const sel = $("t-goal");
         const opt = document.createElement("option");
-        opt.value.trim() = newId; opt.textContent = esc(newTitle);
-        sel.appendChild(opt); sel.value.trim() = newId;
+        opt.value = newId; opt.textContent = esc(newTitle);
+        sel.appendChild(opt); sel.value = newId;
         selectedGoalId = newId; render();
       });
     });
@@ -183,8 +183,8 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         projects.push({ id: newId, name: newName, goalId: selectedGoalId });
         const sel = $("t-proj");
         const opt = document.createElement("option");
-        opt.value.trim() = newId; opt.textContent = esc(newName);
-        sel.appendChild(opt); sel.value.trim() = newId;
+        opt.value = newId; opt.textContent = esc(newName);
+        sel.appendChild(opt); sel.value = newId;
       });
     });
     $("t-goal")?.addEventListener("change", e => { selectedGoalId = e.target.value.trim(); render(); });
@@ -202,7 +202,7 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         div.querySelector("span").onclick = () => showFileViewer(attached.url, attached.type, attached.name);
         div.querySelector(".rm-sub").onclick = () => { attachments = attachments.filter(a => a.url !== attached.url); div.remove(); };
       }
-      e.target.value.trim() = "";
+      e.target.value = "";
     });
   }
 
@@ -318,8 +318,8 @@ export async function editTaskModal(id) {
         goals.push({ id: newId, title: newTitle });
         const sel = $("et-goal");
         const opt = document.createElement("option");
-        opt.value.trim() = newId; opt.textContent = esc(newTitle);
-        sel.appendChild(opt); sel.value.trim() = newId;
+        opt.value = newId; opt.textContent = esc(newTitle);
+        sel.appendChild(opt); sel.value = newId;
         t.goalId = newId; renderEdit();
       });
     });
@@ -328,8 +328,8 @@ export async function editTaskModal(id) {
         projects.push({ id: newId, name: newName, goalId: t.goalId });
         const sel = $("et-proj");
         const opt = document.createElement("option");
-        opt.value.trim() = newId; opt.textContent = esc(newName);
-        sel.appendChild(opt); sel.value.trim() = newId;
+        opt.value = newId; opt.textContent = esc(newName);
+        sel.appendChild(opt); sel.value = newId;
       });
     });
     document.querySelectorAll("#edit-attach-list span").forEach(span => {
@@ -352,7 +352,7 @@ export async function editTaskModal(id) {
         div.querySelector("span").onclick = () => showFileViewer(attached.url, attached.type, attached.name);
         div.querySelector(".rm-sub").onclick = () => { attachments = attachments.filter(a => a.url !== attached.url); div.remove(); };
       }
-      e.target.value.trim() = "";
+      e.target.value = "";
     };
   }
 
@@ -513,14 +513,14 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
       </span>`).join("") +
       `<input class="diary-tag-inp" id="${containerId}-inp"
         placeholder="+ тег (Enter)"
-        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${containerId}');this.value.trim()='';}"/>`;
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${containerId}');this.value = '';}"/>`;
   }
 
   window._diaryAddTag = (val, cid) => {
     const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
     if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
     const inp = document.getElementById(cid + "-inp");
-    if (inp) { inp.value.trim() = ""; inp.focus(); }
+    if (inp) { inp.value = ""; inp.focus(); }
   };
   window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
 
@@ -590,14 +590,14 @@ export async function editDiaryModal(id) {
       </span>`).join("") +
       `<input class="diary-tag-inp" id="${cid}-inp"
         placeholder="+ тег (Enter)"
-        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${cid}');this.value.trim()='';}"/>`;
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${cid}');this.value = '';}"/>`;
   }
 
   window._diaryAddTag = (val, cid) => {
     const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
     if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
     const inp = document.getElementById(cid + "-inp");
-    if (inp) { inp.value.trim() = ""; inp.focus(); }
+    if (inp) { inp.value = ""; inp.focus(); }
   };
   window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
 
