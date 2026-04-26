@@ -3,28 +3,29 @@
 //  service-worker.js (в корне проекта)
 // ════════════════════════════════════════
 
-const CACHE_NAME = "life-control-v1";
+const CACHE_NAME = "life-control-v2";
 
-// Файлы, которые кешируем при установке
 const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/css/main.css",
-  "/js/app.js",
-  "/js/firebase.js",
-  "/js/db.js",
-  "/js/modal.js",
-  "/js/router.js",
-  "/js/forms.js",
-  "/js/calendar.js",
-  "/js/storage.js",
-  "/js/utils.js",
-  "/js/tabs/dashboard.js",
-  "/js/tabs/plan.js",
-  "/js/tabs/goals.js",
-  "/js/tabs/ideas.js",
-  "/js/tabs/diary.js",
-  "/manifest.json"
+  ".",
+  "./index.html",
+  "./css/main.css",
+  "./js/app.js",
+  "./js/firebase.js",
+  "./js/db.js",
+  "./js/modal.js",
+  "./js/router.js",
+  "./js/forms.js",
+  "./js/calendar.js",
+  "./js/storage.js",
+  "./js/utils.js",
+  "./js/tabs/dashboard.js",
+  "./js/tabs/plan.js",
+  "./js/tabs/goals.js",
+  "./js/tabs/ideas.js",
+  "./js/tabs/diary.js",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
 // ── Установка: кешируем статику ──
