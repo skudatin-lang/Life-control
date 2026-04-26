@@ -29,10 +29,15 @@ import { MONTHS }                      from "./utils.js";
 
 import {
   GoogleAuthProvider, OAuthProvider,
-  signInWithPopup, signOut, onAuthStateChanged
+  signInWithPopup, signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const $ = id => document.getElementById(id);
+
+// Определяем режим: PWA standalone или обычный браузер
+const isPWA = () => window.matchMedia("(display-mode: standalone)").matches
+                 || window.navigator.standalone === true;
 
 // ════════════════════════════════════════
 //  WINDOW GLOBALS
@@ -137,7 +142,12 @@ $("btn-g").onclick = async () => {
   try {
     const p = new GoogleAuthProvider();
     p.setCustomParameters({ prompt: "select_account" });
-    await signInWithPopup(auth, p);
+    if (isPWA()) {
+      // В PWA режиме popup не работает — используем redirect
+      await signInWithRedirect(auth, p);
+    } else {
+      await signInWithPopup(auth, p);
+    }
   } catch(e) {
     const m = {
       "auth/unauthorized-domain": `Домен не авторизован!\nДобавьте skudatin-lang.github.io\nв Firebase Console → Authentication → Authorized domains`,
@@ -150,7 +160,12 @@ $("btn-g").onclick = async () => {
 
 $("btn-y").onclick = async () => {
   try {
-    await signInWithPopup(auth, new OAuthProvider("yandex.com"));
+    const p = new OAuthProvider("yandex.com");
+    if (isPWA()) {
+      await signInWithRedirect(auth, p);
+    } else {
+      await signInWithPopup(auth, p);
+    }
   } catch(e) {
     alert(e.code==="auth/unauthorized-domain"
       ? "Добавьте skudatin-lang.github.io в Firebase Authorized domains."
@@ -163,6 +178,16 @@ $("btn-logout").onclick = async () => {
 };
 
 onAuthStateChanged(auth, async user => {
+  // Обрабатываем возврат после redirect авторизации (PWA)
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) user = result.user;
+  } catch(e) {
+    if (e.code !== "auth/no-current-user") {
+      alert("Ошибка авторизации: " + e.code);
+    }
+  }
+
   if (user) {
     setUid(user.uid);
     $("sb-un").textContent = user.displayName || "Пользователь";
