@@ -806,7 +806,7 @@ window._planEditGoal = async id => {
       <input class="inp" id="eg-dl" type="date" value="${g.deadline||""}"/></div>`,
     async () => {
       const title = document.getElementById("eg-title")?.value.trim();
-      if (!title) { alert("Введите название"); return; }
+      if (!title) { toast("⚠️ Введите название"); return; }
       await updateGoal(id, {
         title,
         desc:     document.getElementById("eg-desc")?.value.trim() || "",
@@ -837,7 +837,7 @@ window._planEditProj = async id => {
       </select></div>`,
     async () => {
       const name = document.getElementById("ep-name")?.value.trim();
-      if (!name) { alert("Введите название"); return; }
+      if (!name) { toast("⚠️ Введите название"); return; }
       await updateDoc(doc(db,"users",uid,"projects",id), {
         name,
         desc:   document.getElementById("ep-desc")?.value.trim() || "",
