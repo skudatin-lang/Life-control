@@ -177,17 +177,19 @@ $("btn-logout").onclick = async () => {
   if (confirm("Выйти из аккаунта?")) await signOut(auth);
 };
 
-onAuthStateChanged(auth, async user => {
-  // Обрабатываем возврат после redirect авторизации (PWA)
-  try {
-    const result = await getRedirectResult(auth);
-    if (result?.user) user = result.user;
-  } catch(e) {
-    if (e.code !== "auth/no-current-user") {
-      alert("Ошибка авторизации: " + e.code);
-    }
+// ════════════════════════════════════════
+//  REDIRECT RESULT — обрабатываем один раз при загрузке
+// ════════════════════════════════════════
+getRedirectResult(auth).then(result => {
+  // result обрабатывается автоматически через onAuthStateChanged ниже
+  // Ничего дополнительно делать не нужно
+}).catch(e => {
+  if (e.code && e.code !== "auth/no-current-user") {
+    console.error("Redirect auth error:", e.code);
   }
+});
 
+onAuthStateChanged(auth, async user => {
   if (user) {
     setUid(user.uid);
     $("sb-un").textContent = user.displayName || "Пользователь";
