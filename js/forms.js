@@ -59,7 +59,7 @@ async function quickAddGoal(callback) {
       <textarea class="txta" id="quick-goal-desc" placeholder="Описание..."></textarea></div>`,
     async () => {
       const t = $("quick-goal-title")?.value.trim();
-      if (!t) { alert("Введите название"); return; }
+      if (!t) { toast("⚠️ Введите название"); return; }
       const newGoal = await addGoal({ title: t, desc: $("quick-goal-desc")?.value.trim() || "" });
       toast("Цель создана");
       closeModal();
@@ -79,7 +79,7 @@ async function quickAddProject(goalId, callback) {
       </select></div>`,
     async () => {
       const t = $("quick-proj-title")?.value.trim();
-      if (!t) { alert("Введите название"); return; }
+      if (!t) { toast("⚠️ Введите название"); return; }
       const newProj = await addProject({ name: t, goalId: $("quick-proj-goal")?.value || null });
       toast("Проект создан");
       closeModal();
@@ -208,7 +208,7 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
 
   openModal(title || "Новая задача", "", async () => {
     const titleVal = $("t-title")?.value.trim();
-    if (!titleVal) { alert("Введите название задачи"); return; }
+    if (!titleVal) { toast("⚠️ Введите название задачи"); return; }
     const recType = $("t-recurrence-type")?.value || "none";
     await addTask({
       title: titleVal,
@@ -396,7 +396,7 @@ export async function buildGoalModal(title) {
       <input class="inp" id="g-dl" type="date"/></div>`,
     async () => {
       const t = $("g-title")?.value.trim();
-      if (!t) { alert("Введите название цели"); return; }
+      if (!t) { toast("⚠️ Введите название цели"); return; }
       await addGoal({ title: t, desc: $("g-desc")?.value.trim() || "", deadline: $("g-dl")?.value || null });
       toast("Цель добавлена ✓");
       closeModal();
@@ -421,7 +421,7 @@ export async function buildProjectModal(title, defGoalId = null) {
       <textarea class="txta" id="p-desc" placeholder="Описание..."></textarea></div>`,
     async () => {
       const t = $("p-title")?.value.trim();
-      if (!t) { alert("Введите название"); return; }
+      if (!t) { toast("⚠️ Введите название"); return; }
       await addProject({ name: t, goalId: $("p-goal")?.value || null, desc: $("p-desc")?.value.trim() || "" });
       toast("Проект добавлен ✓");
       closeModal();
@@ -445,7 +445,7 @@ export function buildIdeaModal(title, defaultDate = null) {
       <input class="inp" id="i-dl" type="date"/></div>`,
     async () => {
       const t = $("i-title")?.value.trim();
-      if (!t) { alert("Введите заголовок"); return; }
+      if (!t) { toast("⚠️ Введите заголовок"); return; }
       await addIdea({
         title: t,
         text:  $("i-text")?.value.trim() || "",
@@ -480,7 +480,7 @@ export async function editIdeaModal(id) {
     </div>`,
     async () => {
       const t = $("ei-title")?.value.trim();
-      if (!t) { alert("Введите заголовок"); return; }
+      if (!t) { toast("⚠️ Введите заголовок"); return; }
       await updateIdea(id, {
         title: t,
         text:  $("ei-text")?.value.trim() || "",
@@ -550,7 +550,7 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
     </div>`,
     async () => {
       const t = $("d-title")?.value.trim();
-      if (!t) { alert("Введите заголовок"); return; }
+      if (!t) { toast("⚠️ Введите заголовок"); return; }
       // Добавляем незафиксированный тег из поля если есть
       const inp = $("d-tags-wrap-inp");
       if (inp?.value.trim()) window._diaryAddTag(inp.value, "d-tags-wrap");
@@ -630,7 +630,7 @@ export async function editDiaryModal(id) {
     </div>`,
     async () => {
       const t = $("ed-title")?.value.trim();
-      if (!t) { alert("Введите заголовок"); return; }
+      if (!t) { toast("⚠️ Введите заголовок"); return; }
       const inp = $("ed-tags-wrap-inp");
       if (inp?.value.trim()) window._diaryAddTag(inp.value, "ed-tags-wrap");
       await updateDiaryEntry(id, {
@@ -660,7 +660,7 @@ export function buildTemplateModal(title) {
       <textarea class="txta" id="tmpl-body" style="min-height:120px" placeholder="Шаблонный текст, вопросы для записи..."></textarea></div>`,
     async () => {
       const t = $("tmpl-title")?.value.trim();
-      if (!t) { alert("Введите название шаблона"); return; }
+      if (!t) { toast("⚠️ Введите название шаблона"); return; }
       await addTemplate({ title: t, body: $("tmpl-body")?.value.trim() || "" });
       toast("Шаблон создан ✓");
       closeModal();
