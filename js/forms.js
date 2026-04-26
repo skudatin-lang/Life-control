@@ -80,7 +80,7 @@ async function quickAddProject(goalId, callback) {
     async () => {
       const t = $("quick-proj-title")?.value.trim();
       if (!t) { toast("⚠️ Введите название"); return; }
-      const newProj = await addProject({ name: t, goalId: $("quick-proj-goal")?.value || null });
+      const newProj = await addProject({ name: t, goalId: $("quick-proj-goal")?.value.trim() || null });
       toast("Проект создан");
       closeModal();
       callback(newProj.id, t);
@@ -173,8 +173,8 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         goals.push({ id: newId, title: newTitle });
         const sel = $("t-goal");
         const opt = document.createElement("option");
-        opt.value = newId; opt.textContent = esc(newTitle);
-        sel.appendChild(opt); sel.value = newId;
+        opt.value.trim() = newId; opt.textContent = esc(newTitle);
+        sel.appendChild(opt); sel.value.trim() = newId;
         selectedGoalId = newId; render();
       });
     });
@@ -183,11 +183,11 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         projects.push({ id: newId, name: newName, goalId: selectedGoalId });
         const sel = $("t-proj");
         const opt = document.createElement("option");
-        opt.value = newId; opt.textContent = esc(newName);
-        sel.appendChild(opt); sel.value = newId;
+        opt.value.trim() = newId; opt.textContent = esc(newName);
+        sel.appendChild(opt); sel.value.trim() = newId;
       });
     });
-    $("t-goal")?.addEventListener("change", e => { selectedGoalId = e.target.value; render(); });
+    $("t-goal")?.addEventListener("change", e => { selectedGoalId = e.target.value.trim(); render(); });
     $("t-attach")?.addEventListener("change", async e => {
       const file = e.target.files[0]; if (!file) return;
       toast("Загрузка...");
@@ -202,30 +202,30 @@ export async function buildTaskModal(title, defGoalId = null, defProjId = null, 
         div.querySelector("span").onclick = () => showFileViewer(attached.url, attached.type, attached.name);
         div.querySelector(".rm-sub").onclick = () => { attachments = attachments.filter(a => a.url !== attached.url); div.remove(); };
       }
-      e.target.value = "";
+      e.target.value.trim() = "";
     });
   }
 
   openModal(title || "Новая задача", "", async () => {
     const titleVal = $("t-title")?.value.trim();
     if (!titleVal) { toast("⚠️ Введите название задачи"); return; }
-    const recType = $("t-recurrence-type")?.value || "none";
+    const recType = $("t-recurrence-type")?.value.trim() || "none";
     await addTask({
       title: titleVal,
       note: $("t-note")?.value.trim() || "",
-      goalId: $("t-goal")?.value || null,
-      projId: $("t-proj")?.value || null,
-      deadline: $("t-dl")?.value || null,
-      startDate: $("t-start")?.value || null,
+      goalId: $("t-goal")?.value.trim() || null,
+      projId: $("t-proj")?.value.trim() || null,
+      deadline: $("t-dl")?.value.trim() || null,
+      startDate: $("t-start")?.value.trim() || null,
       priority: getActivePriority(),
       subtasks: getSubtasks(),
-      date: $("t-date")?.value || today(),
-      reminder: $("t-reminder")?.value || null,
+      date: $("t-date")?.value.trim() || today(),
+      reminder: $("t-reminder")?.value.trim() || null,
       attachments,
       recurrence: recType !== "none" ? {
         type: recType,
-        interval: parseInt($("t-recurrence-interval")?.value) || 1,
-        until: $("t-recurrence-until")?.value || null
+        interval: parseInt($("t-recurrence-interval")?.value.trim()) || 1,
+        until: $("t-recurrence-until")?.value.trim() || null
       } : null,
     });
     toast("Задача добавлена ✓");
@@ -318,8 +318,8 @@ export async function editTaskModal(id) {
         goals.push({ id: newId, title: newTitle });
         const sel = $("et-goal");
         const opt = document.createElement("option");
-        opt.value = newId; opt.textContent = esc(newTitle);
-        sel.appendChild(opt); sel.value = newId;
+        opt.value.trim() = newId; opt.textContent = esc(newTitle);
+        sel.appendChild(opt); sel.value.trim() = newId;
         t.goalId = newId; renderEdit();
       });
     });
@@ -328,8 +328,8 @@ export async function editTaskModal(id) {
         projects.push({ id: newId, name: newName, goalId: t.goalId });
         const sel = $("et-proj");
         const opt = document.createElement("option");
-        opt.value = newId; opt.textContent = esc(newName);
-        sel.appendChild(opt); sel.value = newId;
+        opt.value.trim() = newId; opt.textContent = esc(newName);
+        sel.appendChild(opt); sel.value.trim() = newId;
       });
     });
     document.querySelectorAll("#edit-attach-list span").forEach(span => {
@@ -352,7 +352,7 @@ export async function editTaskModal(id) {
         div.querySelector("span").onclick = () => showFileViewer(attached.url, attached.type, attached.name);
         div.querySelector(".rm-sub").onclick = () => { attachments = attachments.filter(a => a.url !== attached.url); div.remove(); };
       }
-      e.target.value = "";
+      e.target.value.trim() = "";
     };
   }
 
@@ -361,19 +361,19 @@ export async function editTaskModal(id) {
     await updateTask(id, {
       title:     $("et-ttl").value.trim(),
       note:      $("et-note").value.trim(),
-      goalId:    $("et-goal").value || null,
-      projId:    $("et-proj").value || null,
-      priority:  $("et-pri").value,
-      deadline:  $("et-dl")?.value || null,
-      startDate: $("et-st")?.value || null,
-      date:      $("et-date")?.value || today(),
-      reminder:  $("et-reminder")?.value || null,
+      goalId:    $("et-goal").value.trim() || null,
+      projId:    $("et-proj").value.trim() || null,
+      priority:  $("et-pri").value.trim(),
+      deadline:  $("et-dl")?.value.trim() || null,
+      startDate: $("et-st")?.value.trim() || null,
+      date:      $("et-date")?.value.trim() || today(),
+      reminder:  $("et-reminder")?.value.trim() || null,
       subtasks:  newSubtasks,
       attachments,
       recurrence: {
-        type:     $("et-recurrence-type").value,
-        interval: parseInt($("et-recurrence-interval").value) || 1,
-        until:    $("et-recurrence-until").value || null,
+        type:     $("et-recurrence-type").value.trim(),
+        interval: parseInt($("et-recurrence-interval").value.trim()) || 1,
+        until:    $("et-recurrence-until").value.trim() || null,
       }
     });
     toast("Сохранено ✓");
@@ -397,7 +397,7 @@ export async function buildGoalModal(title) {
     async () => {
       const t = $("g-title")?.value.trim();
       if (!t) { toast("⚠️ Введите название цели"); return; }
-      await addGoal({ title: t, desc: $("g-desc")?.value.trim() || "", deadline: $("g-dl")?.value || null });
+      await addGoal({ title: t, desc: $("g-desc")?.value.trim() || "", deadline: $("g-dl")?.value.trim() || null });
       toast("Цель добавлена ✓");
       closeModal();
       window._refreshAll?.();
@@ -422,7 +422,7 @@ export async function buildProjectModal(title, defGoalId = null) {
     async () => {
       const t = $("p-title")?.value.trim();
       if (!t) { toast("⚠️ Введите название"); return; }
-      await addProject({ name: t, goalId: $("p-goal")?.value || null, desc: $("p-desc")?.value.trim() || "" });
+      await addProject({ name: t, goalId: $("p-goal")?.value.trim() || null, desc: $("p-desc")?.value.trim() || "" });
       toast("Проект добавлен ✓");
       closeModal();
       window._refreshAll?.();
@@ -449,8 +449,8 @@ export function buildIdeaModal(title, defaultDate = null) {
       await addIdea({
         title: t,
         text:  $("i-text")?.value.trim() || "",
-        date:  $("i-date")?.value || today(),
-        deadline: $("i-dl")?.value ? toTS($("i-dl").value) : null,
+        date:  $("i-date")?.value.trim() || today(),
+        deadline: $("i-dl")?.value.trim() ? toTS($("i-dl").value.trim()) : null,
       });
       toast("Идея добавлена ✓");
       closeModal();
@@ -484,8 +484,8 @@ export async function editIdeaModal(id) {
       await updateIdea(id, {
         title: t,
         text:  $("ei-text")?.value.trim() || "",
-        date:  $("ei-date")?.value || today(),
-        deadline: $("ei-dl")?.value ? toTS($("ei-dl").value) : null,
+        date:  $("ei-date")?.value.trim() || today(),
+        deadline: $("ei-dl")?.value.trim() ? toTS($("ei-dl").value.trim()) : null,
       });
       toast("Сохранено ✓");
       closeModal();
@@ -513,14 +513,14 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
       </span>`).join("") +
       `<input class="diary-tag-inp" id="${containerId}-inp"
         placeholder="+ тег (Enter)"
-        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value,'${containerId}');this.value='';}"/>`;
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${containerId}');this.value.trim()='';}"/>`;
   }
 
   window._diaryAddTag = (val, cid) => {
     const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
     if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
     const inp = document.getElementById(cid + "-inp");
-    if (inp) { inp.value = ""; inp.focus(); }
+    if (inp) { inp.value.trim() = ""; inp.focus(); }
   };
   window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
 
@@ -539,7 +539,7 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px" id="d-mood-row">
         ${["😊 Отлично","🙂 Хорошо","😐 Нейтрально","😔 Плохо","😢 Тяжело"].map(m=>`
           <button class="pri-btn" data-mood="${m}"
-            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('d-mood-val').value='${m}'">${m}</button>`
+            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('d-mood-val').value.trim()='${m}'">${m}</button>`
         ).join("")}
       </div>
       <input type="hidden" id="d-mood-val" value=""/>
@@ -553,13 +553,13 @@ export async function buildDiaryModal(title, tmpl = null, defaultDate = null) {
       if (!t) { toast("⚠️ Введите заголовок"); return; }
       // Добавляем незафиксированный тег из поля если есть
       const inp = $("d-tags-wrap-inp");
-      if (inp?.value.trim()) window._diaryAddTag(inp.value, "d-tags-wrap");
+      if (inp?.value.trim()) window._diaryAddTag(inp.value.trim(), "d-tags-wrap");
       await addDiaryEntry({
         title: t,
         text:  $("d-text")?.value.trim() || "",
-        date:  $("d-date")?.value || today(),
-        time:  $("d-time")?.value || "",
-        mood:  $("d-mood-val")?.value || "",
+        date:  $("d-date")?.value.trim() || today(),
+        time:  $("d-time")?.value.trim() || "",
+        mood:  $("d-mood-val")?.value.trim() || "",
         tags,
       });
       toast("Запись добавлена ✓");
@@ -590,14 +590,14 @@ export async function editDiaryModal(id) {
       </span>`).join("") +
       `<input class="diary-tag-inp" id="${cid}-inp"
         placeholder="+ тег (Enter)"
-        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value,'${cid}');this.value='';}"/>`;
+        onkeydown="if(event.key==='Enter'||event.key===','){event.preventDefault();window._diaryAddTag(this.value.trim(),'${cid}');this.value.trim()='';}"/>`;
   }
 
   window._diaryAddTag = (val, cid) => {
     const t = val.trim().replace(/^#/, "").replace(/\s+/g,"_");
     if (t && !tags.includes(t)) { tags.push(t); renderTagsBlock(cid); }
     const inp = document.getElementById(cid + "-inp");
-    if (inp) { inp.value = ""; inp.focus(); }
+    if (inp) { inp.value.trim() = ""; inp.focus(); }
   };
   window._diaryRmTag = (i, cid) => { tags.splice(i, 1); renderTagsBlock(cid); };
 
@@ -616,7 +616,7 @@ export async function editDiaryModal(id) {
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
         ${["😊 Отлично","🙂 Хорошо","😐 Нейтрально","😔 Плохо","😢 Тяжело"].map(m=>`
           <button class="pri-btn ${x.mood===m?"on-med":""}" data-mood="${m}"
-            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('ed-mood-val').value='${m}'">${m}</button>`
+            onclick="document.querySelectorAll('[data-mood]').forEach(b=>b.classList.remove('on-med'));this.classList.add('on-med');document.getElementById('ed-mood-val').value.trim()='${m}'">${m}</button>`
         ).join("")}
       </div>
       <input type="hidden" id="ed-mood-val" value="${esc(x.mood||"")}"/>
@@ -632,13 +632,13 @@ export async function editDiaryModal(id) {
       const t = $("ed-title")?.value.trim();
       if (!t) { toast("⚠️ Введите заголовок"); return; }
       const inp = $("ed-tags-wrap-inp");
-      if (inp?.value.trim()) window._diaryAddTag(inp.value, "ed-tags-wrap");
+      if (inp?.value.trim()) window._diaryAddTag(inp.value.trim(), "ed-tags-wrap");
       await updateDiaryEntry(id, {
         title: t,
         text:  $("ed-text")?.value.trim() || "",
-        date:  $("ed-date")?.value || today(),
-        time:  $("ed-time")?.value || "",
-        mood:  $("ed-mood-val")?.value || "",
+        date:  $("ed-date")?.value.trim() || today(),
+        time:  $("ed-time")?.value.trim() || "",
+        mood:  $("ed-mood-val")?.value.trim() || "",
         tags,
       });
       toast("Сохранено ✓");
