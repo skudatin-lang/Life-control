@@ -29,15 +29,10 @@ import { MONTHS }                      from "./utils.js";
 
 import {
   GoogleAuthProvider, OAuthProvider,
-  signInWithPopup, signInWithRedirect, getRedirectResult,
-  signOut, onAuthStateChanged
+  signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const $ = id => document.getElementById(id);
-
-// Определяем режим: PWA standalone или обычный браузер
-const isPWA = () => window.matchMedia("(display-mode: standalone)").matches
-                 || window.navigator.standalone === true;
 
 // ════════════════════════════════════════
 //  WINDOW GLOBALS
@@ -141,33 +136,27 @@ function initApp() {
 $("btn-g").onclick = async () => {
   try {
     const p = new GoogleAuthProvider();
-    p.setCustomParameters({ prompt: "select_account" });
-    if (isPWA()) {
-      // В PWA режиме popup не работает — используем redirect
-      await signInWithRedirect(auth, p);
-    } else {
-      await signInWithPopup(auth, p);
-    }
+    // Без prompt:"select_account" — не заставляем выбирать аккаунт повторно
+    await signInWithPopup(auth, p);
   } catch(e) {
     const m = {
-      "auth/unauthorized-domain": `Домен не авторизован!\nДобавьте skudatin-lang.github.io\nв Firebase Console → Authentication → Authorized domains`,
+      "auth/unauthorized-domain": `Домен не авторизован! Добавьте skudatin-lang.github.io в Firebase Console → Authentication → Authorized domains`,
       "auth/popup-blocked":       "Разрешите всплывающие окна в браузере.",
       "auth/popup-closed-by-user":"Вход отменён.",
+      "auth/cancelled-popup-request": "",
     };
-    alert(m[e.code] || ("Ошибка: " + e.code));
+    const msg = m[e.code];
+    if (msg === undefined) alert("Ошибка: " + e.code);
+    else if (msg) alert(msg);
   }
 };
 
 $("btn-y").onclick = async () => {
   try {
-    const p = new OAuthProvider("yandex.com");
-    if (isPWA()) {
-      await signInWithRedirect(auth, p);
-    } else {
-      await signInWithPopup(auth, p);
-    }
+    await signInWithPopup(auth, new OAuthProvider("yandex.com"));
   } catch(e) {
-    alert(e.code==="auth/unauthorized-domain"
+    if (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request") return;
+    alert(e.code === "auth/unauthorized-domain"
       ? "Добавьте skudatin-lang.github.io в Firebase Authorized domains."
       : "Яндекс: " + e.code);
   }
@@ -177,17 +166,7 @@ $("btn-logout").onclick = async () => {
   if (confirm("Выйти из аккаунта?")) await signOut(auth);
 };
 
-// ════════════════════════════════════════
-//  REDIRECT RESULT — обрабатываем один раз при загрузке
-// ════════════════════════════════════════
-getRedirectResult(auth).then(result => {
-  // result обрабатывается автоматически через onAuthStateChanged ниже
-  // Ничего дополнительно делать не нужно
-}).catch(e => {
-  if (e.code && e.code !== "auth/no-current-user") {
-    console.error("Redirect auth error:", e.code);
-  }
-});
+let appInitialized = false;
 
 onAuthStateChanged(auth, async user => {
   if (user) {
@@ -202,9 +181,13 @@ onAuthStateChanged(auth, async user => {
     $("sb-mo").textContent = MONTHS[mn.getMonth()].toUpperCase() + " " + mn.getFullYear();
     $("s-auth").classList.remove("on");
     $("s-app").classList.add("on");
-    initApp();
-    await switchTab("dashboard");
+    if (!appInitialized) {
+      appInitialized = true;
+      initApp();
+      await switchTab("dashboard");
+    }
   } else {
+    appInitialized = false;
     $("s-app").classList.remove("on");
     $("s-auth").classList.add("on");
   }
